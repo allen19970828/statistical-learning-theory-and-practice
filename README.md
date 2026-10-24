@@ -40,24 +40,35 @@
 
 ---
 
+## 🎯 自修降門檻體系：雙重直覺導航
+
+為徹底破除自修者「公式抽象難懂、不知為何而學」的痛點，本書全 14 章全面導入**「雙重直覺導航」**教學架構：
+
+1. **💡 開篇實務案例導讀（Opening Empirical Case Study）**：
+   每章以真實世界的具體產業痛點（ICU 敗血症預警、信用卡防偽、廣告負數 ROI、癌症基因篩選、自駕車光達防撞等）開篇，說明為何傳統粗糙解法會遭遇滑鐵盧，帶出技術的核心價值。
+2. **🎯 概念直覺與幾何啟發（Conceptual Intuition & Geometric Heuristics）**：
+   在正式展開微積分與矩陣符號前，先以空間正交投影、彈性木條張力、等高線幾何切削、Voronoi 多邊形與俄羅斯套娃等物理幾何心智模型建立直覺，讓自修學習平滑無挫折。
+
+---
+
 ## 📚 全書章節目錄與架構地圖
 
-| 篇章分類 | 章節名稱 | 核心理論證明 | 數值推演範例 | 程式實踐亮點 |
+| 篇章分類 | 章節名稱 | 開篇實務案例導讀 | 概念直覺與幾何啟發 | 程式實踐亮點 |
 | :--- | :--- | :--- | :--- | :--- |
-| **第一篇：基礎理論與評估** | [第 1 章：統計學習概論與思維典範](manuscript/chapters/ch01_introduction.qmd) | 沒有免費午餐定理 (NFL)、可約化與不可約化誤差 | 維度災難幾何收縮推算 | 模型彈性 vs 可解釋性權衡實驗 |
-| | [第 2 章：模型評估、重抽樣與理論](manuscript/chapters/ch02_model_assessment.qmd) | 偏誤-變異數分解、LOOCV 槓桿捷徑定理、OOB 36.8% 極限 | 5 筆樣本槓桿值與 LOOCV 手算 | 手刻 LOOCV 捷徑 vs 套件驗證 |
-| **第二篇：線性模型與正則化** | [第 3 章：多元線性迴歸與古典推論](manuscript/chapters/ch03_linear_regression.qmd) | Gauss-Markov 定理 (BLUE)、幾何正交投影 | 4 筆 2D 樣本正規方程與 $SE(\hat{\beta})$ | 報表全字段解讀與異變異數診斷 |
-| | [第 4 章：正則化技術與高維特徵篩選](manuscript/chapters/ch04_regularization.qmd) | Lasso 次梯度與軟閾值算子、SVD 有效自由度 | 單變量 Ridge vs Lasso 收縮率手算 | 座標下降演算法手刻與 glmnet |
-| **第三篇：非線性與分類模型** | [第 5 章：非線性模型與平滑技術](manuscript/chapters/ch05_splines_gam.qmd) | 截斷冪次基底、Reinsch 變分定理、Backfitting | 4 筆樣本單節點分段仿樣聯立方程求解 | 自然三次仿樣與 mgcv GAM 擬合 |
-| | [第 6 章：羅吉斯迴歸與廣義線性模型](manuscript/chapters/ch06_logistic_glm.qmd) | 對數似然嚴格凹性、Deviance 與 LRT 檢定 | 4 筆樣本 IRLS 首步加權最小平方手算 | 手刻 IRLS 演算法與勝算比解讀 |
-| | [第 7 章：生成式分類模型](manuscript/chapters/ch07_generative_models.qmd) | Fisher 投影極大化廣義瑞利商、LDA 高斯邊界 | 4 筆 2D 樣本合併共變異數逆矩陣求解 | LDA / QDA / 單純貝氏決策邊界 |
-| | [第 8 章：支援向量機與核方法](manuscript/chapters/ch08_svm.qmd) | Wolfe 對偶、KKT 條件、RBF 核無限維映射 | 3 筆樣本手算 Gram 矩陣與對偶變數 $\alpha$ | 手刻線性 SVM 對偶 QP 與 e1071 |
-| **第四篇：樹模型與集成學習** | [第 9 章：決策樹演算法](manuscript/chapters/ch09_decision_trees.qmd) | 吉尼不純度與交叉熵嚴格凹性、弱連接剪枝 | 6 筆樣本窮舉候選切分點吉尼增益表 | 成本-複雜度剪枝路徑 (ccp_alpha) |
-| | [第 10 章：集成學習理論](manuscript/chapters/ch10_ensemble_learning.qmd) | AdaBoost 指數損失最小化、XGBoost 二階泰勒展開 | 10 筆樣本手推兩輪 AdaBoost 樣本權重 | 隨機森林 OOB 評估與 XGBoost |
-| **第五篇：非監督學習與現代前沿** | [第 11 章：主成分分析與流形學習](manuscript/chapters/ch11_pca_manifold.qmd) | 最大投影方差 vs 最小重建誤差、SVD 對偶性 | 3 筆 2D 樣本手算共變異數特徵值 $\lambda$ | PCA 解釋變異數比例 vs t-SNE |
-| | [第 12 章：分群演算法與混合模型](manuscript/chapters/ch12_clustering_em.qmd) | Lloyd 單調收斂性、GMM ELBO 下界與 M-步閉式解 | 4 筆 K-Means 迭代與 2 筆 GMM EM 手算 | 輪廓係數分析與 GMM 軟分群 |
-| | [第 13 章：現代前沿：深度學習與 XAI](manuscript/chapters/ch13_modern_frontiers.qmd) | 雙重下降機制、共變量偏移加權、Shapley 唯一公理 | 6 假設 BH 程序臨界線與 Shapley 手算 | FDR 逐步校正與 TreeSHAP 歸因 |
-| **第六篇：高級專題（博士深論）** | [第 14 章：經驗過程與高維非漸近統計](manuscript/chapters/ch14_empirical_processes.qmd) | 亞高斯集中界、對稱化引理、Dudley 熵積分、Lasso RE 神諭界、Fano 下界 | 2 函數 Rademacher 手算與 RE 錐條件矩陣手算 | 蒙地卡羅驗證集中尾部與 Lasso 誤差收斂率 |
+| **第一篇：基礎理論與評估** | [第 1 章：統計學習概論與思維典範](manuscript/chapters/ch01_introduction.qmd) | 加護病房重症預警 vs 量化高頻交易定價 | 深海礁石、表面浪花與觀測雜訊函數投影 | 模型彈性 vs 可解釋性權衡實驗 |
+| | [第 2 章：模型評估、重抽樣與理論](manuscript/chapters/ch02_model_assessment.qmd) | 信用卡即時詐欺偵測之 99.9% 準確率謊言 | 靶心射箭、系統性偏斜與手部顫抖 | 手刻 LOOCV 捷徑 vs 套件驗證 |
+| **第二篇：線性模型與正則化** | [第 3 章：多元線性迴歸與古典推論](manuscript/chapters/ch03_linear_regression.qmd) | 跨通路廣告投放歸因的「負數 ROI」謎團 | 正交投影、垂直影射與殘差無相關性 | 報表全字段解讀與異變異數診斷 |
+| | [第 4 章：正則化技術與高維特徵篩選](manuscript/chapters/ch04_regularization.qmd) | 癌症微陣列全基因表現量分析 ($p \gg n$) | 等高線氣球碰撞圓弧 vs 扎中多面體菱形尖角 | 座標下降演算法手刻與 glmnet |
+| **第三篇：非線性與分類模型** | [第 5 章：非線性模型與平滑技術](manuscript/chapters/ch05_splines_gam.qmd) | 大都會 PM2.5 濃度與極端氣候突變監測 | 彈性木條、曲率彈性位能與局部分段拼裝 | 自然三次仿樣與 mgcv GAM 擬合 |
+| | [第 6 章：羅吉斯迴歸與廣義線性模型](manuscript/chapters/ch06_logistic_glm.qmd) | 純網銀個人信貸審核與授信違約預警 | 無界鋼軌、橡皮筋阻尼與 S 型邊界壓制 | 手刻 IRLS 演算法與勝算比解讀 |
+| | [第 7 章：生成式分類模型](manuscript/chapters/ch07_generative_models.qmd) | 多重神經退化性疾病生物標記精準分型 | 費雪投影聚光燈與彩色高斯橢球切削 | LDA / QDA / 單純貝氏決策邊界 |
+| | [第 8 章：支援向量機與核方法](manuscript/chapters/ch08_svm.qmd) | 自駕車光學雷達障礙物安全隔離帶劃定 | 最寬的無人街道、前線哨兵與彈性蹦床核映射 | 手刻線性 SVM 對偶 QP 與 e1071 |
+| **第四篇：樹模型與集成學習** | [第 9 章：決策樹演算法](manuscript/chapters/ch09_decision_trees.qmd) | 急診醫學檢傷分級臨床處置決策流 | 正交切蛋糕、不純度純化與逆向剪枝拼裝 | 成本-複雜度剪枝路徑 (ccp_alpha) |
+| | [第 10 章：集成學習理論](manuscript/chapters/ch10_ensemble_learning.qmd) | 全球串流影音平台高價值會員流失預警 | 獨立專家多數表決 vs 專題錯題本螺旋式訂正 | 隨機森林 OOB 評估與 XGBoost |
+| **第五篇：非監督學習與現代前沿** | [第 11 章：主成分分析與流形學習](manuscript/chapters/ch11_pca_manifold.qmd) | 全球金融市場千檔資產共振與單細胞定序 | 高維橄欖球的主軸旋轉與最大展開投影 | PCA 解釋變異數比例 vs t-SNE |
+| | [第 12 章：分群演算法與混合模型](manuscript/chapters/ch12_clustering_em.qmd) | 全球跨國電商億級會員畫像分群 | Voronoi 多邊形硬切 vs 機率迷霧與雞蛋雙螺旋 | 輪廓係數分析與 GMM 軟分群 |
+| | [第 13 章：現代前沿：深度學習與 XAI](manuscript/chapters/ch13_modern_frontiers.qmd) | 百億參數大模型泛化反常與醫療 AI 崩潰 | 穿越插值海嘯的暴風眼與超高維零損失超平面 | FDR 逐步校正與 TreeSHAP 歸因 |
+| **第六篇：高級專題（博士深論）** | [第 14 章：經驗過程與高維非漸近統計](manuscript/chapters/ch14_empirical_processes.qmd) | GWAS 全基因組關聯分析偽相關天羅地網 | 次高斯強力阻尼、鬼魂樣本鏡像與 Dudley 套娃鏈 | 蒙地卡羅驗證集中尾部與 Lasso 誤差收斂率 |
 
 ---
 
