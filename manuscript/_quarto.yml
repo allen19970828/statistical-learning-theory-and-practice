@@ -56,13 +56,4 @@ format:
     code-copy: true
     html-math-method: katex
     smooth-scroll: true
-  pdf:
-    documentclass: scrreprt
-    number-sections: true
-    toc: true
-    toc-depth: 3
-    pdf-engine: xelatex
-    include-in-header:
-      text: |
-        \usepackage{xeCJK}
-        \usepackage{amsmath,amssymb}
+

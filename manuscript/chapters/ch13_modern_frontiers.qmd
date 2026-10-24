@@ -37,7 +37,7 @@ Mikhail Belkin、Daniel Hsu 等學者於 2019 年在《PNAS》發表里程碑論
    此時存在無窮多個能夠達到訓練誤差為 0 的插值解。現代梯度下降演算法（SGD）隱式地選擇了**具有最小範數（Minimum-norm solution）**的最光滑插值解：
    $$
    \hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} \|\boldsymbol{\beta}\|_2 \quad \text{s.t.} \quad \boldsymbol{X}\boldsymbol{\beta} = \boldsymbol{y}
-   $$
+   $$ {#eq-ch13-double-descent}
    隨著參數空間維度 $p$ 繼續暴增，超平面的可行解空間急遽膨脹，隱式正則化作用愈發強大，模型的有效曲率反而變得更加平緩，驅使測試誤差展開**第二重單調下降**！這在統計學上被稱為**良性過度配適（Benign Overfitting）**。
 
 ---
