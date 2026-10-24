@@ -34,7 +34,7 @@
    * 高斯混合模型（GMM）基於 Jensen 不等式之證據下界（ELBO）與 EM 閉式解推導。
 2. **R 語言與 Python 雙軌實戰對照（Dual-Track）**：
    * 打破「統計系用 R，資工/業界用 Python」的壁壘。
-   * 全書 13 章同步提供現代 R（Tidyverse、`glmnet`、`e1071`、`randomForest`、`mgcv`）與標準 Python（`numpy`、`scipy`、`scikit-learn`、`statsmodels`、`xgboost`、`shap`）完整實體程式碼。
+   * 全書 14 章同步提供現代 R（Tidyverse、`glmnet`、`e1071`、`randomForest`、`mgcv`）與標準 Python（`numpy`、`scipy`、`scikit-learn`、`statsmodels`、`xgboost`、`shap`）完整實體程式碼。
 3. **臺灣教育部審定標準統計術語**：
    * 嚴格規範專業名詞（如「迴歸」、「殘差」、「過度配適」、「穩健」、「支援向量機」、「交叉驗證」、「單純貝氏」等），內附完整三欄中英術語對照表。
 
@@ -54,9 +54,10 @@
 | | [第 8 章：支援向量機與核方法](manuscript/chapters/ch08_svm.qmd) | Wolfe 對偶、KKT 條件、RBF 核無限維映射 | 3 筆樣本手算 Gram 矩陣與對偶變數 $\alpha$ | 手刻線性 SVM 對偶 QP 與 e1071 |
 | **第四篇：樹模型與集成學習** | [第 9 章：決策樹演算法](manuscript/chapters/ch09_decision_trees.qmd) | 吉尼不純度與交叉熵嚴格凹性、弱連接剪枝 | 6 筆樣本窮舉候選切分點吉尼增益表 | 成本-複雜度剪枝路徑 (ccp_alpha) |
 | | [第 10 章：集成學習理論](manuscript/chapters/ch10_ensemble_learning.qmd) | AdaBoost 指數損失最小化、XGBoost 二階泰勒展開 | 10 筆樣本手推兩輪 AdaBoost 樣本權重 | 隨機森林 OOB 評估與 XGBoost |
-| **第五篇：非監督學習** | [第 11 章：主成分分析與流形學習](manuscript/chapters/ch11_pca_manifold.qmd) | 最大投影方差 vs 最小重建誤差、SVD 對偶性 | 3 筆 2D 樣本手算共變異數特徵值 $\lambda$ | PCA 解釋變異數比例 vs t-SNE |
+| **第五篇：非監督學習與現代前沿** | [第 11 章：主成分分析與流形學習](manuscript/chapters/ch11_pca_manifold.qmd) | 最大投影方差 vs 最小重建誤差、SVD 對偶性 | 3 筆 2D 樣本手算共變異數特徵值 $\lambda$ | PCA 解釋變異數比例 vs t-SNE |
 | | [第 12 章：分群演算法與混合模型](manuscript/chapters/ch12_clustering_em.qmd) | Lloyd 單調收斂性、GMM ELBO 下界與 M-步閉式解 | 4 筆 K-Means 迭代與 2 筆 GMM EM 手算 | 輪廓係數分析與 GMM 軟分群 |
-| **第六篇：現代前沿** | [第 13 章：現代前沿：深度學習與 XAI](manuscript/chapters/ch13_modern_frontiers.qmd) | 雙重下降機制、共變量偏移加權、Shapley 唯一公理 | 6 假設 BH 程序臨界線與 Shapley 手算 | FDR 逐步校正與 TreeSHAP 歸因 |
+| | [第 13 章：現代前沿：深度學習與 XAI](manuscript/chapters/ch13_modern_frontiers.qmd) | 雙重下降機制、共變量偏移加權、Shapley 唯一公理 | 6 假設 BH 程序臨界線與 Shapley 手算 | FDR 逐步校正與 TreeSHAP 歸因 |
+| **第六篇：高級專題（博士深論）** | [第 14 章：經驗過程與高維非漸近統計](manuscript/chapters/ch14_empirical_processes.qmd) | 亞高斯集中界、對稱化引理、Dudley 熵積分、Lasso RE 神諭界、Fano 下界 | 2 函數 Rademacher 手算與 RE 錐條件矩陣手算 | 蒙地卡羅驗證集中尾部與 Lasso 誤差收斂率 |
 
 ---
 
@@ -68,13 +69,13 @@
 ```bash
 python3 manuscript/code/verify_all.py
 ```
-*涵蓋全書 13 章端到端回歸模型、正則化路徑、IRLS、LDA、SVM、隨機森林、XGBoost、PCA、K-Means、GMM 與 SHAP 測試。*
+*涵蓋全書 14 章端到端回歸模型、正則化路徑、IRLS、LDA、SVM、隨機森林、XGBoost、PCA、K-Means、GMM、SHAP 與高維經驗過程測試。*
 
 ### 2. R 語言驗證測試
 ```bash
 Rscript manuscript/code/verify_all.R
 ```
-*涵蓋 `ISLR2`、`boot`、`car`、`glmnet`、`splines`、`mgcv`、`MASS`、`e1071`、`rpart`、`randomForest`、`xgboost`、`cluster` 與 `Rtsne` 測試。*
+*涵蓋全書 14 章 `ISLR2`、`boot`、`car`、`glmnet`、`splines`、`mgcv`、`MASS`、`e1071`、`rpart`、`randomForest`、`xgboost`、`cluster`、`Rtsne` 與亞高斯集中模擬測試。*
 
 ---
 

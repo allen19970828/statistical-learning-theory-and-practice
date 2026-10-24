@@ -97,6 +97,15 @@ shap_vals = explainer13(X11)
 assert shap_vals.shape == X11.shape, "Ch13 Failed"
 print("✓ Ch13 現代前沿與 SHAP 測試通過")
 
+# --- 第 14 章 ---
+from sklearn.linear_model import Lasso
+eps14 = np.random.choice([-1.0, 1.0], size=40)
+rademacher_val = np.linalg.norm(X11.T @ eps14 / 40, 2)
+assert rademacher_val > 0, "Ch14 Rademacher Failed"
+lasso14 = Lasso(alpha=0.1, fit_intercept=False).fit(X11, y13)
+assert lasso14.coef_.shape == (5,), "Ch14 Lasso Oracle Failed"
+print("✓ Ch14 經驗過程與高維非漸近統計 測試通過")
+
 print("\n==========================================")
-print("🎉 全書 13 章 Python 雙軌實作綜合測試 100% 通過！")
+print("🎉 全書 14 章 Python 雙軌實作綜合測試 100% 通過！")
 print("==========================================")

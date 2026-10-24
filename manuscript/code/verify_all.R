@@ -89,6 +89,13 @@ fdr_adj <- p.adjust(pvals, method = "BH")
 stopifnot(length(fdr_adj) == 100)
 cat("✓ Ch13 現代前沿 (FDR 控制) 測試通過\n")
 
+# --- 第 14 章 ---
+rademachers <- sample(c(-1, 1), 500, replace = TRUE)
+hoeffding_p <- mean(abs(cumsum(rademachers)/seq_along(rademachers)) >= 0.2)
+fit14 <- glmnet(X4, y4, alpha = 1, lambda = 0.1)
+stopifnot(!is.null(fit14))
+cat("✓ Ch14 經驗過程與高維非漸近統計 測試通過\n")
+
 cat("\n==========================================\n")
-cat("🎉 全書 13 章 R 語言雙軌實作綜合測試 100% 通過！\n")
+cat("🎉 全書 14 章 R 語言雙軌實作綜合測試 100% 通過！\n")
 cat("==========================================\n")

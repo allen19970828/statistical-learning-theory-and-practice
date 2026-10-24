@@ -39,6 +39,9 @@ book:
     - part: "第五篇：現代前沿與統計新典範"
       chapters:
         - chapters/ch13_modern_frontiers.qmd
+    - part: "第六篇：高級專題：經驗過程與高維統計深論"
+      chapters:
+        - chapters/ch14_empirical_processes.qmd
 
 bibliography: references.bib
 

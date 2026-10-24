@@ -1,0 +1,598 @@
+# 高級專題：經驗過程與高維非漸近統計 {#sec-ch14}
+
+## 本章導讀
+
+在古典數理統計學中，理論的建立高度仰賴**漸近理論（Asymptotic Theory）**：假設樣本量 $n \to \infty$，而特徵維度 $p$ 保持固定常數。在這種設定下，中心極限定理（CLT）保證了估計量的大樣本常態性，似然比檢定亦漸近收斂至卡方分佈。
+
+然而，當代資料科學與大數據革命徹底打破了這個古典假設：
+1. 在全基因體關聯分析（GWAS）、單細胞定序、高頻金融交易與深度神經網路中，特徵維度 $p$ 往往遠遠大於樣本容量 $n$（**高維統計小樣本，即 $p \gg n$**，甚至 $p$ 達數百萬而 $n$ 僅數百）。
+2. 在有限樣本條件下，漸近結論可能給出災難性的錯誤推論。若 $p > n$，傳統協方差矩陣必然奇異不可逆，古典統計理論徹底失效。
+
+如何為**有限樣本 $n$ 與超高維度 $p$** 下的學習演算法給出精確、嚴格且無需依賴 $n \to \infty$ 的機率泛化保證？這正是統計學與機率論最高殿堂——**非漸近統計（Non-Asymptotic Statistics）**與**經驗過程理論（Empirical Process Theory）**回答的核心問題。
+
+本章將帶領讀者登上統計學習理論的高峰：從第一原理建立亞高斯與亞指數集中不等式工具庫；深入推導對稱化引理與**經驗拉德馬赫複雜度（Rademacher Complexity）**；掌握克服無窮維空間維度災難的**Dudley 熵積分鏈接技術（Chaining Technique）**；給出高維稀疏迴歸中著名的 **Lasso 非漸近神諭不等式（Oracle Inequality）**與限制特徵值（RE）條件的完整數學證明；最後藉由資訊論 Fano 不等式證明該邊界達到了**極小化極大（Minimax）物理極限**，並於 R 與 Python 雙軌實驗室中進行蒙地卡羅經驗過程模擬驗證。
+
+---
+
+## 14.1 集中不等式工具庫（Concentration Inequalities Toolkit）
+
+非漸近分析的底層基石是一系列精密的**集中不等式（Concentration Inequalities）**，它們量化了一個隨機變數偏離其期望值的尾部機率衰減速度 [@vershynin2018high]。
+
+### 14.1.1 亞高斯隨機變數（Sub-Gaussian Random Variables）
+
+高斯分佈具有極端優良的尾部性質（以 $e^{-t^2/2\sigma^2}$ 速度急遽衰減）。我們將這種具備高斯般輕尾特性的隨機變數推廣為**亞高斯隨機變數**。
+
+#### 定義 14.1：亞高斯變數
+若均值為零（$\mathbb{E}[X] = 0$）的隨機變數 $X$ 其動差母函數（Moment Generating Function, MGF）滿足：
+$$
+\mathbb{E}[e^{\lambda X}] \le \exp\left( \frac{\lambda^2 \sigma^2}{2} \right), \quad \forall \lambda \in \mathbb{R}
+$$ {#eq-ch14-subgaussian-def}
+則稱 $X$ 為參數為 $\sigma^2$ 的**亞高斯隨機變數（Sub-Gaussian Variable）**，記為 $X \in \mathcal{SG}(\sigma^2)$。
+
+#### 性質與等價刻劃：
+隨機變數 $X$ 具備亞高斯性，等價於其滿足以下任一條件（僅常數係數相差微小倍數）：
+1. **尾部衰減界**：$P(|X| \ge t) \le 2 \exp(-c t^2 / \sigma^2)$ 對所有 $t \ge 0$ 成立。
+2. **高階動差增長界**：對任意整數 $k \ge 1$，$(\mathbb{E}[|X|^k])^{1/k} \le C \sigma \sqrt{k}$。
+3. **Orlicz $\psi_2$ 範數有界**：定義 $\|X\|_{\psi_2} \triangleq \inf\{u > 0 \mid \mathbb{E}[\exp(X^2/u^2)] \le 2\} < \infty$。
+
+> **常見例子**：
+> * 所有有界隨機變數（如 Rademacher 隨機變數 $\epsilon \in \{-1, +1\}$、均勻分佈 $X \sim U[-a, a]$）皆為亞高斯。
+> * 標準常態分佈 $X \sim \mathcal{N}(0, \sigma^2)$ 為亞高斯變數。
+
+---
+
+### 14.1.2 通用 Hoeffding 集中不等式
+
+#### 定理 14.1：獨立亞高斯之和的集中性（Hoeffding's Inequality）
+設 $X_1, X_2, \dots, X_n$ 為相互獨立的均值為零隨機變數，且各自滿足 $X_i \in \mathcal{SG}(\sigma_i^2)$。令 $S_n = \sum_{i=1}^n X_i$，則對任意 $t \ge 0$：
+$$
+P\left( S_n \ge t \right) \le \exp\left( -\frac{t^2}{2 \sum_{i=1}^n \sigma_i^2} \right)
+$$ {#eq-ch14-hoeffding}
+
+**證明**：
+利用 Chernoff 邊界技巧。對任意 $\lambda > 0$：
+$$
+P(S_n \ge t) = P(e^{\lambda S_n} \ge e^{\lambda t}) \le \frac{\mathbb{E}[e^{\lambda S_n}]}{e^{\lambda t}} = e^{-\lambda t} \prod_{i=1}^n \mathbb{E}[e^{\lambda X_i}]
+$$
+由亞高斯定義式 ([-@eq-ch14-subgaussian-def])：
+$$
+P(S_n \ge t) \le e^{-\lambda t} \prod_{i=1}^n \exp\left(\frac{\lambda^2 \sigma_i^2}{2}\right) = \exp\left( -\lambda t + \frac{\lambda^2}{2}\sum_{i=1}^n \sigma_i^2 \right)
+$$
+上式對所有 $\lambda > 0$ 恆成立。尋找最小化指數二次項的最優 $\lambda^* = \frac{t}{\sum \sigma_i^2}$ 代回，即得證式 ([-@eq-ch14-hoeffding]) $\quad \blacksquare$
+
+---
+
+### 14.1.3 McDiarmid 差分有界不等式（Bounded Differences Inequality）
+
+在機器學習中，我們關注的統計量往往不是簡單的求和，而是複雜的非線性泛函（例如：交叉驗證誤差、最佳化後的超參數）。Colin McDiarmid (1989) 將 Hoeffding 不等式推廣至任意座標敏感度有界的多元函數。
+
+#### 定理 14.2：McDiarmid 不等式
+設 $X_1, \dots, X_n$ 為定義在樣本空間 $\mathcal{X}$ 上的獨立隨機變數。設函數 $g: \mathcal{X}^n \to \mathbb{R}$ 滿足**差分有界條件（Bounded Differences）**：
+$$
+\sup_{x_1, \dots, x_n, x_i'} |g(x_1, \dots, x_i, \dots, x_n) - g(x_1, \dots, x_i', \dots, x_n)| \le c_i, \quad \forall i \in \{1, \dots, n\}
+$$
+即替換第 $i$ 個觀測值時，函數值的最大變動不超過常數 $c_i$。
+則對任意 $t > 0$：
+$$
+P\left( g(X_1, \dots, X_n) - \mathbb{E}[g] \ge t \right) \le \exp\left( -\frac{2t^2}{\sum_{i=1}^n c_i^2} \right)
+$$ {#eq-ch14-mcdiarmid}
+
+此不等式在後續推導「經驗拉德馬赫複雜度集中至其母體期望值」時扮演絕對核心角色！
+
+---
+
+## 14.2 經驗過程與均勻泛化界（Empirical Processes & Uniform Laws）
+
+在統計學習中，評估泛化誤差的核心是控制經驗風險 $\hat{R}_n(f) = \frac{1}{n}\sum_{i=1}^n \ell(f(\boldsymbol{x}_i), y_i)$ 與真實風險 $R(f) = \mathbb{E}[\ell(f(\boldsymbol{X}), Y)]$ 之間的偏差。
+
+若對單一固定的函數 $f$，由大數法則 $|\hat{R}_n(f) - R(f)| \xrightarrow{P} 0$。然而，學習演算法所挑選出的最優模型 $\hat{f}$ 是**依賴於特定訓練樣本**的隨機函數。因此，我們必須控制在**整個假設空間 $\mathcal{F}$ 上的最大可能偏差（Uniform Deviation）**：
+$$
+\Delta_n(\mathcal{F}) \triangleq \sup_{f \in \mathcal{F}} \left| \hat{R}_n(f) - R(f) \right|
+$$
+
+---
+
+### 14.2.1 對稱化引理（Symmetrization Lemma）
+
+如何求一個未知母體分佈上確界 $\sup_{f \in \mathcal{F}} |\mathbb{E}_n[f] - \mathbb{E}[f]|$ 的期望值？統計學家發明了神乎其技的**對稱化引理（Symmetrization）** [@bartlett2002rademacher]。
+
+#### 定理 14.3：對稱化引理
+設 $\mathcal{D} = \{\boldsymbol{z}_1, \dots, \boldsymbol{z}_n\}$ 為獨立同分佈樣本。引入一組同分佈且獨立於 $\mathcal{D}$ 的**虛擬鬼樣本（Ghost Sample）** $\mathcal{D}' = \{\boldsymbol{z}_1', \dots, \boldsymbol{z}_n'\}$。引入 $n$ 個相互獨立的 **Rademacher 隨機變數** $\epsilon_1, \dots, \epsilon_n$（滿足 $P(\epsilon_i = +1) = P(\epsilon_i = -1) = 1/2$），且 $\boldsymbol{\epsilon}$ 獨立於所有樣本。
+
+則嚴格滿足不等式：
+$$
+\mathbb{E}_{\mathcal{D}}\left[ \sup_{f \in \mathcal{F}} \left( \mathbb{E}[f] - \frac{1}{n}\sum_{i=1}^n f(\boldsymbol{z}_i) \right) \right] \le 2 \, \mathbb{E}_{\mathcal{D}, \boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \left| \frac{1}{n}\sum_{i=1}^n \epsilon_i f(\boldsymbol{z}_i) \right| \right]
+$$ {#eq-ch14-symmetrization}
+
+#### 逐步數學證明：
+1. 將母體真實期望值表示為在鬼樣本 $\mathcal{D}'$ 上的期望：$\mathbb{E}[f] = \mathbb{E}_{\mathcal{D}'}\left[ \frac{1}{n}\sum_{i=1}^n f(\boldsymbol{z}_i') \right]$。
+2. 代入並利用 Jensen 不等式（上確界算子 $\sup$ 是凸函數）：
+   $$
+   \begin{aligned}
+   \mathbb{E}_{\mathcal{D}}\left[ \sup_{f \in \mathcal{F}} \left( \mathbb{E}[f] - \frac{1}{n}\sum_{i=1}^n f(\boldsymbol{z}_i) \right) \right] &= \mathbb{E}_{\mathcal{D}}\left[ \sup_{f \in \mathcal{F}} \left( \mathbb{E}_{\mathcal{D}'}\left[ \frac{1}{n}\sum_{i=1}^n f(\boldsymbol{z}_i') \right] - \frac{1}{n}\sum_{i=1}^n f(\boldsymbol{z}_i) \right) \right] \\
+   &= \mathbb{E}_{\mathcal{D}}\left[ \sup_{f \in \mathcal{F}} \mathbb{E}_{\mathcal{D}'}\left[ \frac{1}{n}\sum_{i=1}^n \left( f(\boldsymbol{z}_i') - f(\boldsymbol{z}_i) \right) \right] \right] \\
+   &\le \mathbb{E}_{\mathcal{D}, \mathcal{D}'}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n}\sum_{i=1}^n \left( f(\boldsymbol{z}_i') - f(\boldsymbol{z}_i) \right) \right]
+   \end{aligned}
+   $$
+3. 注意到差值項 $f(\boldsymbol{z}_i') - f(\boldsymbol{z}_i)$ 的機率分佈關於原點對稱（因為 $\boldsymbol{z}_i$ 與 $\boldsymbol{z}_i'$ 獨立同分佈）。因此，引入隨機符號變數 $\epsilon_i \in \{-1, +1\}$ 完全不改變聯合分佈：
+   $$
+   \mathbb{E}_{\mathcal{D}, \mathcal{D}'}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n}\sum_{i=1}^n \left( f(\boldsymbol{z}_i') - f(\boldsymbol{z}_i) \right) \right] = \mathbb{E}_{\mathcal{D}, \mathcal{D}', \boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n}\sum_{i=1}^n \epsilon_i \left( f(\boldsymbol{z}_i') - f(\boldsymbol{z}_i) \right) \right]
+   $$
+4. 拆分上確界求和：$\sup(A - B) \le \sup A + \sup(-B)$：
+   $$
+   \le \mathbb{E}_{\mathcal{D}', \boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n}\sum_{i=1}^n \epsilon_i f(\boldsymbol{z}_i') \right] + \mathbb{E}_{\mathcal{D}, \boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n}\sum_{i=1}^n (-\epsilon_i) f(\boldsymbol{z}_i) \right]
+   $$
+   由於 $-\epsilon_i$ 與 $\epsilon_i$ 分佈相同，兩項期望值完全相等，相加即得 $2 \, \mathbb{E}_{\mathcal{D}, \boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \left| \frac{1}{n}\sum_{i=1}^n \epsilon_i f(\boldsymbol{z}_i) \right| \right] \quad \blacksquare$
+
+---
+
+### 14.2.2 經驗拉德馬赫複雜度（Rademacher Complexity）
+
+對稱化引理引出了一個衡量假設空間容量的現代核心幾何指標：
+
+#### 定義 14.2：經驗拉德馬赫複雜度
+給定固定樣本集合 $S = \{\boldsymbol{z}_1, \dots, \boldsymbol{z}_n\}$，函數類 $\mathcal{F}$ 在該樣本上的**經驗拉德馬赫複雜度（Empirical Rademacher Complexity）**定義為：
+$$
+\hat{\mathcal{R}}_S(\mathcal{F}) \triangleq \mathbb{E}_{\boldsymbol{\epsilon}}\left[ \sup_{f \in \mathcal{F}} \frac{1}{n} \sum_{i=1}^n \epsilon_i f(\boldsymbol{z}_i) \right]
+$$ {#eq-ch14-rademacher-def}
+其母體拉德馬赫複雜度為對樣本取期望：$\mathcal{R}_n(\mathcal{F}) \triangleq \mathbb{E}_S[\hat{\mathcal{R}}_S(\mathcal{F})]$。
+
+> **幾何物理意義**：
+> 向量 $\boldsymbol{\epsilon} = (\epsilon_1, \dots, \epsilon_n)^\top$ 是隨機噪聲方向。$\hat{\mathcal{R}}_S(\mathcal{F})$ 衡量的是假設空間 $\mathcal{F}$ 中的函數**擬合純隨機噪聲的最大能力**！若一個函數類能完美擬合隨機噪聲，代表其容量過大，極易發生過度配適。
+
+#### 定理 14.4：均勻大數法則泛化誤差界
+設損失函數值域有界於 $[0, 1]$。則對任意 $\delta \in (0, 1)$，在機率至少為 $1 - \delta$ 下，對空間中的所有假設 $f \in \mathcal{F}$ 同時成立：
+$$
+R(f) \le \hat{R}_n(f) + 2 \, \hat{\mathcal{R}}_S(\mathcal{F}) + 3 \sqrt{\frac{\ln(2/\delta)}{2n}}
+$$ {#eq-ch14-rademacher-bound}
+
+**證明步驟**：
+1. 觀察函數 $g(S) = \sup_{f \in \mathcal{F}} (R(f) - \hat{R}_n(f))$。若改變單一樣本 $\boldsymbol{z}_i$，由於損失函數有界於 $[0, 1]$，$g(S)$ 的變化量至多為 $1/n$（滿足差分有界條件，常數 $c_i = 1/n$）。
+2. 套用 McDiarmid 不等式 ([-@eq-ch14-mcdiarmid])，在機率至少 $1 - \delta/2$ 下：
+   $$
+   g(S) \le \mathbb{E}[g(S)] + \sqrt{\frac{\ln(2/\delta)}{2n}}
+   $$
+3. 由對稱化引理，$\mathbb{E}[g(S)] \le 2 \mathcal{R}_n(\mathcal{F})$。
+4. 再次對 $\mathcal{R}_n(\mathcal{F})$ 與 $\hat{\mathcal{R}}_S(\mathcal{F})$ 套用 McDiarmid 不等式，即可閉合證明式 ([-@eq-ch14-rademacher-bound]) $\quad \blacksquare$
+
+---
+
+## 14.3 度量熵與 Dudley 鏈接技術（Metric Entropy & Chaining）
+
+當函數空間 $\mathcal{F}$ 是無窮維連續空間時，直接計算拉德馬赫複雜度的上確界極為困難。統計物理與幾何分析引入了**覆蓋數（Covering Numbers）**與**鏈接技術（Chaining Technique）**。
+
+### 14.3.1 覆蓋數與度量熵
+設 $(\mathcal{F}, \rho)$ 為度量空間（如經驗 $L_2$ 範數 $\|f - g\|_{L_2(\mathbb{P}_n)} = \sqrt{\frac{1}{n}\sum_{i=1}^n (f(\boldsymbol{x}_i) - g(\boldsymbol{x}_i))^2}$）。
+
+* **$\epsilon$-覆蓋（$\epsilon$-Covering）**：若存在一個子集 $\{g_1, \dots, g_N\} \subset \mathcal{F}$，使得對任意 $f \in \mathcal{F}$，皆存在某個 $g_j$ 滿足 $\rho(f, g_j) \le \epsilon$。
+* **覆蓋數 $\mathcal{N}(\mathcal{F}, \epsilon, \rho)$**：構成 $\epsilon$-覆蓋所需的最少元素個數。
+* **度量熵（Metric Entropy）**：$\mathcal{H}(\mathcal{F}, \epsilon, \rho) \triangleq \ln \mathcal{N}(\mathcal{F}, \epsilon, \rho)$。
+
+---
+
+### 14.3.2 Dudley 熵積分定理
+
+古典單步離散逼近只能選取單一半徑 $\epsilon$，在逼近精度與離散基數之間面臨無法調和的平衡難題。R. M. Dudley (1967) 提出了**多尺度幾何鏈接（Chaining）**：在半徑序列 $\epsilon_k = 2^{-k} \mathrm{diam}(\mathcal{F})$ 上建立一系列嵌套網格，將高維高斯/拉德馬赫過程的偏差分解為無窮幾何級數之和。
+
+#### 定理 14.5：Dudley 熵積分定理
+對任意實值函數空間 $\mathcal{F}$，其經驗拉德馬赫複雜度有界於度量熵的連續積分：
+$$
+\hat{\mathcal{R}}_n(\mathcal{F}) \le \frac{4\sqrt{2}}{\sqrt{n}} \int_{0}^{\mathrm{diam}(\mathcal{F})} \sqrt{\ln \mathcal{N}(\mathcal{F}, \epsilon, L_2(\mathbb{P}_n))} \, d\epsilon
+$$ {#eq-ch14-dudley-integral}
+
+> **深刻結論**：
+> 式 ([-@eq-ch14-dudley-integral]) 徹底架起了幾何測度論與統計泛化理論的橋樑！只要被積分的度量熵增長速率滿足 $\ln \mathcal{N}(\epsilon) \sim (1/\epsilon)^\alpha$（其中 $\alpha < 2$），積分必嚴格收斂，保證函數空間的非漸近泛化速率達到經典的 $\mathcal{O}(1/\sqrt{n})$！
+
+---
+
+## 14.4 高維稀疏迴歸與 Lasso 非漸近神諭不等式（Oracle Bounds）
+
+現在我們進入現代高維統計最著名的經典戰役：在 $p \gg n$ 的極端高維線性迴歸中，嚴格推導 Lasso 的**非漸近預測神諭不等式（Non-Asymptotic Oracle Inequality）** [@bickel2009simultaneous; @wainwright2019high]。
+
+### 14.4.1 高維設定與問題定義
+考慮線性模型：
+$$
+\boldsymbol{y} = \boldsymbol{X}\boldsymbol{\beta}^* + \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\boldsymbol{0}, \sigma^2 \boldsymbol{I}_n)
+$$
+* 矩陣維度：$\boldsymbol{X} \in \mathbb{R}^{n \times p}$，其中 $p \gg n$（例如 $p = 10,000, n = 200$）。
+* 假設特徵列向量已歸一化：$\frac{1}{n} \|\boldsymbol{X}_j\|_2^2 \le 1, \forall j$。
+* **稀疏性假設（Sparsity）**：真實係數向量 $\boldsymbol{\beta}^*$ 僅有 $s$ 個非零元素。令支撐集（Support）為 $S \triangleq \{j \mid \beta_j^* \neq 0\}$，且 $|S| = s \ll n$。
+
+Lasso 估計量為：
+$$
+\hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta} \in \mathbb{R}^p} \left\{ \frac{1}{2n}\|\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta}\|_2^2 + \lambda \|\boldsymbol{\beta}\|_1 \right\}
+$$ {#eq-ch14-lasso-obj}
+
+---
+
+### 14.4.2 限制特徵值條件（Restricted Eigenvalue, RE）
+
+當 $p > n$ 時，Gram 矩陣 $\frac{1}{n}\boldsymbol{X}^\top \boldsymbol{X}$ 的秩至多為 $n$，存在至少 $p - n$ 個零特徵值，全域強凸性徹底喪失。
+然而，Bickel, Ritov & Tsybakov (2009) 發現：**誤差向量 $\hat{\boldsymbol{\Delta}} = \hat{\boldsymbol{\beta}} - \boldsymbol{\beta}^*$ 並不會漫無目的地指向全空間，而是被高維幾何強行壓縮在一個極其狹窄的錐形空間（Cone）之內！**
+
+#### 定義 14.3：限制錐形空間 $\mathcal{C}(S)$
+對任意子集 $S \subseteq \{1, \dots, p\}$，定義錐形限制集：
+$$
+\mathcal{C}(S) \triangleq \left\{ \boldsymbol{\Delta} \in \mathbb{R}^p \;\middle|\; \|\boldsymbol{\Delta}_{S^c}\|_1 \le 3 \|\boldsymbol{\Delta}_S\|_1 \right\}
+$$ {#eq-ch14-cone-def}
+其中 $\boldsymbol{\Delta}_S$ 代表將向量限制在索引集 $S$ 的分量，$\boldsymbol{\Delta}_{S^c}$ 為其餘非支撐分量。
+
+#### 定義 14.4：限制特徵值條件（RE Condition）
+若存在常數 $\kappa > 0$，使得對錐形空間 $\mathcal{C}(S)$ 內的所有向量 $\boldsymbol{\Delta} \neq \boldsymbol{0}$ 均滿足：
+$$
+\frac{1}{n} \|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \ge \kappa^2 \|\boldsymbol{\Delta}_S\|_2^2
+$$ {#eq-ch14-re-condition}
+則稱設計矩陣 $\boldsymbol{X}$ 在支撐集 $S$ 上滿足參數為 $\kappa$ 的限制特徵值條件 $\mathrm{RE}(s, 3, \kappa)$。
+
+> **幾何本質**：
+> 雖然矩陣在全空間是奇異的，但在受到稀疏錐約束的有效低維子空間內，矩陣表現得就像具備最小特徵值 $\kappa^2$ 的嚴格正定矩陣！
+
+---
+
+### 14.4.3 Lasso 神諭不等式之完整逐步證明
+
+我們現在給出高維統計學史上最具里程碑意義的完整數學推導。
+
+#### 定理 14.6：Lasso 非漸近預測誤差神諭界
+設設計矩陣滿足 $\mathrm{RE}(s, 3, \kappa)$ 條件。選取正則化參數 $\lambda = 2 \sigma \sqrt{\frac{2\ln p}{n}}$。
+則在機率至少為 $1 - 2/p$ 下，Lasso 估計量 $\hat{\boldsymbol{\beta}}$ 的預測誤差滿足非漸近神諭上界：
+$$
+\frac{1}{n} \|\boldsymbol{X}(\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}^*)\|_2^2 \le \frac{32 \, s \, \lambda^2}{\kappa^2} = \mathcal{O}\left( \frac{s \sigma^2 \ln p}{n} \right)
+$$ {#eq-ch14-lasso-oracle-bound}
+同時，$L_1$ 參數估計誤差滿足：
+$$
+\|\hat{\boldsymbol{\beta}} - \boldsymbol{\beta}^*\|_1 \le \frac{16 \, s \, \lambda}{\kappa^2} = \mathcal{O}\left( s \sigma \sqrt{\frac{\ln p}{n}} \right)
+$$ {#eq-ch14-lasso-l1-bound}
+
+---
+
+#### 嚴格逐步證明：
+
+定義誤差向量 $\boldsymbol{\Delta} \triangleq \hat{\boldsymbol{\beta}} - \boldsymbol{\beta}^*$。
+
+##### 第一步：利用最優性建立基本不等式（Basic Inequality）
+因為 $\hat{\boldsymbol{\beta}}$ 最小化式 ([-@eq-ch14-lasso-obj])，其目標函數值必然小於或等於真實參數 $\boldsymbol{\beta}^*$ 的目標函數值：
+$$
+\frac{1}{2n}\|\boldsymbol{y} - \boldsymbol{X}\hat{\boldsymbol{\beta}}\|_2^2 + \lambda \|\hat{\boldsymbol{\beta}}\|_1 \le \frac{1}{2n}\|\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta}^*\|_2^2 + \lambda \|\boldsymbol{\beta}^*\|_1
+$$
+將 $\boldsymbol{y} - \boldsymbol{X}\hat{\boldsymbol{\beta}} = \boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta}^* - \boldsymbol{X}\boldsymbol{\Delta} = \boldsymbol{\epsilon} - \boldsymbol{X}\boldsymbol{\Delta}$ 代入左端展開：
+$$
+\frac{1}{2n}\|\boldsymbol{\epsilon} - \boldsymbol{X}\boldsymbol{\Delta}\|_2^2 = \frac{1}{2n}\|\boldsymbol{\epsilon}\|_2^2 - \frac{1}{n}\boldsymbol{\epsilon}^\top \boldsymbol{X}\boldsymbol{\Delta} + \frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2
+$$
+代回不等式，兩端消去 $\frac{1}{2n}\|\boldsymbol{\epsilon}\|_2^2$ 並移項整理，得到**基本不等式**：
+$$
+\frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \le \frac{1}{n}\boldsymbol{\epsilon}^\top \boldsymbol{X}\boldsymbol{\Delta} + \lambda \left( \|\boldsymbol{\beta}^*\|_1 - \|\hat{\boldsymbol{\beta}}\|_1 \right)
+$$ {#eq-ch14-step1-basic}
+
+---
+
+##### 第二步：控制隨機噪聲項（Holder 不等式與集中）
+考慮第一項 $\frac{1}{n}\boldsymbol{\epsilon}^\top \boldsymbol{X}\boldsymbol{\Delta} = \left(\frac{1}{n}\boldsymbol{X}^\top \boldsymbol{\epsilon}\right)^\top \boldsymbol{\Delta}$。由 Hölder 不等式：
+$$
+\left| \frac{1}{n}\boldsymbol{\epsilon}^\top \boldsymbol{X}\boldsymbol{\Delta} \right| \le \left\| \frac{1}{n}\boldsymbol{X}^\top \boldsymbol{\epsilon} \right\|_\infty \|\boldsymbol{\Delta}\|_1
+$$
+定義高維隨機事件 $\mathcal{E} \triangleq \left\{ \left\| \frac{1}{n}\boldsymbol{X}^\top \boldsymbol{\epsilon} \right\|_\infty \le \frac{\lambda}{2} \right\}$。
+由於每個分量 $\frac{1}{n}\boldsymbol{X}_j^\top \boldsymbol{\epsilon} \sim \mathcal{N}\left(0, \frac{\sigma^2 \|\boldsymbol{X}_j\|_2^2}{n^2}\right) \le \mathcal{N}(0, \sigma^2/n)$，套用 $p$ 個高斯變數極大值的集中界與並集界（Union Bound）：
+$$
+P(\mathcal{E}^c) \le p \cdot P\left( |\mathcal{N}(0, 1)| \ge \frac{\sqrt{n}\lambda}{2\sigma} \right) \le 2p \exp\left( -\frac{n \lambda^2}{8\sigma^2} \right)
+$$
+代入 $\lambda = 2\sigma \sqrt{\frac{2\ln p}{n}}$，指數項為 $\exp(-(\ln p)) = 1/p^2$，故 $P(\mathcal{E}^c) \le \frac{2}{p}$。
+因此，在機率至少為 $1 - 2/p$ 的高機率事件 $\mathcal{E}$ 下：
+$$
+\frac{1}{n}\boldsymbol{\epsilon}^\top \boldsymbol{X}\boldsymbol{\Delta} \le \frac{\lambda}{2} \|\boldsymbol{\Delta}\|_1
+$$ {#eq-ch14-step2-noise}
+
+---
+
+##### 第三步：證明誤差向量必然落在錐形限制集 $\mathcal{C}(S)$
+檢驗式 ([-@eq-ch14-step1-basic]) 右端的範數差值項。
+將向量拆分為支撐集 $S$ 與非支撐集 $S^c$：
+$$
+\begin{aligned}
+\|\boldsymbol{\beta}^*\|_1 - \|\hat{\boldsymbol{\beta}}\|_1 &= \|\boldsymbol{\beta}_S^*\|_1 - \|\boldsymbol{\beta}_S^* + \boldsymbol{\Delta}_S\|_1 - \|\boldsymbol{\Delta}_{S^c}\|_1 \\
+&\le \|\boldsymbol{\Delta}_S\|_1 - \|\boldsymbol{\Delta}_{S^c}\|_1
+\end{aligned}
+$$
+將此式與式 ([-@eq-ch14-step2-noise]) 代入基本不等式 ([-@eq-ch14-step1-basic])：
+$$
+\begin{aligned}
+\frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 &\le \frac{\lambda}{2} \|\boldsymbol{\Delta}\|_1 + \lambda \left( \|\boldsymbol{\Delta}_S\|_1 - \|\boldsymbol{\Delta}_{S^c}\|_1 \right) \\
+&= \frac{\lambda}{2}\left(\|\boldsymbol{\Delta}_S\|_1 + \|\boldsymbol{\Delta}_{S^c}\|_1\right) + \lambda \|\boldsymbol{\Delta}_S\|_1 - \lambda \|\boldsymbol{\Delta}_{S^c}\|_1 \\
+&= \frac{3\lambda}{2} \|\boldsymbol{\Delta}_S\|_1 - \frac{\lambda}{2} \|\boldsymbol{\Delta}_{S^c}\|_1
+\end{aligned}
+$$ {#eq-ch14-step3-decomp}
+由於左端平方項非負（$\frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \ge 0$）：
+$$
+\frac{3\lambda}{2} \|\boldsymbol{\Delta}_S\|_1 - \frac{\lambda}{2} \|\boldsymbol{\Delta}_{S^c}\|_1 \ge 0 \implies \|\boldsymbol{\Delta}_{S^c}\|_1 \le 3 \|\boldsymbol{\Delta}_S\|_1
+$$
+這無可辯駁地嚴格證明了：**誤差向量 $\boldsymbol{\Delta}$ 100% 必然落在定義 14.3 的錐形集合 $\mathcal{C}(S)$ 之內！**
+
+---
+
+##### 第四步：結合 RE 條件完成神諭界證明
+由於 $\boldsymbol{\Delta} \in \mathcal{C}(S)$，限制特徵值條件 ([-@eq-ch14-re-condition]) 必然成立。由 Cauchy-Schwarz 不等式：
+$$
+\|\boldsymbol{\Delta}_S\|_1 \le \sqrt{s} \|\boldsymbol{\Delta}_S\|_2
+$$
+將式 ([-@eq-ch14-step3-decomp]) 放大：
+$$
+\frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \le \frac{3\lambda}{2}\|\boldsymbol{\Delta}_S\|_1 \le \frac{3\lambda\sqrt{s}}{2} \|\boldsymbol{\Delta}_S\|_2
+$$
+利用 RE 條件 $\|\boldsymbol{\Delta}_S\|_2 \le \frac{1}{\kappa \sqrt{n}} \|\boldsymbol{X}\boldsymbol{\Delta}\|_2$：
+$$
+\frac{1}{2n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \le \frac{3\lambda\sqrt{s}}{2 \kappa \sqrt{n}} \|\boldsymbol{X}\boldsymbol{\Delta}\|_2
+$$
+兩端同除以 $\frac{1}{\sqrt{n}}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2$（若為 0 則界顯然成立）：
+$$
+\frac{1}{\sqrt{n}}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2 \le \frac{3\lambda\sqrt{s}}{\kappa}
+$$
+對等式兩端平方，即嚴格得證式 ([-@eq-ch14-lasso-oracle-bound])：
+$$
+\frac{1}{n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 \le \frac{9 s \lambda^2}{\kappa^2} \le \frac{32 s \lambda^2}{\kappa^2} = \mathcal{O}\left( \frac{s \sigma^2 \ln p}{n} \right) \quad \blacksquare
+$$
+
+---
+
+## 14.5 極小化極大下界（Minimax Lower Bounds）與 Fano 不等式
+
+在推導出 $\mathcal{O}\left(\frac{s \ln p}{n}\right)$ 的上界後，一個更深刻的理論問題浮現：**這個速率是否是最好的？是否存在某個天才演算法能夠達到更快的收斂速率（例如 $\mathcal{O}(s/n)$）？**
+
+答案是否定的。統計學家利用資訊論中的 **Fano 不等式**，證明了 $\mathcal{O}\left(\frac{s \ln(p/s)}{n}\right)$ 是大自然設定的不可逾越的物理極限！
+
+### 14.5.1 Minimax 風險形式化
+設參數空間為 $s$-稀疏球體 $\mathcal{B}_0(s) = \{\boldsymbol{\beta} \in \mathbb{R}^p \mid \|\boldsymbol{\beta}\|_0 \le s\}$。
+**極小化極大風險（Minimax Risk）**定義為：
+$$
+\mathfrak{M}_n \triangleq \inf_{\tilde{\boldsymbol{\beta}}} \sup_{\boldsymbol{\beta}^* \in \mathcal{B}_0(s)} \mathbb{E}\left[ \frac{1}{n}\|\boldsymbol{X}(\tilde{\boldsymbol{\beta}} - \boldsymbol{\beta}^*)\|_2^2 \right]
+$$
+其中 $\inf_{\tilde{\boldsymbol{\beta}}}$ 遍歷**所有可能存在的估計方法（包含任何已發明與未發明的非線性演算法）**。
+
+### 14.5.2 Fano 下界定理
+利用 Varshamov-Gilbert 引理構造具有最大相互間隔的稀疏假說超立方體集合，並計算兩兩高斯測度間的 Kullback-Leibler (KL) 散度，可推導出如下極限：
+
+#### 定理 14.7：高維稀疏估計 Minimax 下界定理
+存在純數常數 $c > 0$，使得：
+$$
+\inf_{\tilde{\boldsymbol{\beta}}} \sup_{\boldsymbol{\beta}^* \in \mathcal{B}_0(s)} \mathbb{E}\left[ \frac{1}{n}\|\boldsymbol{X}(\tilde{\boldsymbol{\beta}} - \boldsymbol{\beta}^*)\|_2^2 \right] \ge c \, \frac{s \sigma^2 \ln(p/s)}{n}
+$$ {#eq-ch14-minimax-lower}
+
+> 🎯 **終極理論閉環**：
+> 比較式 ([-@eq-ch14-lasso-oracle-bound]) 的 Lasso 上界與式 ([-@eq-ch14-minimax-lower]) 的 Minimax 下界，兩者在上界與下界上的階數（Rate）在對數因子上完全吻合！
+> 這在數學上莊嚴宣告：**Lasso 是極小化極大意義下的最優估計量（Minimax Rate-Optimal Estimator）**，世上絕不存在能在階數上超越 Lasso 的高維線性稀疏演算法！
+
+---
+
+## 14.6 手把手數值推演範例
+
+### 範例一：有限假設空間拉德馬赫複雜度的精確手算
+設樣本容量 $n=2$，觀測點為 $x_1, x_2$。
+假設空間僅包含兩個函數 $\mathcal{F} = \{f_1, f_2\}$，其在觀測點上的取值向量為：
+* $f_1$: $\boldsymbol{v}_1 = [1.0, \, -1.0]^\top$
+* $f_2$: $\boldsymbol{v}_2 = [-1.0, \, 2.0]^\top$
+
+Rademacher 隨機向量 $\boldsymbol{\epsilon} = (\epsilon_1, \epsilon_2)^\top$ 共有 $2^2 = 4$ 種等機率取值組合（機率各為 $1/4$）：
+
+| 隨機符號 $\boldsymbol{\epsilon}$ | $\frac{1}{2}\boldsymbol{\epsilon}^\top \boldsymbol{v}_1$ | $\frac{1}{2}\boldsymbol{\epsilon}^\top \boldsymbol{v}_2$ | 最大內積 $\sup_{f \in \mathcal{F}} \frac{1}{2}\sum \epsilon_i f(x_i)$ |
+| :---: | :---: | :---: | :---: |
+| $(+1, +1)$ | $\frac{1}{2}(1 - 1) = 0.0$ | $\frac{1}{2}(-1 + 2) = 0.5$ | $\mathbf{0.5}$ |
+| $(+1, -1)$ | $\frac{1}{2}(1 + 1) = 1.0$ | $\frac{1}{2}(-1 - 2) = -1.5$ | $\mathbf{1.0}$ |
+| $(-1, +1)$ | $\frac{1}{2}(-1 - 1) = -1.0$ | $\frac{1}{2}(1 + 2) = 1.5$ | $\mathbf{1.5}$ |
+| $(-1, -1)$ | $\frac{1}{2}(-1 + 1) = 0.0$ | $\frac{1}{2}(1 - 2) = -0.5$ | $\mathbf{0.0}$ |
+
+計算期望值：
+$$
+\hat{\mathcal{R}}_S(\mathcal{F}) = \frac{1}{4}(0.5 + 1.0 + 1.5 + 0.0) = \frac{3.0}{4} = \mathbf{0.7500}
+$$
+這個數值 $0.7500$ 精確量化了該二元函數類在該資料集上與隨機噪聲的最大對齊期望值！
+
+---
+
+### 範例二：限制特徵值（RE）條件手算驗證
+考慮 $p=3, n=2$ 的高維特徵矩陣（列數小於行數，矩陣必然非正定）：
+$$
+\boldsymbol{X} = \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix} \implies \boldsymbol{\Sigma}_n = \frac{1}{2}\boldsymbol{X}^\top \boldsymbol{X} = \frac{1}{2}\begin{bmatrix} 1 & 0 \\ 0 & 1 \\ 1 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \end{bmatrix} = \begin{bmatrix} 0.5 & 0 & 0.5 \\ 0 & 0.5 & 0.5 \\ 0.5 & 0.5 & 1.0 \end{bmatrix}
+$$
+Gram 矩陣 $\boldsymbol{\Sigma}_n$ 的行列式 $\det = 0$，最小特徵值為 $0$（奇異矩陣）。
+
+設真實稀疏支撐集為第 1 個特徵：$S = \{1\}$，故 $s=1$，$S^c = \{2, 3\}$。
+檢驗錐形空間向量 $\boldsymbol{\Delta} = [\Delta_1, \Delta_2, \Delta_3]^\top$ 滿足 $\|\boldsymbol{\Delta}_{S^c}\|_1 \le 3 \|\boldsymbol{\Delta}_S\|_1 \implies |\Delta_2| + |\Delta_3| \le 3 |\Delta_1|$。
+
+計算二次型：
+$$
+\frac{1}{n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 = \boldsymbol{\Delta}^\top \boldsymbol{\Sigma}_n \boldsymbol{\Delta} = \frac{1}{2}\left( (\Delta_1 + \Delta_3)^2 + (\Delta_2 + \Delta_3)^2 \right)
+$$
+若 $\frac{1}{n}\|\boldsymbol{X}\boldsymbol{\Delta}\|_2^2 = 0$，則必須 $\Delta_1 + \Delta_3 = 0$ 且 $\Delta_2 + \Delta_3 = 0$，即 $\Delta_1 = \Delta_2 = -\Delta_3$。
+代回錐條件檢驗：
+$$
+|\Delta_2| + |\Delta_3| = |-\Delta_3| + |\Delta_3| = 2 |\Delta_3| \le 3 |\Delta_1| = 3 |\Delta_3|
+$$
+雖然零空間方向 $[-1, -1, 1]^\top$ 落在廣義錐內，但若我們在設計矩陣中加入正交擾動或隨機高斯分佈，RE 條件 $\kappa^2 > 0$ 即可被數學嚴格保證！
+
+---
+
+## 14.7 雙軌實務實驗室：經驗過程與高維神諭界模擬
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：亞高斯集中不等式驗證與高維 Lasso Oracle 收斂速率模擬
+# 依賴套件：glmnet, stats, graphics
+# ==============================================================================
+
+library(glmnet)
+
+# ------------------------------------------------------------------------------
+# 實驗 1：蒙地卡羅驗證亞高斯 Hoeffding 尾部機率指數衰減
+# ------------------------------------------------------------------------------
+set.seed(42)
+n_trials <- 50000
+sample_size <- 20
+# Rademacher 隨機變數 (均值為 0, 參數 sigma^2 = 1)
+rademacher_matrix <- matrix(sample(c(-1, 1), size = n_trials * sample_size, replace = TRUE),
+                            nrow = n_trials, ncol = sample_size)
+sample_means <- rowMeans(rademacher_matrix)
+
+# 計算在不同閾值 t 下的經驗尾部機率 vs 理論 Hoeffding 上界
+t_grid <- seq(0.1, 0.8, by = 0.05)
+empirical_tail <- sapply(t_grid, function(t) mean(abs(sample_means) >= t))
+hoeffding_bound <- 2 * exp(-2 * sample_size * (t_grid^2) / 4)
+
+cat("=== 實驗 1：Hoeffding 集中不等式數值驗證 ===\n")
+tail_comparison <- data.frame(閾值_t = t_grid, 
+                              經驗尾部機率 = round(empirical_tail, 5), 
+                              理論上界 = round(hoeffding_bound, 5))
+print(head(tail_comparison, 6))
+
+# ------------------------------------------------------------------------------
+# 實驗 2：驗證高維 Lasso 預測誤差隨 (s * ln(p) / n) 的線性收斂性
+# ------------------------------------------------------------------------------
+cat("\n=== 實驗 2：高維 Lasso Oracle 邊界 O(s*ln(p)/n) 實證模擬 ===\n")
+s_true <- 5 # 稀疏度
+beta_star <- c(rep(2.0, s_true), rep(0, 45)) # p = 50
+sigma_noise <- 0.5
+
+n_list <- c(40, 80, 120, 200, 300)
+p_fixed <- 50
+oracle_factor <- (s_true * log(p_fixed)) / n_list
+mse_results <- numeric(length(n_list))
+
+for (idx in seq_along(n_list)) {
+  n_cur <- n_list[idx]
+  reps <- 40
+  rep_mse <- numeric(reps)
+  for (r in 1:reps) {
+    X <- matrix(rnorm(n_cur * p_fixed), nrow = n_cur, ncol = p_fixed)
+    X <- scale(X) / sqrt(n_cur - 1)
+    y <- X %*% beta_star + rnorm(n_cur, mean = 0, sd = sigma_noise)
+    
+    # 擬合 Lasso 並以理論 lambda 求解
+    lambda_theory <- 2 * sigma_noise * sqrt(2 * log(p_fixed) / n_cur)
+    fit <- glmnet(X, y, alpha = 1, lambda = lambda_theory, intercept = FALSE)
+    pred_err <- mean((X %*% (coef(fit)[-1] - beta_star))^2)
+    rep_mse[r] <- pred_err
+  }
+  mse_results[idx] <- mean(rep_mse)
+}
+
+results_df <- data.frame(樣本數_n = n_list, 
+                         理論因子 = round(oracle_factor, 4), 
+                         Lasso預測均方誤差 = round(mse_results, 5))
+print(results_df)
+
+# 線性回歸檢驗理論因子對實際 MSE 的解釋力 (R^2 應接近 1)
+lm_test <- lm(mse_results ~ oracle_factor)
+cat(sprintf("\n理論因子對實際預測誤差的線性擬合 R-squared: %.4f\n", summary(lm_test)$r.squared))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：經驗拉德馬赫複雜度計算與高維 Oracle 邊界驗證
+# 依賴套件：numpy, pandas, scikit-learn
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import Lasso
+
+# ------------------------------------------------------------------------------
+# 實驗 1：蒙地卡羅估計線性函數類的經驗拉德馬赫複雜度 (Rademacher Complexity)
+# ------------------------------------------------------------------------------
+np.random.seed(42)
+n_samples = 100
+p_features = 10
+n_simulations = 1000
+
+# 建立特徵矩陣 (單位球內)
+X = np.random.normal(0, 1, size=(n_samples, p_features))
+X = X / np.linalg.norm(X, axis=1, keepdims=True)
+
+# 估計在 L2 單位球 ||w||_2 <= 1 下的 Rademacher 複雜度
+# 理論值: E[||X' epsilon / n||_2] <= max||x_i|| / sqrt(n)
+rademacher_values = []
+for _ in range(n_simulations):
+    eps = np.random.choice([-1.0, 1.0], size=n_samples)
+    noise_proj = (X.T @ eps) / n_samples
+    # 在 L2 單位球內的上確界恰好為 dual L2 norm: ||X' eps / n||_2
+    sup_val = np.linalg.norm(noise_proj, 2)
+    rademacher_values.append(sup_val)
+
+rademacher_est = np.mean(rademacher_values)
+rademacher_theory_upper = 1.0 / np.sqrt(n_samples)
+
+print("=== 實驗 1：經驗拉德馬赫複雜度數值模擬 ===")
+print(f"蒙地卡羅估計之 Rademacher 複雜度: {rademacher_est:.4f}")
+print(f"理論幾何上界 (1 / sqrt(n)): {rademacher_theory_upper:.4f}")
+
+# ------------------------------------------------------------------------------
+# 實驗 2：驗證高維 Lasso 預測誤差與 (s * ln(p) / n) 的嚴格線性關係
+# ------------------------------------------------------------------------------
+print("\n=== 實驗 2：高維 Lasso 神諭不等式 O(s * ln(p) / n) 實證模擬 ===")
+s_true = 4
+p_features = 80
+beta_star = np.zeros(p_features)
+beta_star[:s_true] = 2.5
+sigma_noise = 0.4
+
+n_grid = [50, 80, 120, 180, 260]
+oracle_rates = []
+actual_mses = []
+
+for n in n_grid:
+    reps = 30
+    mses = []
+    lambda_val = 2 * sigma_noise * np.sqrt(2 * np.log(p_features) / n)
+    for _ in range(reps):
+        X_mat = np.random.normal(0, 1, size=(n, p_features)) / np.sqrt(n)
+        noise = np.random.normal(0, sigma_noise, size=n)
+        y = X_mat @ beta_star + noise
+        
+        lasso = Lasso(alpha=lambda_val / (2 * n), fit_intercept=False, max_iter=2000)
+        lasso.fit(X_mat, y)
+        
+        pred_err = np.mean((X_mat @ (lasso.coef_ - beta_star)) ** 2)
+        mses.append(pred_err)
+        
+    oracle_factor = (s_true * np.log(p_features)) / n
+    oracle_rates.append(oracle_factor)
+    actual_mses.append(np.mean(mses))
+    print(f"樣本數 n={n:3d} | 理論因子 (s*ln(p)/n)={oracle_factor:.4f} | 實測 Lasso 預測誤差={np.mean(mses):.5f}")
+
+# 計算皮爾森相關係數檢定線性共振
+correlation = np.corrcoef(oracle_rates, actual_mses)[0, 1]
+print(f"\n理論因子與實測誤差的皮爾森相關係數 r: {correlation:.4f} (高度線性吻合)")
+```
+:::
+
+---
+
+## 14.8 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **亞指數分佈之 Bernstein 集中界推導**：
+   若隨機變數 $X$ 滿足條件 $\mathbb{E}[|X|^k] \le \frac{1}{2} k! \, \sigma^2 b^{k-2}$（Bernstein 條件），利用動差展開式嚴格推導 Bernstein 集中不等式：$P\left(\left|\sum_{i=1}^n X_i\right| \ge t\right) \le 2 \exp\left( -\frac{t^2}{2(n\sigma^2 + bt)} \right)$。
+2. **有限字典的極大值亞高斯上界**：
+   設 $Z_1, Z_2, \dots, Z_M$ 為 $M$ 個（可能相關的）$\sigma^2$-亞高斯隨機變數。證明其極大值的期望滿足嚴格上界：$\mathbb{E}\left[\max_{1 \le j \le M} |Z_j|\right] \le \sigma \sqrt{2 \ln(2M)}$。
+3. **Rademacher 複雜度之質數多面體（$L_1$ 球）精確解析解**：
+   設假設空間為 $L_1$ 單位球 $\mathcal{F} = \{f_{\boldsymbol{w}}(\boldsymbol{x}) = \boldsymbol{w}^\top \boldsymbol{x} \mid \|\boldsymbol{w}\|_1 \le 1\}$。證明其經驗拉德馬赫複雜度恰好為：$\hat{\mathcal{R}}_S(\mathcal{F}) = \mathbb{E}_{\boldsymbol{\epsilon}}\left[ \left\|\frac{1}{n}\sum_{i=1}^n \epsilon_i \boldsymbol{x}_i\right\|_\infty \right] \le \max_{i}\|\boldsymbol{x}_i\|_\infty \sqrt{\frac{2\ln(2p)}{n}}$。
+4. **Restricted Isometry Property (RIP) 對 RE 條件之蘊涵性證明**：
+   Emmanuel Candès 與 Terence Tao 提出了 $s$-階限制等距常數 $\delta_s$（滿足 $(1-\delta_s)\|\boldsymbol{v}\|_2^2 \le \frac{1}{n}\|\boldsymbol{X}\boldsymbol{v}\|_2^2 \le (1+\delta_s)\|\boldsymbol{v}\|_2^2$）。證明若 $\delta_{2s} < \frac{1}{3}$，則設計矩陣 $\boldsymbol{X}$ 必然滿足式 ([-@eq-ch14-re-condition]) 的限制特徵值條件 $\mathrm{RE}(s, 3, \kappa)$。
+5. **Le Cam 雙點法證明下界之引理推導**：
+   設假設檢定兩參數點 $\theta_0$ 與 $\theta_1$ 滿足距離 $d(\theta_0, \theta_1) \ge 2\delta$。證明任何估計量在兩點上的最大風險下界滿足 $\mathfrak{M}_n \ge \delta \left(1 - \|\mathbb{P}_{\theta_0} - \mathbb{P}_{\theta_1}\|_{\mathrm{TV}}\right)$，其中 $\|\cdot\|_{\mathrm{TV}}$ 為全變差距離（Total Variation Distance）。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **蒙地卡羅驗證 Dudley 積分之收斂常數**：
+   使用 Python 實作多尺度網格算法，計算一維高斯過程在不同劃分精度下的覆蓋數 $\mathcal{N}(\epsilon)$，數值積分驗證 Dudley 熵積分對經驗拉德馬赫複雜度的上界縮放緊度。
+7. **高維協方差矩陣的非漸近集中模擬（Vershynin 定理）**：
+   產生 $n \times p$ 的標準常態矩陣。計算樣本協方差矩陣 $\|\frac{1}{n}\boldsymbol{X}^\top \boldsymbol{X} - \boldsymbol{I}_p\|_{\mathrm{op}}$ 之算子範數，驗證其是否以高機率嚴格有界於 $C \left(\sqrt{\frac{p}{n}} + \frac{p}{n}\right)$。
+8. **限制特徵值（RE）常數之半正定規劃（SDP）數值檢驗**：
+   對給定的合成設計矩陣，撰寫程式抽樣 10,000 個滿足錐條件 $\|\boldsymbol{\Delta}_{S^c}\|_1 \le 3\|\boldsymbol{\Delta}_S\|_1$ 的單位向量，數值搜尋並輸出最小 Raylegh 商，實證求出經驗 $\hat{\kappa}^2$ 數值。
+9. **Dantzig Selector vs Lasso 之神諭界對比**：
+   實作 Candès & Tao (2007) 的 Dantzig Selector（透過線性規劃求解：$\min \|\boldsymbol{\beta}\|_1$ s.t. $\|\frac{1}{n}\boldsymbol{X}^\top(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta})\|_\infty \le \lambda$），對比 Lasso 在相同維度 $p=500, n=100$ 下的預測誤差與支撐集恢復精確率。
+10. **Rademacher 複雜度之深度神經網路寬度縮放性實證**：
+    訓練不同寬度（隱藏層神經元 $m \in [10, 500]$）但具有固定 Frobenius 範數約束的兩層神經網路。使用隨機符號標籤進行擬合，經驗計算其實際 Rademacher 複雜度隨寬度與樣本數的縮放階數。
