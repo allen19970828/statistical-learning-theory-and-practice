@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>7&nbsp; 生成式分類模型：LDA、QDA 與單純貝氏 – 統計學習理論與實務：深入淺出指南</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/ch08_svm.html" rel="next">
+<link href="../chapters/ch06_logistic_glm.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-51b2efe42a832a760ae4a04b3490e69f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch06_logistic_glm.html">第三篇：離散型預測：分類模型與幾何分界</a></li><li class="breadcrumb-item"><a href="../chapters/ch07_generative_models.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">統計學習理論與實務：深入淺出指南</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">自序：走向嚴謹與實踐兼備的統計學習</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">統計學習專有名詞與符號對照表</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第一篇：統計學習基石與泛化理論</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">統計學習概論與思維典範</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch02_model_assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">模型評估、重抽樣與統計學習理論</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">第二篇：連續型預測：迴歸分析、正則化與平滑</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch03_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">多元線性迴歸與古典統計推論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch04_regularization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">高維特徵選擇與正則化收縮法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch05_splines_gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">非線性模型與平滑技術</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">第三篇：離散型預測：分類模型與幾何分界</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch06_logistic_glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">羅吉斯迴歸與廣義線性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch07_generative_models.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch08_svm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">支援向量機與核方法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">第四篇：樹狀模型、集成學習與非監督技術</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch09_decision_trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">決策樹演算法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch10_ensemble_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">集成學習：隨機森林與梯度提升</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch11_pca_manifold.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">主成分分析與流形學習</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch12_clustering_em.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">第五篇：現代前沿與統計新典範</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch13_modern_frontiers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">本章目錄</h2>
+   
+  <ul>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">7.1</span> 本章導讀</a></li>
+  <li><a href="#判別式-vs-生成式分類哲學" id="toc-判別式-vs-生成式分類哲學" class="nav-link" data-scroll-target="#判別式-vs-生成式分類哲學"><span class="header-section-number">7.2</span> 7.1 判別式 vs 生成式分類哲學</a></li>
+  <li><a href="#線性判別分析lda" id="toc-線性判別分析lda" class="nav-link" data-scroll-target="#線性判別分析lda"><span class="header-section-number">7.3</span> 7.2 線性判別分析（LDA）</a>
+  <ul class="collapse">
+  <li><a href="#多元常態分佈與同方差假設" id="toc-多元常態分佈與同方差假設" class="nav-link" data-scroll-target="#多元常態分佈與同方差假設"><span class="header-section-number">7.3.1</span> 7.2.1 多元常態分佈與同方差假設</a></li>
+  <li><a href="#線性判別函數推導" id="toc-線性判別函數推導" class="nav-link" data-scroll-target="#線性判別函數推導"><span class="header-section-number">7.3.2</span> 7.2.2 線性判別函數推導</a></li>
+  <li><a href="#fisher-線性判別與瑞利商rayleigh-quotient證明" id="toc-fisher-線性判別與瑞利商rayleigh-quotient證明" class="nav-link" data-scroll-target="#fisher-線性判別與瑞利商rayleigh-quotient證明"><span class="header-section-number">7.3.3</span> 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明</a></li>
+  </ul></li>
+  <li><a href="#手把手數值推演4-筆-2d-樣本之-lda-判別面全手算" id="toc-手把手數值推演4-筆-2d-樣本之-lda-判別面全手算" class="nav-link" data-scroll-target="#手把手數值推演4-筆-2d-樣本之-lda-判別面全手算"><span class="header-section-number">7.4</span> 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算</a>
+  <ul class="collapse">
+  <li><a href="#步驟-1計算各類別均值向量" id="toc-步驟-1計算各類別均值向量" class="nav-link" data-scroll-target="#步驟-1計算各類別均值向量"><span class="header-section-number">7.4.1</span> 步驟 1：計算各類別均值向量</a></li>
+  <li><a href="#步驟-2計算各類別內部離散度與合併共變異數矩陣" id="toc-步驟-2計算各類別內部離散度與合併共變異數矩陣" class="nav-link" data-scroll-target="#步驟-2計算各類別內部離散度與合併共變異數矩陣"><span class="header-section-number">7.4.2</span> 步驟 2：計算各類別內部離散度與合併共變異數矩陣</a></li>
+  <li><a href="#步驟-3計算共變異數逆矩陣-hatboldsymbolsigma-1" id="toc-步驟-3計算共變異數逆矩陣-hatboldsymbolsigma-1" class="nav-link" data-scroll-target="#步驟-3計算共變異數逆矩陣-hatboldsymbolsigma-1"><span class="header-section-number">7.4.3</span> 步驟 3：計算共變異數逆矩陣 <span class="math inline">\hat{\boldsymbol{\Sigma}}^{-1}</span></a></li>
+  <li><a href="#步驟-4計算-fisher-最優投影向量-boldsymbolw" id="toc-步驟-4計算-fisher-最優投影向量-boldsymbolw" class="nav-link" data-scroll-target="#步驟-4計算-fisher-最優投影向量-boldsymbolw"><span class="header-section-number">7.4.4</span> 步驟 4：計算 Fisher 最優投影向量 <span class="math inline">\boldsymbol{w}^*</span></a></li>
+  <li><a href="#步驟-5推導決策分界超平面方程式" id="toc-步驟-5推導決策分界超平面方程式" class="nav-link" data-scroll-target="#步驟-5推導決策分界超平面方程式"><span class="header-section-number">7.4.5</span> 步驟 5：推導決策分界超平面方程式</a></li>
+  <li><a href="#步驟-6代入樣本點檢驗" id="toc-步驟-6代入樣本點檢驗" class="nav-link" data-scroll-target="#步驟-6代入樣本點檢驗"><span class="header-section-number">7.4.6</span> 步驟 6：代入樣本點檢驗</a></li>
+  </ul></li>
+  <li><a href="#二次判別分析qda" id="toc-二次判別分析qda" class="nav-link" data-scroll-target="#二次判別分析qda"><span class="header-section-number">7.5</span> 7.4 二次判別分析（QDA）</a></li>
+  <li><a href="#單純貝氏分類器naive-bayes" id="toc-單純貝氏分類器naive-bayes" class="nav-link" data-scroll-target="#單純貝氏分類器naive-bayes"><span class="header-section-number">7.6</span> 7.5 單純貝氏分類器（Naive Bayes）</a>
+  <ul class="collapse">
+  <li><a href="#三大常見單純貝氏模型" id="toc-三大常見單純貝氏模型" class="nav-link" data-scroll-target="#三大常見單純貝氏模型"><span class="header-section-number">7.6.1</span> 7.5.1 三大常見單純貝氏模型</a></li>
+  <li><a href="#零機率問題與拉普拉斯平滑laplace-smoothing" id="toc-零機率問題與拉普拉斯平滑laplace-smoothing" class="nav-link" data-scroll-target="#零機率問題與拉普拉斯平滑laplace-smoothing"><span class="header-section-number">7.6.2</span> 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）</a></li>
+  </ul></li>
+  <li><a href="#雙軌實務實驗室ldaqda-與單純貝氏決策邊界對比" id="toc-雙軌實務實驗室ldaqda-與單純貝氏決策邊界對比" class="nav-link" data-scroll-target="#雙軌實務實驗室ldaqda-與單純貝氏決策邊界對比"><span class="header-section-number">7.7</span> 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比</a></li>
+  <li><a href="#課後全方位習題庫10-題" id="toc-課後全方位習題庫10-題" class="nav-link" data-scroll-target="#課後全方位習題庫10-題"><span class="header-section-number">7.8</span> 7.7 課後全方位習題庫（10 題）</a>
+  <ul class="collapse">
+  <li><a href="#一觀念理解與數學證明5-題" id="toc-一觀念理解與數學證明5-題" class="nav-link" data-scroll-target="#一觀念理解與數學證明5-題"><span class="header-section-number">7.8.1</span> 一、觀念理解與數學證明（5 題）</a></li>
+  <li><a href="#二程式實作與實務應用5-題" id="toc-二程式實作與實務應用5-題" class="nav-link" data-scroll-target="#二程式實作與實務應用5-題"><span class="header-section-number">7.8.2</span> 二、程式實作與實務應用（5 題）</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch06_logistic_glm.html">第三篇：離散型預測：分類模型與幾何分界</a></li><li class="breadcrumb-item"><a href="../chapters/ch07_generative_models.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-ch07" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章導讀" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="本章導讀"><span class="header-section-number">7.1</span> 本章導讀</h2>
+<p>在上一章中，羅吉斯迴歸採取「<strong>判別式途徑（Discriminative Approach）</strong>」，直接透過線性函數與 Sigmoid 連結來對條件後驗機率 <span class="math inline">P(Y \mid \boldsymbol{X})</span> 建模。</p>
+<p>然而，當遇到以下情境時，羅吉斯迴歸會顯得力不從心： 1. <strong>各類別分離度極高</strong>：此時羅吉斯迴歸的 MLE 係數會發散至無限大，數值極不穩定（Hauck-Donner 效應）。 2. <strong>樣本容量 <span class="math inline">n</span> 較小</strong>，且特徵大致符合常態分佈：此時透過母體分佈假設估計參數更為精準。 3. <strong>類別數 <span class="math inline">K &gt; 2</span></strong>：多類別架構在生成式模型下極為自然直觀，無須透過一對多（OvR）之妥協拆解。</p>
+<p>本章將引介「<strong>生成式分類途徑（Generative Approach）</strong>」：透過先驗機率與特徵條件機率密度，利用貝氏定理反求後驗機率。我們將詳解<strong>線性判別分析（LDA）</strong>並給出 Fisher 投影極大化瑞利商的嚴格證明；提供一組 4 筆 2D 樣本的手把手數值推演；對比允許不同共變異數的<strong>二次判別分析（QDA）</strong>；最後推導在大數據與高維文字探勘中歷久彌新的<strong>單純貝氏分類器（Naive Bayes）</strong>，並在 R 與 Python 雙環境中進行決策邊界與模型評估實戰。</p>
+<hr>
+</section>
+<section id="判別式-vs-生成式分類哲學" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="判別式-vs-生成式分類哲學"><span class="header-section-number">7.2</span> 7.1 判別式 vs 生成式分類哲學</h2>
+<pre><code>                ┌──────────────────────────────────────────────────────────┐
+                │                  分類問題的兩大流派                      │
+                ├────────────────────────────┬─────────────────────────────┤
+                │  判別式模型 (Discriminative)│  生成式模型 (Generative)    │
+                ├────────────────────────────┼─────────────────────────────┤
+                │ - 代表模型：羅吉斯迴歸, SVM│ - 代表模型：LDA, QDA, 單純貝氏│
+                │ - 核心思想：直接劃定分界線 │ - 核心思想：先學每一類的特徵│
+                │ - 建模目標：P(Y | X)        │ - 建模目標：P(X | Y) 與 P(Y) │
+                │ - 判定準則：直接輸出後驗   │ - 判定準則：藉由貝氏定理反推│
+                └────────────────────────────┴─────────────────────────────┘</code></pre>
+<p>生成式模型遵循<strong>貝氏定理（Bayes’ Theorem）</strong>： 設目標類別共有 <span class="math inline">K</span> 類，<span class="math inline">Y \in \{1, 2, \dots, K\}</span>。 * 類別先驗機率（Prior Probability）：<span class="math inline">\pi_k = P(Y = k)</span>，且 <span class="math inline">\sum_{k=1}^K \pi_k = 1</span>。 * 類別條件密度（Class-Conditional Density）：<span class="math inline">f_k(\boldsymbol{x}) \triangleq P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k)</span>。</p>
+<p>給定觀測值 <span class="math inline">\boldsymbol{x}</span>，其屬於類別 <span class="math inline">k</span> 的<strong>條件後驗機率（Posterior Probability）</strong>為： <span id="eq-ch07-bayes-classifier"><span class="math display">
+p_k(\boldsymbol{x}) \triangleq P(Y = k \mid \boldsymbol{X} = \boldsymbol{x}) = \frac{\pi_k f_k(\boldsymbol{x})}{\sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}
+\tag{7.1}</span></span></p>
+<p><strong>貝氏最優分類器（Bayes Optimal Classifier）</strong>的決策準則是：將 <span class="math inline">\boldsymbol{x}</span> 指派給後驗機率 <span class="math inline">p_k(\boldsymbol{x})</span> 最大的那個類別。</p>
+<hr>
+</section>
+<section id="線性判別分析lda" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="線性判別分析lda"><span class="header-section-number">7.3</span> 7.2 線性判別分析（LDA）</h2>
+<section id="多元常態分佈與同方差假設" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="多元常態分佈與同方差假設"><span class="header-section-number">7.3.1</span> 7.2.1 多元常態分佈與同方差假設</h3>
+<p>線性判別分析（Linear Discriminant Analysis, LDA）假設每一類別的特徵向量服從<strong>多元高斯常態分佈</strong>： <span id="eq-ch07-multivariate-normal"><span class="math display">
+f_k(\boldsymbol{x}) = \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)
+\tag{7.2}</span></span></p>
+<p>LDA 的核心關鍵假設：<strong>所有 <span class="math inline">K</span> 個類別共享完全相同的共變異數矩陣 <span class="math inline">\boldsymbol{\Sigma}</span></strong>（各類別僅平均值向量 <span class="math inline">\boldsymbol{\mu}_k</span> 相異）。</p>
+<hr>
+</section>
+<section id="線性判別函數推導" class="level3" data-number="7.3.2">
+<h3 data-number="7.3.2" class="anchored" data-anchor-id="線性判別函數推導"><span class="header-section-number">7.3.2</span> 7.2.2 線性判別函數推導</h3>
+<p>將多元常態密度式 (<a href="#eq-ch07-multivariate-normal" class="quarto-xref"><span>7.2</span></a>) 代入貝氏後驗機率式 (<a href="#eq-ch07-bayes-classifier" class="quarto-xref"><span>7.1</span></a>)： <span class="math display">
+p_k(\boldsymbol{x}) = \frac{\pi_k \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)}{\sum_{l=1}^K \pi_l \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_l)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_l) \right)}
+</span></p>
+<p>由於分母與常數係數 <span class="math inline">\frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}}</span> 對所有類別 <span class="math inline">k</span> 皆相同，最大化 <span class="math inline">p_k(\boldsymbol{x})</span> 等價於最大化分子項。取自然對數：</p>
+<p><span class="math display">
+\ln \left[ \pi_k f_k(\boldsymbol{x}) \right] = \ln \pi_k - \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) + \text{常數}
+</span></p>
+<p>展開二次型矩陣乘積： <span class="math display">
+(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) = \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x} - 2\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k
+</span></p>
+<p>注意到 <span class="math inline">\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x}</span> 與類別標籤 <span class="math inline">k</span> 完全無關（因 <span class="math inline">\boldsymbol{\Sigma}</span> 被所有類別共享），在比較不同類別的大小關係時可以作為全體公共常數剔除！</p>
+<p>整理後，定義 <strong>LDA 線性判別函數（Linear Discriminant Function）</strong> <span class="math inline">\delta_k(\boldsymbol{x})</span>： <span id="eq-ch07-lda-discriminant"><span class="math display">
+\delta_k(\boldsymbol{x}) \triangleq \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k - \frac{1}{2} \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \ln \pi_k
+\tag{7.3}</span></span></p>
+<section id="深刻結論" class="level4" data-number="7.3.2.1">
+<h4 data-number="7.3.2.1" class="anchored" data-anchor-id="深刻結論"><span class="header-section-number">7.3.2.1</span> 深刻結論：</h4>
+<ol type="1">
+<li><span class="math inline">\delta_k(\boldsymbol{x})</span> 是關於輸入特徵 <span class="math inline">\boldsymbol{x}</span> 的<strong>純線性函數（Linear in <span class="math inline">\boldsymbol{x}</span>）</strong>！</li>
+<li>任意兩類別 <span class="math inline">k</span> 與 <span class="math inline">l</span> 之間的決策邊界為滿足 <span class="math inline">\delta_k(\boldsymbol{x}) = \delta_l(\boldsymbol{x})</span> 之點集： <span class="math display">
+\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_k - \boldsymbol{\mu}_l) - \frac{1}{2}\boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_k + \frac{1}{2}\boldsymbol{\mu}_l^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_l + \ln\left(\frac{\pi_k}{\pi_l}\right) = 0
+</span> 這是一個嚴格的 <span class="math inline">(p-1)</span> 維<strong>超平面（Hyperplane）</strong>。這正是該方法被稱為「線性」判別分析的根本原因。</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="fisher-線性判別與瑞利商rayleigh-quotient證明" class="level3" data-number="7.3.3">
+<h3 data-number="7.3.3" class="anchored" data-anchor-id="fisher-線性判別與瑞利商rayleigh-quotient證明"><span class="header-section-number">7.3.3</span> 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明</h3>
+<p>Ronald Fisher (1936) 從另一個純幾何投影維度推導了相同的結果，完全不依賴常態分佈假設。</p>
+<section id="最佳化目標" class="level4" data-number="7.3.3.1">
+<h4 data-number="7.3.3.1" class="anchored" data-anchor-id="最佳化目標"><span class="header-section-number">7.3.3.1</span> 最佳化目標：</h4>
+<p>尋找一個投影方向向量 <span class="math inline">\boldsymbol{w} \in \mathbb{R}^p</span>，將高維特徵投影至一維純量 <span class="math inline">z = \boldsymbol{w}^\top \boldsymbol{x}</span>，要求投影後的<strong>類別中心差距（Between-class scatter）盡可能大</strong>，同時<strong>類別內部的離散度（Within-class scatter）盡可能小</strong>。</p>
+<p>以二元分類為例，定義： * 類別間散佈矩陣（Between-Class Scatter）：<span class="math inline">\boldsymbol{S}_B = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top</span> * 類別內散佈矩陣（Within-Class Scatter）：<span class="math inline">\boldsymbol{S}_W = \sum_{i \in \mathcal{C}_1}(\boldsymbol{x}_i - \boldsymbol{\mu}_1)(\boldsymbol{x}_i - \boldsymbol{\mu}_1)^\top + \sum_{i \in \mathcal{C}_2}(\boldsymbol{x}_i - \boldsymbol{\mu}_2)(\boldsymbol{x}_i - \boldsymbol{\mu}_2)^\top</span></p>
+<p>投影後的<strong>廣義瑞利商（Generalized Rayleigh Quotient）</strong>為： <span class="math display">
+J(\boldsymbol{w}) = \frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}
+</span></p>
+<p>對 <span class="math inline">\boldsymbol{w}</span> 求導並令其為零： <span class="math display">
+\nabla_{\boldsymbol{w}} J(\boldsymbol{w}) = \frac{2\boldsymbol{S}_B\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}) - 2\boldsymbol{S}_W\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w})}{(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w})^2} = \boldsymbol{0}
+</span></p>
+<p>整理得： <span class="math display">
+\boldsymbol{S}_B \boldsymbol{w} = J(\boldsymbol{w}) \boldsymbol{S}_W \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w} \implies \boldsymbol{S}_W^{-1} \boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{w}
+</span></p>
+<p>注意到 <span class="math inline">\boldsymbol{S}_B \boldsymbol{w} = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\left[ (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \boldsymbol{w} \right]</span>，括號內為標量純量，故 <span class="math inline">\boldsymbol{S}_B \boldsymbol{w}</span> 的方向恆沿著向量 <span class="math inline">(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)</span>。 因此最優投影向量的方向解為： <span id="eq-ch07-fisher-solution"><span class="math display">
+\boldsymbol{w}^* \propto \boldsymbol{S}_W^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)
+\tag{7.4}</span></span></p>
+<p>這與式 (<a href="#eq-ch07-lda-discriminant" class="quarto-xref"><span>7.3</span></a>) 中推導出的高斯機率視角下的超平面法向量 <span class="math inline">\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)</span> 完全等價！</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="手把手數值推演4-筆-2d-樣本之-lda-判別面全手算" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="手把手數值推演4-筆-2d-樣本之-lda-判別面全手算"><span class="header-section-number">7.4</span> 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算</h2>
+<p>為了讓讀者掌握判別向量與共變異數矩陣的計算實質，我們構造一組 2 類別、4 筆樣本的二維玩具資料：</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">樣本編號</th>
+<th style="text-align: center;"><span class="math inline">x_1</span></th>
+<th style="text-align: center;"><span class="math inline">x_2</span></th>
+<th style="text-align: center;">類別標籤</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">類別 1 (<span class="math inline">\mathcal{C}_1</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">類別 1 (<span class="math inline">\mathcal{C}_1</span>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">類別 2 (<span class="math inline">\mathcal{C}_2</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">類別 2 (<span class="math inline">\mathcal{C}_2</span>)</td>
+</tr>
+</tbody>
+</table>
+<p>設先驗機率相等：<span class="math inline">\pi_1 = \pi_2 = 0.5</span>。</p>
+<section id="步驟-1計算各類別均值向量" class="level3" data-number="7.4.1">
+<h3 data-number="7.4.1" class="anchored" data-anchor-id="步驟-1計算各類別均值向量"><span class="header-section-number">7.4.1</span> 步驟 1：計算各類別均值向量</h3>
+<ul>
+<li>類別 1 均值： <span class="math display">
+\boldsymbol{\mu}_1 = \frac{1}{2} \left( \begin{bmatrix} 1 \\ 2 \end{bmatrix} + \begin{bmatrix} 2 \\ 3 \end{bmatrix} \right) = \begin{bmatrix} 1.5 \\ 2.5 \end{bmatrix}
+</span></li>
+<li>類別 2 均值： <span class="math display">
+\boldsymbol{\mu}_2 = \frac{1}{2} \left( \begin{bmatrix} 3 \\ 5 \end{bmatrix} + \begin{bmatrix} 5 \\ 6 \end{bmatrix} \right) = \begin{bmatrix} 4.0 \\ 5.5 \end{bmatrix}
+</span></li>
+<li>均值差向量： <span class="math display">
+\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = \begin{bmatrix} 1.5 - 4.0 \\ 2.5 - 5.5 \end{bmatrix} = \begin{bmatrix} -2.5 \\ -3.0 \end{bmatrix}
+</span></li>
+</ul>
+</section>
+<section id="步驟-2計算各類別內部離散度與合併共變異數矩陣" class="level3" data-number="7.4.2">
+<h3 data-number="7.4.2" class="anchored" data-anchor-id="步驟-2計算各類別內部離散度與合併共變異數矩陣"><span class="header-section-number">7.4.2</span> 步驟 2：計算各類別內部離散度與合併共變異數矩陣</h3>
+<ul>
+<li><strong>類別 1 離散矩陣 <span class="math inline">\boldsymbol{S}_1</span></strong>： 樣本偏差為 <span class="math inline">[-0.5, -0.5]^\top</span> 與 <span class="math inline">[0.5, 0.5]^\top</span>。 <span class="math display">
+\boldsymbol{S}_1 = \begin{bmatrix} -0.5 \\ -0.5 \end{bmatrix} \begin{bmatrix} -0.5 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 0.5 \\ 0.5 \end{bmatrix} \begin{bmatrix} 0.5 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 0.25 &amp; 0.25 \\ 0.25 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 0.25 &amp; 0.25 \\ 0.25 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 0.5 &amp; 0.5 \\ 0.5 &amp; 0.5 \end{bmatrix}
+</span></li>
+<li><strong>類別 2 離散矩陣 <span class="math inline">\boldsymbol{S}_2</span></strong>： 樣本偏差為 <span class="math inline">[-1.0, -0.5]^\top</span> 與 <span class="math inline">[1.0, 0.5]^\top</span>。 <span class="math display">
+\boldsymbol{S}_2 = \begin{bmatrix} -1.0 \\ -0.5 \end{bmatrix} \begin{bmatrix} -1.0 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 1.0 \\ 0.5 \end{bmatrix} \begin{bmatrix} 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 0.5 \\ 0.5 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 1.0 &amp; 0.5 \\ 0.5 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 2.0 &amp; 1.0 \\ 1.0 &amp; 0.5 \end{bmatrix}
+</span></li>
+<li><strong>類別內總散佈矩陣 <span class="math inline">\boldsymbol{S}_W</span></strong>： <span class="math display">
+\boldsymbol{S}_W = \boldsymbol{S}_1 + \boldsymbol{S}_2 = \begin{bmatrix} 0.5 &amp; 0.5 \\ 0.5 &amp; 0.5 \end{bmatrix} + \begin{bmatrix} 2.0 &amp; 1.0 \\ 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 2.5 &amp; 1.5 \\ 1.5 &amp; 1.0 \end{bmatrix}
+</span></li>
+<li><strong>合併共變異數矩陣（Pooled Covariance Matrix）<span class="math inline">\hat{\boldsymbol{\Sigma}}</span></strong>： 自由度為 <span class="math inline">n - K = 4 - 2 = 2</span>： <span class="math display">
+\hat{\boldsymbol{\Sigma}} = \frac{1}{n - K} \boldsymbol{S}_W = \frac{1}{2} \begin{bmatrix} 2.5 &amp; 1.5 \\ 1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 1.25 &amp; 0.75 \\ 0.75 &amp; 0.50 \end{bmatrix}
+</span></li>
+</ul>
+</section>
+<section id="步驟-3計算共變異數逆矩陣-hatboldsymbolsigma-1" class="level3" data-number="7.4.3">
+<h3 data-number="7.4.3" class="anchored" data-anchor-id="步驟-3計算共變異數逆矩陣-hatboldsymbolsigma-1"><span class="header-section-number">7.4.3</span> 步驟 3：計算共變異數逆矩陣 <span class="math inline">\hat{\boldsymbol{\Sigma}}^{-1}</span></h3>
+<p>行列式： <span class="math display">
+\det(\hat{\boldsymbol{\Sigma}}) = (1.25)(0.50) - (0.75)^2 = 0.625 - 0.5625 = 0.0625 = \frac{1}{16}
+</span> 求逆： <span class="math display">
+\hat{\boldsymbol{\Sigma}}^{-1} = \frac{1}{0.0625} \begin{bmatrix} 0.50 &amp; -0.75 \\ -0.75 &amp; 1.25 \end{bmatrix} = 16 \begin{bmatrix} 0.50 &amp; -0.75 \\ -0.75 &amp; 1.25 \end{bmatrix} = \begin{bmatrix} 8 &amp; -12 \\ -12 &amp; 20 \end{bmatrix}
+</span></p>
+</section>
+<section id="步驟-4計算-fisher-最優投影向量-boldsymbolw" class="level3" data-number="7.4.4">
+<h3 data-number="7.4.4" class="anchored" data-anchor-id="步驟-4計算-fisher-最優投影向量-boldsymbolw"><span class="header-section-number">7.4.4</span> 步驟 4：計算 Fisher 最優投影向量 <span class="math inline">\boldsymbol{w}^*</span></h3>
+<p><span class="math display">
+\boldsymbol{w}^* = \hat{\boldsymbol{\Sigma}}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) = \begin{bmatrix} 8 &amp; -12 \\ -12 &amp; 20 \end{bmatrix} \begin{bmatrix} -2.5 \\ -3.0 \end{bmatrix} = \begin{bmatrix} 8(-2.5) - 12(-3.0) \\ -12(-2.5) + 20(-3.0) \end{bmatrix} = \begin{bmatrix} -20 + 36 \\ 30 - 60 \end{bmatrix} = \begin{bmatrix} 16 \\ -30 \end{bmatrix}
+</span> 除以公因數 2 簡化方向向量為：<span class="math inline">\boldsymbol{w} = \begin{bmatrix} 8 \\ -15 \end{bmatrix}</span>。</p>
+</section>
+<section id="步驟-5推導決策分界超平面方程式" class="level3" data-number="7.4.5">
+<h3 data-number="7.4.5" class="anchored" data-anchor-id="步驟-5推導決策分界超平面方程式"><span class="header-section-number">7.4.5</span> 步驟 5：推導決策分界超平面方程式</h3>
+<p>在先驗機率相等（<span class="math inline">\pi_1 = \pi_2</span>）條件下，決策邊界恰好穿過兩類別均值的中點 <span class="math inline">\boldsymbol{\mu}_0 = \frac{\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2}{2}</span>： <span class="math display">
+\boldsymbol{\mu}_0 = \frac{1}{2} \left( \begin{bmatrix} 1.5 \\ 2.5 \end{bmatrix} + \begin{bmatrix} 4.0 \\ 5.5 \end{bmatrix} \right) = \begin{bmatrix} 2.75 \\ 4.00 \end{bmatrix}
+</span> 決策面方程式為 <span class="math inline">\boldsymbol{w}^\top (\boldsymbol{x} - \boldsymbol{\mu}_0) = 0</span>： <span class="math display">
+8(x_1 - 2.75) - 15(x_2 - 4.0) = 0 \implies 8x_1 - 22 - 15x_2 + 60 = 0 \implies 8x_1 - 15x_2 + 38 = 0
+</span></p>
+</section>
+<section id="步驟-6代入樣本點檢驗" class="level3" data-number="7.4.6">
+<h3 data-number="7.4.6" class="anchored" data-anchor-id="步驟-6代入樣本點檢驗"><span class="header-section-number">7.4.6</span> 步驟 6：代入樣本點檢驗</h3>
+<ul>
+<li>樣本 1（<span class="math inline">\mathcal{C}_1</span>）：<span class="math inline">\boldsymbol{x}_1 = [1, 2]^\top \implies 8(1) - 15(2) + 38 = 8 - 30 + 38 = +16 &gt; 0</span>（判定為 <span class="math inline">\mathcal{C}_1</span>）。</li>
+<li>樣本 2（<span class="math inline">\mathcal{C}_1</span>）：<span class="math inline">\boldsymbol{x}_2 = [2, 3]^\top \implies 8(2) - 15(3) + 38 = 16 - 45 + 38 = +9 &gt; 0</span>（判定為 <span class="math inline">\mathcal{C}_1</span>）。</li>
+<li>樣本 3（<span class="math inline">\mathcal{C}_2</span>）：<span class="math inline">\boldsymbol{x}_3 = [3, 5]^\top \implies 8(3) - 15(5) + 38 = 24 - 75 + 38 = -13 &lt; 0</span>（判定為 <span class="math inline">\mathcal{C}_2</span>）。</li>
+<li>樣本 4（<span class="math inline">\mathcal{C}_2</span>）：<span class="math inline">\boldsymbol{x}_4 = [5, 6]^\top \implies 8(5) - 15(6) + 38 = 40 - 90 + 38 = -12 &lt; 0</span>（判定為 <span class="math inline">\mathcal{C}_2</span>）。</li>
+</ul>
+<p>所有訓練樣本皆被 100% 正確分離！</p>
+<hr>
+</section>
+</section>
+<section id="二次判別分析qda" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="二次判別分析qda"><span class="header-section-number">7.5</span> 7.4 二次判別分析（QDA）</h2>
+<p>若放寬「共享共變異數」的限制，允許<strong>每一個類別擁有專屬的共變異數矩陣 <span class="math inline">\boldsymbol{\Sigma}_k</span></strong>，即得<strong>二次判別分析（Quadratic Discriminant Analysis, QDA）</strong>。</p>
+<p>此時在推導中，二次項 <span class="math inline">\boldsymbol{x}^\top \boldsymbol{\Sigma}_k^{-1} \boldsymbol{x}</span> 無法被約去，判別函數為： <span id="eq-ch07-qda-discriminant"><span class="math display">
+\delta_k^{\text{qda}}(\boldsymbol{x}) \triangleq -\frac{1}{2}\ln |\boldsymbol{\Sigma}_k| - \frac{1}{2}(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}_k^{-1}(\boldsymbol{x} - \boldsymbol{\mu}_k) + \ln \pi_k
+\tag{7.5}</span></span></p>
+<ul>
+<li><strong>幾何邊界</strong>：<span class="math inline">\delta_k^{\text{qda}}(\boldsymbol{x}) = \delta_l^{\text{qda}}(\boldsymbol{x})</span> 形成二次曲面（拋物面、橢圓面、雙曲面）。</li>
+<li><strong>參數規模與偏誤-變異數權衡</strong>：
+<ul>
+<li>LDA 僅需估計 1 個共享的 <span class="math inline">\boldsymbol{\Sigma}</span>，需估計參數為 <span class="math inline">p(p+1)/2</span> 個，變異數小但偏誤較大。</li>
+<li>QDA 需獨立估計 <span class="math inline">K</span> 個相異的矩陣 <span class="math inline">\boldsymbol{\Sigma}_k</span>，總參數為 <span class="math inline">K \cdot [p(p+1)/2]</span>。當特徵數 <span class="math inline">p</span> 較大且樣本數較小時，QDA 極易因估計矩陣的不穩定性而過度配適。</li>
+</ul></li>
+</ul>
+<hr>
+</section>
+<section id="單純貝氏分類器naive-bayes" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="單純貝氏分類器naive-bayes"><span class="header-section-number">7.6</span> 7.5 單純貝氏分類器（Naive Bayes）</h2>
+<p>當特徵數 <span class="math inline">p</span> 達到成千上萬（如文字分類、基因體學）時，即使是 LDA 亦無法反轉巨大的 <span class="math inline">\boldsymbol{\Sigma}</span>。<strong>單純貝氏（Naive Bayes）</strong>提出了一個大膽且強力的假設：</p>
+<blockquote class="blockquote">
+<p><strong>條件獨立假設（Conditional Independence Assumption）</strong>： 給定類別標籤 <span class="math inline">Y=k</span>，所有特徵變數之間彼此條件獨立。</p>
+</blockquote>
+<p>基於此假設，高維聯合條件密度完全分解為各維度一維邊際機率密度的連乘積： <span id="eq-ch07-naive-bayes-density"><span class="math display">
+f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1}^p f_{kj}(x_j)
+\tag{7.6}</span></span></p>
+<section id="三大常見單純貝氏模型" class="level3" data-number="7.6.1">
+<h3 data-number="7.6.1" class="anchored" data-anchor-id="三大常見單純貝氏模型"><span class="header-section-number">7.6.1</span> 7.5.1 三大常見單純貝氏模型</h3>
+<ol type="1">
+<li><strong>高斯單純貝氏（Gaussian Naive Bayes）</strong>：用於連續型特徵，假設每一維度服從獨立一維高斯分佈 <span class="math inline">\mathcal{N}(\mu_{kj}, \sigma_{kj}^2)</span>。</li>
+<li><strong>多項式單純貝氏（Multinomial Naive Bayes）</strong>：用於文字詞頻統計向量。</li>
+<li><strong>伯努利單純貝氏（Bernoulli Naive Bayes）</strong>：用於特徵為二元布林（是否出現某單詞）。</li>
+</ol>
+</section>
+<section id="零機率問題與拉普拉斯平滑laplace-smoothing" class="level3" data-number="7.6.2">
+<h3 data-number="7.6.2" class="anchored" data-anchor-id="零機率問題與拉普拉斯平滑laplace-smoothing"><span class="header-section-number">7.6.2</span> 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）</h3>
+<p>在離散多項式分類中，若某個詞彙在訓練集某個類別中從未出現過，其估計條件機率 <span class="math inline">\hat{P}(x_j \mid Y=k) = 0</span>。連乘積將導致整體後驗機率直接歸零（一票否決效應）。 解決方案是引入<strong>拉普拉斯平滑</strong>： <span class="math display">
+\hat{P}(X_j = v \mid Y = k) = \frac{N_{kj} + \alpha}{N_k + \alpha \cdot d}
+</span> 通常取平滑常數 <span class="math inline">\alpha = 1</span>，<span class="math inline">d</span> 為該特徵可能的離散取值種類數。</p>
+<hr>
+</section>
+</section>
+<section id="雙軌實務實驗室ldaqda-與單純貝氏決策邊界對比" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="雙軌實務實驗室ldaqda-與單純貝氏決策邊界對比"><span class="header-section-number">7.7</span> 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">🟦 R 語言雙軌實作</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">🟨 Python 雙軌實作</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：MASS::lda, MASS::qda 與 e1071::naiveBayes 多類別分類</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：MASS, e1071, ISLR2</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用股市 Smarket 資料集 (預測隔日大盤漲跌 Direction: Up / Down)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Smarket)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分 2005 年以前為訓練集，2005 年當年度為測試集</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>Smarket_test <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Direction_test <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性判別分析 (LDA)</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>fit_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>pred_lda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_lda, Smarket_test)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>table_lda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_lda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== LDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_lda)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_lda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合二次判別分析 (QDA)</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>fit_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>pred_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_qda, Smarket_test)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>table_qda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_qda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== QDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_qda)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"QDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_qda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合單純貝氏分類器 (Naive Bayes)</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>fit_nb <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>pred_nb <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_nb, Smarket_test)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== Naive Bayes 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(預測 <span class="ot">=</span> pred_nb, 真實 <span class="ot">=</span> Direction_test))</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Naive Bayes 準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_nb <span class="sc">==</span> Direction_test)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：LDA, QDA 與 GaussianNB 模型評估</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.discriminant_analysis <span class="im">import</span> LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, classification_report</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬雙變數非線性多類別資料 (3 個類別)</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>n_per_class <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 1: 常態分佈</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">1.0</span>, <span class="fl">0.5</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>]], n_per_class)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 2: 共變異數不同的常態分佈</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">3</span>, <span class="dv">3</span>], [[<span class="fl">2.0</span>, <span class="op">-</span><span class="fl">0.8</span>], [<span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.8</span>]], n_per_class)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 3</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>X3 <span class="op">=</span> np.random.multivariate_normal([<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>], [[<span class="fl">0.5</span>, <span class="fl">0.0</span>], [<span class="fl">0.0</span>, <span class="fl">2.0</span>]], n_per_class)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2, X3])</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">0</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">1</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">2</span>]<span class="op">*</span>n_per_class)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合三種生成式模型</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>lda <span class="op">=</span> LinearDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>qda <span class="op">=</span> QuadraticDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>gnb <span class="op">=</span> GaussianNB().fit(X_train, y_train)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出準確率比較</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>acc_lda <span class="op">=</span> accuracy_score(y_test, lda.predict(X_test))</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>acc_qda <span class="op">=</span> accuracy_score(y_test, qda.predict(X_test))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>acc_gnb <span class="op">=</span> accuracy_score(y_test, gnb.predict(X_test))</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性判別分析 (LDA) 測試準確率: </span><span class="sc">{</span>acc_lda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"二次判別分析 (QDA) 測試準確率: </span><span class="sc">{</span>acc_qda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"高斯單純貝氏 (GNB) 測試準確率: </span><span class="sc">{</span>acc_gnb<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 檢視 LDA 的 Fisher 特徵投影權重</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">LDA 線性判別特徵係數 (投影法向量):"</span>)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(lda.coef_, <span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="課後全方位習題庫10-題" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="課後全方位習題庫10-題"><span class="header-section-number">7.8</span> 7.7 課後全方位習題庫（10 題）</h2>
+<section id="一觀念理解與數學證明5-題" class="level3" data-number="7.8.1">
+<h3 data-number="7.8.1" class="anchored" data-anchor-id="一觀念理解與數學證明5-題"><span class="header-section-number">7.8.1</span> 一、觀念理解與數學證明（5 題）</h3>
+<ol type="1">
+<li><strong>二元 LDA 後驗機率對羅吉斯函數之等價性證明</strong>： 在二元 LDA 假設下，證明後驗機率 <span class="math inline">P(Y=1 \mid \boldsymbol{x})</span> 可嚴格表為 <span class="math inline">\sigma(\beta_0 + \boldsymbol{\beta}^\top \boldsymbol{x})</span>，並求出 <span class="math inline">\beta_0</span> 與 <span class="math inline">\boldsymbol{\beta}</span> 以 <span class="math inline">\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \boldsymbol{\Sigma}, \pi_1, \pi_2</span> 表示的封閉表達式。</li>
+<li><strong>Fisher 廣義瑞利商的一階偏導證明</strong>： 詳細展開式 (<a href="#eq-ch07-fisher-solution" class="quarto-xref"><span>7.4</span></a>) 的推導過程，證明使 <span class="math inline">\frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}</span> 極大化的向量 <span class="math inline">\boldsymbol{w}</span> 必然滿足廣義特徵值問題 <span class="math inline">\boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w}</span>。</li>
+<li><strong>LDA 與 QDA 的參數自由度精確計算</strong>： 設特徵維度為 <span class="math inline">p</span>，類別數為 <span class="math inline">K</span>。計算 LDA 與 QDA 各自需要估計的獨立純量參數總數（包含先驗、均值與共變異數矩陣），並分析當 <span class="math inline">p=50, K=5</span> 時兩者的參數估計負擔倍率。</li>
+<li><strong>單純貝氏的對數勝算線性形式</strong>： 對於二元高斯單純貝氏分類器，若假設兩類在各特徵維度上的變異數相同（即 <span class="math inline">\sigma_{1j}^2 = \sigma_{2j}^2 = \sigma_j^2</span>），證明對數後驗勝算 <span class="math inline">\ln \frac{P(Y=1 \mid \boldsymbol{x})}{P(Y=2 \mid \boldsymbol{x})}</span> 亦為特徵 <span class="math inline">\boldsymbol{x}</span> 的線性函數。</li>
+<li><strong>拉普拉斯平滑的貝氏共軛先驗詮釋</strong>： 在多項式單純貝氏中，證明加入拉普拉斯平滑（<span class="math inline">\alpha = 1</span>）等價於在多項分佈參數上施加了對稱狄利克雷分佈（Dirichlet Distribution, <span class="math inline">\mathrm{Dir}(1, 1, \dots, 1)</span>）先驗的最大後驗估計（MAP）。</li>
+</ol>
+</section>
+<section id="二程式實作與實務應用5-題" class="level3" data-number="7.8.2">
+<h3 data-number="7.8.2" class="anchored" data-anchor-id="二程式實作與實務應用5-題"><span class="header-section-number">7.8.2</span> 二、程式實作與實務應用（5 題）</h3>
+<ol start="6" type="1">
+<li><strong>正規化判別分析（Regularized Discriminant Analysis, RDA）實作</strong>： RDA 透過收縮參數 <span class="math inline">\alpha \in [0, 1]</span> 平滑 LDA 與 QDA 的共變異數矩陣：<span class="math inline">\hat{\boldsymbol{\Sigma}}_k(\alpha) = \alpha \hat{\boldsymbol{\Sigma}}_k + (1 - \alpha) \hat{\boldsymbol{\Sigma}}</span>。撰寫程式在模擬高維數據上進行網格搜尋，繪製 CV 錯誤率隨 <span class="math inline">\alpha</span> 之變化曲線。</li>
+<li><strong>文字垃圾郵件過濾器（Spam Filtering）實戰</strong>： 利用 SMS Spam Collection 資料集，實作文字前處理（Tokenization、去除停用詞）、TF-IDF 向量化，並使用多項式單純貝氏（MultinomialNB）進行二元分類，繪製混淆矩陣與 PR 曲線。</li>
+<li><strong>高維小樣本情境下 LDA 的奇異性修復（Shrinkage LDA）</strong>： 當 <span class="math inline">n &lt; p</span> 時，樣本共變異數矩陣 <span class="math inline">\boldsymbol{S}_W</span> 不可逆。使用 Ledoit-Wolf 收縮估計量或 Python <code>LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto')</code> 擬合基因微陣列數據（如 50 樣本，1,000 基因），評估其穩定性。</li>
+<li><strong>決策邊界等高線可視化（2D Decision Boundary Contour）</strong>： 生成雙月形（Make Moons）或環形（Make Circles）二維數據，撰寫繪圖函數同時繪製 LDA、QDA 與高斯單純貝氏在同一座標平面上的二維決策分界線與測試點分佈。</li>
+<li><strong>不平衡類別先驗校正（Prior Correction）</strong>： 設疾病罕見率為 <span class="math inline">1\%</span>，但在訓練集進行過抽樣使正負樣本比達到 <span class="math inline">1:1</span>。推導並程式驗證如何在推論階段利用貝氏公式重新調整先驗機率 <span class="math inline">\pi_1 / \pi_2</span>，將模型輸出機率校正回母體真實分佈。</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/ch06_logistic_glm.html" class="pagination-link" aria-label="羅吉斯迴歸與廣義線性模型">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">羅吉斯迴歸與廣義線性模型</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/ch08_svm.html" class="pagination-link" aria-label="支援向量機與核方法">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">支援向量機與核方法</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># 生成式分類模型：LDA、QDA 與單純貝氏 {#sec-ch07}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## 本章導讀</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>在上一章中，羅吉斯迴歸採取「**判別式途徑（Discriminative Approach）**」，直接透過線性函數與 Sigmoid 連結來對條件後驗機率 $P(Y \mid \boldsymbol{X})$ 建模。</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>然而，當遇到以下情境時，羅吉斯迴歸會顯得力不從心：</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**各類別分離度極高**：此時羅吉斯迴歸的 MLE 係數會發散至無限大，數值極不穩定（Hauck-Donner 效應）。</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**樣本容量 $n$ 較小**，且特徵大致符合常態分佈：此時透過母體分佈假設估計參數更為精準。</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**類別數 $K &gt; 2$**：多類別架構在生成式模型下極為自然直觀，無須透過一對多（OvR）之妥協拆解。</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>本章將引介「**生成式分類途徑（Generative Approach）**」：透過先驗機率與特徵條件機率密度，利用貝氏定理反求後驗機率。我們將詳解**線性判別分析（LDA）**並給出 Fisher 投影極大化瑞利商的嚴格證明；提供一組 4 筆 2D 樣本的手把手數值推演；對比允許不同共變異數的**二次判別分析（QDA）**；最後推導在大數據與高維文字探勘中歷久彌新的**單純貝氏分類器（Naive Bayes）**，並在 R 與 Python 雙環境中進行決策邊界與模型評估實戰。</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.1 判別式 vs 生成式分類哲學</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="in">                ┌──────────────────────────────────────────────────────────┐</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="in">                │                  分類問題的兩大流派                      │</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┬─────────────────────────────┤</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="in">                │  判別式模型 (Discriminative)│  生成式模型 (Generative)    │</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┼─────────────────────────────┤</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 代表模型：羅吉斯迴歸, SVM│ - 代表模型：LDA, QDA, 單純貝氏│</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 核心思想：直接劃定分界線 │ - 核心思想：先學每一類的特徵│</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 建模目標：P(Y | X)        │ - 建模目標：P(X | Y) 與 P(Y) │</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 判定準則：直接輸出後驗   │ - 判定準則：藉由貝氏定理反推│</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="in">                └────────────────────────────┴─────────────────────────────┘</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>生成式模型遵循**貝氏定理（Bayes' Theorem）**：</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>設目標類別共有 $K$ 類，$Y \in <span class="sc">\{</span>1, 2, \dots, K<span class="sc">\}</span>$。</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別先驗機率（Prior Probability）：$\pi_k = P(Y = k)$，且 $\sum_{k=1}^K \pi_k = 1$。</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別條件密度（Class-Conditional Density）：$f_k(\boldsymbol{x}) \triangleq P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k)$。</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>給定觀測值 $\boldsymbol{x}$，其屬於類別 $k$ 的**條件後驗機率（Posterior Probability）**為：</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) \triangleq P(Y = k \mid \boldsymbol{X} = \boldsymbol{x}) = \frac{\pi_k f_k(\boldsymbol{x})}{\sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-bayes-classifier}</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>**貝氏最優分類器（Bayes Optimal Classifier）**的決策準則是：將 $\boldsymbol{x}$ 指派給後驗機率 $p_k(\boldsymbol{x})$ 最大的那個類別。</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.2 線性判別分析（LDA）</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.1 多元常態分佈與同方差假設</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>線性判別分析（Linear Discriminant Analysis, LDA）假設每一類別的特徵向量服從**多元高斯常態分佈**：</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-multivariate-normal}</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>LDA 的核心關鍵假設：**所有 $K$ 個類別共享完全相同的共變異數矩陣 $\boldsymbol{\Sigma}$**（各類別僅平均值向量 $\boldsymbol{\mu}_k$ 相異）。</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.2 線性判別函數推導</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>將多元常態密度式 (<span class="co">[</span><span class="ot">-@eq-ch07-multivariate-normal</span><span class="co">]</span>) 代入貝氏後驗機率式 (<span class="co">[</span><span class="ot">-@eq-ch07-bayes-classifier</span><span class="co">]</span>)：</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) = \frac{\pi_k \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)}{\sum_{l=1}^K \pi_l \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_l)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_l) \right)}</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>由於分母與常數係數 $\frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}}$ 對所有類別 $k$ 皆相同，最大化 $p_k(\boldsymbol{x})$ 等價於最大化分子項。取自然對數：</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>\ln \left<span class="co">[</span><span class="ot"> \pi_k f_k(\boldsymbol{x}) \right</span><span class="co">]</span> = \ln \pi_k - \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) + \text{常數}</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>展開二次型矩陣乘積：</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) = \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x} - 2\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x}$ 與類別標籤 $k$ 完全無關（因 $\boldsymbol{\Sigma}$ 被所有類別共享），在比較不同類別的大小關係時可以作為全體公共常數剔除！</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>整理後，定義 **LDA 線性判別函數（Linear Discriminant Function）** $\delta_k(\boldsymbol{x})$：</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>\delta_k(\boldsymbol{x}) \triangleq \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k - \frac{1}{2} \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \ln \pi_k</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-lda-discriminant}</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\delta_k(\boldsymbol{x})$ 是關於輸入特徵 $\boldsymbol{x}$ 的**純線性函數（Linear in $\boldsymbol{x}$）**！</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>任意兩類別 $k$ 與 $l$ 之間的決策邊界為滿足 $\delta_k(\boldsymbol{x}) = \delta_l(\boldsymbol{x})$ 之點集：</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>   \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_k - \boldsymbol{\mu}_l) - \frac{1}{2}\boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_k + \frac{1}{2}\boldsymbol{\mu}_l^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_l + \ln\left(\frac{\pi_k}{\pi_l}\right) = 0</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>   這是一個嚴格的 $(p-1)$ 維**超平面（Hyperplane）**。這正是該方法被稱為「線性」判別分析的根本原因。</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>Ronald Fisher (1936) 從另一個純幾何投影維度推導了相同的結果，完全不依賴常態分佈假設。</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 最佳化目標：</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>尋找一個投影方向向量 $\boldsymbol{w} \in \mathbb{R}^p$，將高維特徵投影至一維純量 $z = \boldsymbol{w}^\top \boldsymbol{x}$，要求投影後的**類別中心差距（Between-class scatter）盡可能大**，同時**類別內部的離散度（Within-class scatter）盡可能小**。</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>以二元分類為例，定義：</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別間散佈矩陣（Between-Class Scatter）：$\boldsymbol{S}_B = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top$</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別內散佈矩陣（Within-Class Scatter）：$\boldsymbol{S}_W = \sum_{i \in \mathcal{C}_1}(\boldsymbol{x}_i - \boldsymbol{\mu}_1)(\boldsymbol{x}_i - \boldsymbol{\mu}_1)^\top + \sum_{i \in \mathcal{C}_2}(\boldsymbol{x}_i - \boldsymbol{\mu}_2)(\boldsymbol{x}_i - \boldsymbol{\mu}_2)^\top$</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>投影後的**廣義瑞利商（Generalized Rayleigh Quotient）**為：</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>J(\boldsymbol{w}) = \frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>對 $\boldsymbol{w}$ 求導並令其為零：</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>\nabla_{\boldsymbol{w}} J(\boldsymbol{w}) = \frac{2\boldsymbol{S}_B\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}) - 2\boldsymbol{S}_W\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w})}{(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w})^2} = \boldsymbol{0}</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>整理得：</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>\boldsymbol{S}_B \boldsymbol{w} = J(\boldsymbol{w}) \boldsymbol{S}_W \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w} \implies \boldsymbol{S}_W^{-1} \boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{w}</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{S}_B \boldsymbol{w} = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\left<span class="co">[</span><span class="ot"> (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \boldsymbol{w} \right</span><span class="co">]</span>$，括號內為標量純量，故 $\boldsymbol{S}_B \boldsymbol{w}$ 的方向恆沿著向量 $(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$。</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>因此最優投影向量的方向解為：</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* \propto \boldsymbol{S}_W^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-fisher-solution}</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>這與式 (<span class="co">[</span><span class="ot">-@eq-ch07-lda-discriminant</span><span class="co">]</span>) 中推導出的高斯機率視角下的超平面法向量 $\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$ 完全等價！</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>為了讓讀者掌握判別向量與共變異數矩陣的計算實質，我們構造一組 2 類別、4 筆樣本的二維玩具資料：</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 <span class="pp">|</span> $x_1$ <span class="pp">|</span> $x_2$ <span class="pp">|</span> 類別標籤 <span class="pp">|</span></span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 5 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>設先驗機率相等：$\pi_1 = \pi_2 = 0.5$。</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：計算各類別均值向量</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 1 均值：</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 = \frac{1}{2} \left( \begin{bmatrix} 1 <span class="sc">\\</span> 2 \end{bmatrix} + \begin{bmatrix} 2 <span class="sc">\\</span> 3 \end{bmatrix} \right) = \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix}</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 2 均值：</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_2 = \frac{1}{2} \left( \begin{bmatrix} 3 <span class="sc">\\</span> 5 \end{bmatrix} + \begin{bmatrix} 5 <span class="sc">\\</span> 6 \end{bmatrix} \right) = \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix}</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>均值差向量：</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = \begin{bmatrix} 1.5 - 4.0 <span class="sc">\\</span> 2.5 - 5.5 \end{bmatrix} = \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix}</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各類別內部離散度與合併共變異數矩陣</span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 1 離散矩陣 $\boldsymbol{S}_1$**：</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-0.5, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">0.5, 0.5</span><span class="co">]</span>^\top$。</span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_1 = \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -0.5 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 0.5 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 0.5 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix}</span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 2 離散矩陣 $\boldsymbol{S}_2$**：</span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-1.0, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">1.0, 0.5</span><span class="co">]</span>^\top$。</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_2 = \begin{bmatrix} -1.0 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -1.0 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 1.0 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix}</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別內總散佈矩陣 $\boldsymbol{S}_W$**：</span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_W = \boldsymbol{S}_1 + \boldsymbol{S}_2 = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix} + \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix}</span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**合併共變異數矩陣（Pooled Covariance Matrix）$\hat{\boldsymbol{\Sigma}}$**：</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>  自由度為 $n - K = 4 - 2 = 2$：</span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>  \hat{\boldsymbol{\Sigma}} = \frac{1}{n - K} \boldsymbol{S}_W = \frac{1}{2} \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 1.25 &amp; 0.75 <span class="sc">\\</span> 0.75 &amp; 0.50 \end{bmatrix}</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：計算共變異數逆矩陣 $\hat{\boldsymbol{\Sigma}}^{-1}$</span></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>行列式：</span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>\det(\hat{\boldsymbol{\Sigma}}) = (1.25)(0.50) - (0.75)^2 = 0.625 - 0.5625 = 0.0625 = \frac{1}{16}</span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>求逆：</span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>\hat{\boldsymbol{\Sigma}}^{-1} = \frac{1}{0.0625} \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = 16 \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix}</span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：計算 Fisher 最優投影向量 $\boldsymbol{w}^*$</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* = \hat{\boldsymbol{\Sigma}}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix} \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix} = \begin{bmatrix} 8(-2.5) - 12(-3.0) <span class="sc">\\</span> -12(-2.5) + 20(-3.0) \end{bmatrix} = \begin{bmatrix} -20 + 36 <span class="sc">\\</span> 30 - 60 \end{bmatrix} = \begin{bmatrix} 16 <span class="sc">\\</span> -30 \end{bmatrix}</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>除以公因數 2 簡化方向向量為：$\boldsymbol{w} = \begin{bmatrix} 8 <span class="sc">\\</span> -15 \end{bmatrix}$。</span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：推導決策分界超平面方程式</span></span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>在先驗機率相等（$\pi_1 = \pi_2$）條件下，決策邊界恰好穿過兩類別均值的中點 $\boldsymbol{\mu}_0 = \frac{\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2}{2}$：</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\mu}_0 = \frac{1}{2} \left( \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix} + \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix} \right) = \begin{bmatrix} 2.75 <span class="sc">\\</span> 4.00 \end{bmatrix}</span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>決策面方程式為 $\boldsymbol{w}^\top (\boldsymbol{x} - \boldsymbol{\mu}_0) = 0$：</span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>8(x_1 - 2.75) - 15(x_2 - 4.0) = 0 \implies 8x_1 - 22 - 15x_2 + 60 = 0 \implies 8x_1 - 15x_2 + 38 = 0</span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 6：代入樣本點檢驗</span></span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 1（$\mathcal{C}_1$）：$\boldsymbol{x}_1 = <span class="co">[</span><span class="ot">1, 2</span><span class="co">]</span>^\top \implies 8(1) - 15(2) + 38 = 8 - 30 + 38 = +16 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 2（$\mathcal{C}_1$）：$\boldsymbol{x}_2 = <span class="co">[</span><span class="ot">2, 3</span><span class="co">]</span>^\top \implies 8(2) - 15(3) + 38 = 16 - 45 + 38 = +9 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 3（$\mathcal{C}_2$）：$\boldsymbol{x}_3 = <span class="co">[</span><span class="ot">3, 5</span><span class="co">]</span>^\top \implies 8(3) - 15(5) + 38 = 24 - 75 + 38 = -13 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 4（$\mathcal{C}_2$）：$\boldsymbol{x}_4 = <span class="co">[</span><span class="ot">5, 6</span><span class="co">]</span>^\top \implies 8(5) - 15(6) + 38 = 40 - 90 + 38 = -12 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>所有訓練樣本皆被 100% 正確分離！</span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.4 二次判別分析（QDA）</span></span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>若放寬「共享共變異數」的限制，允許**每一個類別擁有專屬的共變異數矩陣 $\boldsymbol{\Sigma}_k$**，即得**二次判別分析（Quadratic Discriminant Analysis, QDA）**。</span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>此時在推導中，二次項 $\boldsymbol{x}^\top \boldsymbol{\Sigma}_k^{-1} \boldsymbol{x}$ 無法被約去，判別函數為：</span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>\delta_k^{\text{qda}}(\boldsymbol{x}) \triangleq -\frac{1}{2}\ln |\boldsymbol{\Sigma}_k| - \frac{1}{2}(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}_k^{-1}(\boldsymbol{x} - \boldsymbol{\mu}_k) + \ln \pi_k</span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-qda-discriminant}</span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**幾何邊界**：$\delta_k^{\text{qda}}(\boldsymbol{x}) = \delta_l^{\text{qda}}(\boldsymbol{x})$ 形成二次曲面（拋物面、橢圓面、雙曲面）。</span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**參數規模與偏誤-變異數權衡**：</span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>LDA 僅需估計 1 個共享的 $\boldsymbol{\Sigma}$，需估計參數為 $p(p+1)/2$ 個，變異數小但偏誤較大。</span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>QDA 需獨立估計 $K$ 個相異的矩陣 $\boldsymbol{\Sigma}_k$，總參數為 $K \cdot <span class="co">[</span><span class="ot">p(p+1)/2</span><span class="co">]</span>$。當特徵數 $p$ 較大且樣本數較小時，QDA 極易因估計矩陣的不穩定性而過度配適。</span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.5 單純貝氏分類器（Naive Bayes）</span></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>當特徵數 $p$ 達到成千上萬（如文字分類、基因體學）時，即使是 LDA 亦無法反轉巨大的 $\boldsymbol{\Sigma}$。**單純貝氏（Naive Bayes）**提出了一個大膽且強力的假設：</span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **條件獨立假設（Conditional Independence Assumption）**：</span></span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 給定類別標籤 $Y=k$，所有特徵變數之間彼此條件獨立。</span></span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a>基於此假設，高維聯合條件密度完全分解為各維度一維邊際機率密度的連乘積：</span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1}^p f_{kj}(x_j)</span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-naive-bayes-density}</span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.1 三大常見單純貝氏模型</span></span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高斯單純貝氏（Gaussian Naive Bayes）**：用於連續型特徵，假設每一維度服從獨立一維高斯分佈 $\mathcal{N}(\mu_{kj}, \sigma_{kj}^2)$。</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**多項式單純貝氏（Multinomial Naive Bayes）**：用於文字詞頻統計向量。</span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**伯努利單純貝氏（Bernoulli Naive Bayes）**：用於特徵為二元布林（是否出現某單詞）。</span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）</span></span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a>在離散多項式分類中，若某個詞彙在訓練集某個類別中從未出現過，其估計條件機率 $\hat{P}(x_j \mid Y=k) = 0$。連乘積將導致整體後驗機率直接歸零（一票否決效應）。</span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a>解決方案是引入**拉普拉斯平滑**：</span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a>\hat{P}(X_j = v \mid Y = k) = \frac{N_{kj} + \alpha}{N_k + \alpha \cdot d}</span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a>通常取平滑常數 $\alpha = 1$，$d$ 為該特徵可能的離散取值種類數。</span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比</span></span>
+<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：MASS::lda, MASS::qda 與 e1071::naiveBayes 多類別分類</span></span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：MASS, e1071, ISLR2</span></span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用股市 Smarket 資料集 (預測隔日大盤漲跌 Direction: Up / Down)</span></span>
+<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Smarket)</span>
+<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分 2005 年以前為訓練集，2005 年當年度為測試集</span></span>
+<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
+<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a>Smarket_test <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
+<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a>Direction_test <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
+<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性判別分析 (LDA)</span></span>
+<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>fit_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a>pred_lda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_lda, Smarket_test)</span>
+<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a>table_lda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_lda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== LDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_lda)</span>
+<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_lda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合二次判別分析 (QDA)</span></span>
+<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a>fit_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a>pred_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_qda, Smarket_test)</span>
+<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a>table_qda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_qda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== QDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_qda)</span>
+<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"QDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_qda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合單純貝氏分類器 (Naive Bayes)</span></span>
+<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a>fit_nb <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a>pred_nb <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_nb, Smarket_test)</span>
+<span id="cb4-298"><a href="#cb4-298" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== Naive Bayes 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-299"><a href="#cb4-299" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(預測 <span class="ot">=</span> pred_nb, 真實 <span class="ot">=</span> Direction_test))</span>
+<span id="cb4-300"><a href="#cb4-300" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Naive Bayes 準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_nb <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-301"><a href="#cb4-301" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-302"><a href="#cb4-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-303"><a href="#cb4-303" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb4-304"><a href="#cb4-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-305"><a href="#cb4-305" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb4-306"><a href="#cb4-306" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-307"><a href="#cb4-307" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：LDA, QDA 與 GaussianNB 模型評估</span></span>
+<span id="cb4-308"><a href="#cb4-308" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb4-309"><a href="#cb4-309" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-310"><a href="#cb4-310" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-311"><a href="#cb4-311" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-312"><a href="#cb4-312" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-313"><a href="#cb4-313" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.discriminant_analysis <span class="im">import</span> LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis</span>
+<span id="cb4-314"><a href="#cb4-314" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb4-315"><a href="#cb4-315" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb4-316"><a href="#cb4-316" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, classification_report</span>
+<span id="cb4-317"><a href="#cb4-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-318"><a href="#cb4-318" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬雙變數非線性多類別資料 (3 個類別)</span></span>
+<span id="cb4-319"><a href="#cb4-319" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb4-320"><a href="#cb4-320" aria-hidden="true" tabindex="-1"></a>n_per_class <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb4-321"><a href="#cb4-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-322"><a href="#cb4-322" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 1: 常態分佈</span></span>
+<span id="cb4-323"><a href="#cb4-323" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">1.0</span>, <span class="fl">0.5</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>]], n_per_class)</span>
+<span id="cb4-324"><a href="#cb4-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 2: 共變異數不同的常態分佈</span></span>
+<span id="cb4-325"><a href="#cb4-325" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">3</span>, <span class="dv">3</span>], [[<span class="fl">2.0</span>, <span class="op">-</span><span class="fl">0.8</span>], [<span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.8</span>]], n_per_class)</span>
+<span id="cb4-326"><a href="#cb4-326" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 3</span></span>
+<span id="cb4-327"><a href="#cb4-327" aria-hidden="true" tabindex="-1"></a>X3 <span class="op">=</span> np.random.multivariate_normal([<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>], [[<span class="fl">0.5</span>, <span class="fl">0.0</span>], [<span class="fl">0.0</span>, <span class="fl">2.0</span>]], n_per_class)</span>
+<span id="cb4-328"><a href="#cb4-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-329"><a href="#cb4-329" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2, X3])</span>
+<span id="cb4-330"><a href="#cb4-330" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">0</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">1</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">2</span>]<span class="op">*</span>n_per_class)</span>
+<span id="cb4-331"><a href="#cb4-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-332"><a href="#cb4-332" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb4-333"><a href="#cb4-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-334"><a href="#cb4-334" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合三種生成式模型</span></span>
+<span id="cb4-335"><a href="#cb4-335" aria-hidden="true" tabindex="-1"></a>lda <span class="op">=</span> LinearDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb4-336"><a href="#cb4-336" aria-hidden="true" tabindex="-1"></a>qda <span class="op">=</span> QuadraticDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb4-337"><a href="#cb4-337" aria-hidden="true" tabindex="-1"></a>gnb <span class="op">=</span> GaussianNB().fit(X_train, y_train)</span>
+<span id="cb4-338"><a href="#cb4-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-339"><a href="#cb4-339" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出準確率比較</span></span>
+<span id="cb4-340"><a href="#cb4-340" aria-hidden="true" tabindex="-1"></a>acc_lda <span class="op">=</span> accuracy_score(y_test, lda.predict(X_test))</span>
+<span id="cb4-341"><a href="#cb4-341" aria-hidden="true" tabindex="-1"></a>acc_qda <span class="op">=</span> accuracy_score(y_test, qda.predict(X_test))</span>
+<span id="cb4-342"><a href="#cb4-342" aria-hidden="true" tabindex="-1"></a>acc_gnb <span class="op">=</span> accuracy_score(y_test, gnb.predict(X_test))</span>
+<span id="cb4-343"><a href="#cb4-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-344"><a href="#cb4-344" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性判別分析 (LDA) 測試準確率: </span><span class="sc">{</span>acc_lda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-345"><a href="#cb4-345" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"二次判別分析 (QDA) 測試準確率: </span><span class="sc">{</span>acc_qda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-346"><a href="#cb4-346" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"高斯單純貝氏 (GNB) 測試準確率: </span><span class="sc">{</span>acc_gnb<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-347"><a href="#cb4-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-348"><a href="#cb4-348" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 檢視 LDA 的 Fisher 特徵投影權重</span></span>
+<span id="cb4-349"><a href="#cb4-349" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">LDA 線性判別特徵係數 (投影法向量):"</span>)</span>
+<span id="cb4-350"><a href="#cb4-350" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(lda.coef_, <span class="dv">4</span>))</span>
+<span id="cb4-351"><a href="#cb4-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-352"><a href="#cb4-352" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-353"><a href="#cb4-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-354"><a href="#cb4-354" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-355"><a href="#cb4-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-356"><a href="#cb4-356" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb4-357"><a href="#cb4-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-358"><a href="#cb4-358" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb4-359"><a href="#cb4-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-360"><a href="#cb4-360" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**二元 LDA 後驗機率對羅吉斯函數之等價性證明**：</span>
+<span id="cb4-361"><a href="#cb4-361" aria-hidden="true" tabindex="-1"></a>   在二元 LDA 假設下，證明後驗機率 $P(Y=1 \mid \boldsymbol{x})$ 可嚴格表為 $\sigma(\beta_0 + \boldsymbol{\beta}^\top \boldsymbol{x})$，並求出 $\beta_0$ 與 $\boldsymbol{\beta}$ 以 $\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \boldsymbol{\Sigma}, \pi_1, \pi_2$ 表示的封閉表達式。</span>
+<span id="cb4-362"><a href="#cb4-362" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fisher 廣義瑞利商的一階偏導證明**：</span>
+<span id="cb4-363"><a href="#cb4-363" aria-hidden="true" tabindex="-1"></a>   詳細展開式 (<span class="co">[</span><span class="ot">-@eq-ch07-fisher-solution</span><span class="co">]</span>) 的推導過程，證明使 $\frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}$ 極大化的向量 $\boldsymbol{w}$ 必然滿足廣義特徵值問題 $\boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w}$。</span>
+<span id="cb4-364"><a href="#cb4-364" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**LDA 與 QDA 的參數自由度精確計算**：</span>
+<span id="cb4-365"><a href="#cb4-365" aria-hidden="true" tabindex="-1"></a>   設特徵維度為 $p$，類別數為 $K$。計算 LDA 與 QDA 各自需要估計的獨立純量參數總數（包含先驗、均值與共變異數矩陣），並分析當 $p=50, K=5$ 時兩者的參數估計負擔倍率。</span>
+<span id="cb4-366"><a href="#cb4-366" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**單純貝氏的對數勝算線性形式**：</span>
+<span id="cb4-367"><a href="#cb4-367" aria-hidden="true" tabindex="-1"></a>   對於二元高斯單純貝氏分類器，若假設兩類在各特徵維度上的變異數相同（即 $\sigma_{1j}^2 = \sigma_{2j}^2 = \sigma_j^2$），證明對數後驗勝算 $\ln \frac{P(Y=1 \mid \boldsymbol{x})}{P(Y=2 \mid \boldsymbol{x})}$ 亦為特徵 $\boldsymbol{x}$ 的線性函數。</span>
+<span id="cb4-368"><a href="#cb4-368" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**拉普拉斯平滑的貝氏共軛先驗詮釋**：</span>
+<span id="cb4-369"><a href="#cb4-369" aria-hidden="true" tabindex="-1"></a>   在多項式單純貝氏中，證明加入拉普拉斯平滑（$\alpha = 1$）等價於在多項分佈參數上施加了對稱狄利克雷分佈（Dirichlet Distribution, $\mathrm{Dir}(1, 1, \dots, 1)$）先驗的最大後驗估計（MAP）。</span>
+<span id="cb4-370"><a href="#cb4-370" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-371"><a href="#cb4-371" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb4-372"><a href="#cb4-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-373"><a href="#cb4-373" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**正規化判別分析（Regularized Discriminant Analysis, RDA）實作**：</span>
+<span id="cb4-374"><a href="#cb4-374" aria-hidden="true" tabindex="-1"></a>   RDA 透過收縮參數 $\alpha \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 平滑 LDA 與 QDA 的共變異數矩陣：$\hat{\boldsymbol{\Sigma}}_k(\alpha) = \alpha \hat{\boldsymbol{\Sigma}}_k + (1 - \alpha) \hat{\boldsymbol{\Sigma}}$。撰寫程式在模擬高維數據上進行網格搜尋，繪製 CV 錯誤率隨 $\alpha$ 之變化曲線。</span>
+<span id="cb4-375"><a href="#cb4-375" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**文字垃圾郵件過濾器（Spam Filtering）實戰**：</span>
+<span id="cb4-376"><a href="#cb4-376" aria-hidden="true" tabindex="-1"></a>   利用 SMS Spam Collection 資料集，實作文字前處理（Tokenization、去除停用詞）、TF-IDF 向量化，並使用多項式單純貝氏（MultinomialNB）進行二元分類，繪製混淆矩陣與 PR 曲線。</span>
+<span id="cb4-377"><a href="#cb4-377" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**高維小樣本情境下 LDA 的奇異性修復（Shrinkage LDA）**：</span>
+<span id="cb4-378"><a href="#cb4-378" aria-hidden="true" tabindex="-1"></a>   當 $n &lt; p$ 時，樣本共變異數矩陣 $\boldsymbol{S}_W$ 不可逆。使用 Ledoit-Wolf 收縮估計量或 Python <span class="in">`LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto')`</span> 擬合基因微陣列數據（如 50 樣本，1,000 基因），評估其穩定性。</span>
+<span id="cb4-379"><a href="#cb4-379" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**決策邊界等高線可視化（2D Decision Boundary Contour）**：</span>
+<span id="cb4-380"><a href="#cb4-380" aria-hidden="true" tabindex="-1"></a>   生成雙月形（Make Moons）或環形（Make Circles）二維數據，撰寫繪圖函數同時繪製 LDA、QDA 與高斯單純貝氏在同一座標平面上的二維決策分界線與測試點分佈。</span>
+<span id="cb4-381"><a href="#cb4-381" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**不平衡類別先驗校正（Prior Correction）**：</span>
+<span id="cb4-382"><a href="#cb4-382" aria-hidden="true" tabindex="-1"></a>    設疾病罕見率為 $1\%$，但在訓練集進行過抽樣使正負樣本比達到 $1:1$。推導並程式驗證如何在推論階段利用貝氏公式重新調整先驗機率 $\pi_1 / \pi_2$，將模型輸出機率校正回母體真實分佈。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 統計學習理論與實務：深入淺出指南 | 繁體中文第一版</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>基於 R 與 Python 雙軌實作</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

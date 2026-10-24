@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>12&nbsp; 分群演算法與混合模型（EM 演算法） – 統計學習理論與實務：深入淺出指南</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/ch13_modern_frontiers.html" rel="next">
+<link href="../chapters/ch11_pca_manifold.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-51b2efe42a832a760ae4a04b3490e69f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch09_decision_trees.html">第四篇：樹狀模型、集成學習與非監督技術</a></li><li class="breadcrumb-item"><a href="../chapters/ch12_clustering_em.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">統計學習理論與實務：深入淺出指南</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">自序：走向嚴謹與實踐兼備的統計學習</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">統計學習專有名詞與符號對照表</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第一篇：統計學習基石與泛化理論</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">統計學習概論與思維典範</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch02_model_assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">模型評估、重抽樣與統計學習理論</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">第二篇：連續型預測：迴歸分析、正則化與平滑</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch03_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">多元線性迴歸與古典統計推論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch04_regularization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">高維特徵選擇與正則化收縮法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch05_splines_gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">非線性模型與平滑技術</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">第三篇：離散型預測：分類模型與幾何分界</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch06_logistic_glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">羅吉斯迴歸與廣義線性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch07_generative_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch08_svm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">支援向量機與核方法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">第四篇：樹狀模型、集成學習與非監督技術</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch09_decision_trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">決策樹演算法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch10_ensemble_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">集成學習：隨機森林與梯度提升</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch11_pca_manifold.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">主成分分析與流形學習</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch12_clustering_em.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">第五篇：現代前沿與統計新典範</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch13_modern_frontiers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">本章目錄</h2>
+   
+  <ul>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">12.1</span> 本章導讀</a></li>
+  <li><a href="#k-means-分群演算法與收斂性證明" id="toc-k-means-分群演算法與收斂性證明" class="nav-link" data-scroll-target="#k-means-分群演算法與收斂性證明"><span class="header-section-number">12.2</span> 12.1 <span class="math inline">K</span>-Means 分群演算法與收斂性證明</a>
+  <ul class="collapse">
+  <li><a href="#最佳化目標函數" id="toc-最佳化目標函數" class="nav-link" data-scroll-target="#最佳化目標函數"><span class="header-section-number">12.2.1</span> 12.1.1 最佳化目標函數</a></li>
+  <li><a href="#lloyd-演算法與單調收斂性證明" id="toc-lloyd-演算法與單調收斂性證明" class="nav-link" data-scroll-target="#lloyd-演算法與單調收斂性證明"><span class="header-section-number">12.2.2</span> 12.1.2 Lloyd 演算法與單調收斂性證明</a></li>
+  <li><a href="#評估群數-k輪廓係數silhouette-coefficient" id="toc-評估群數-k輪廓係數silhouette-coefficient" class="nav-link" data-scroll-target="#評估群數-k輪廓係數silhouette-coefficient"><span class="header-section-number">12.2.3</span> 12.1.3 評估群數 <span class="math inline">K</span>：輪廓係數（Silhouette Coefficient）</a></li>
+  </ul></li>
+  <li><a href="#階層式分群hierarchical-clustering" id="toc-階層式分群hierarchical-clustering" class="nav-link" data-scroll-target="#階層式分群hierarchical-clustering"><span class="header-section-number">12.3</span> 12.2 階層式分群（Hierarchical Clustering）</a>
+  <ul class="collapse">
+  <li><a href="#凝聚式分群流程agglomerative" id="toc-凝聚式分群流程agglomerative" class="nav-link" data-scroll-target="#凝聚式分群流程agglomerative"><span class="header-section-number">12.3.1</span> 12.2.1 凝聚式分群流程（Agglomerative）</a></li>
+  <li><a href="#四大鏈結法linkage-methods對比" id="toc-四大鏈結法linkage-methods對比" class="nav-link" data-scroll-target="#四大鏈結法linkage-methods對比"><span class="header-section-number">12.3.2</span> 12.2.2 四大鏈結法（Linkage Methods）對比</a></li>
+  </ul></li>
+  <li><a href="#手把手數值推演k-means-迭代與-gmm-em-演算法手算" id="toc-手把手數值推演k-means-迭代與-gmm-em-演算法手算" class="nav-link" data-scroll-target="#手把手數值推演k-means-迭代與-gmm-em-演算法手算"><span class="header-section-number">12.4</span> 12.3 手把手數值推演：K-Means 迭代與 GMM EM 演算法手算</a>
+  <ul class="collapse">
+  <li><a href="#k-means-演算法單步手算" id="toc-k-means-演算法單步手算" class="nav-link" data-scroll-target="#k-means-演算法單步手算"><span class="header-section-number">12.4.1</span> 12.3.1 K-Means 演算法單步手算</a></li>
+  <li><a href="#gmm-之-em-演算法單步手算" id="toc-gmm-之-em-演算法單步手算" class="nav-link" data-scroll-target="#gmm-之-em-演算法單步手算"><span class="header-section-number">12.4.2</span> 12.3.2 GMM 之 EM 演算法單步手算</a></li>
+  </ul></li>
+  <li><a href="#高斯混合模型gmm與-em-演算法之嚴格數學推導" id="toc-高斯混合模型gmm與-em-演算法之嚴格數學推導" class="nav-link" data-scroll-target="#高斯混合模型gmm與-em-演算法之嚴格數學推導"><span class="header-section-number">12.5</span> 12.4 高斯混合模型（GMM）與 EM 演算法之嚴格數學推導</a>
+  <ul class="collapse">
+  <li><a href="#不完全資料似然與-jensen-不等式" id="toc-不完全資料似然與-jensen-不等式" class="nav-link" data-scroll-target="#不完全資料似然與-jensen-不等式"><span class="header-section-number">12.5.1</span> 12.4.1 不完全資料似然與 Jensen 不等式</a></li>
+  <li><a href="#e-步expectation-step與-m-步maximization-step" id="toc-e-步expectation-step與-m-步maximization-step" class="nav-link" data-scroll-target="#e-步expectation-step與-m-步maximization-step"><span class="header-section-number">12.5.2</span> 12.4.2 E-步（Expectation Step）與 M-步（Maximization Step）</a></li>
+  </ul></li>
+  <li><a href="#雙軌實務實驗室k-means階層式分群與-gmm-實戰" id="toc-雙軌實務實驗室k-means階層式分群與-gmm-實戰" class="nav-link" data-scroll-target="#雙軌實務實驗室k-means階層式分群與-gmm-實戰"><span class="header-section-number">12.6</span> 12.5 雙軌實務實驗室：K-Means、階層式分群與 GMM 實戰</a></li>
+  <li><a href="#課後全方位習題庫10-題" id="toc-課後全方位習題庫10-題" class="nav-link" data-scroll-target="#課後全方位習題庫10-題"><span class="header-section-number">12.7</span> 12.6 課後全方位習題庫（10 題）</a>
+  <ul class="collapse">
+  <li><a href="#一觀念理解與數學證明5-題" id="toc-一觀念理解與數學證明5-題" class="nav-link" data-scroll-target="#一觀念理解與數學證明5-題"><span class="header-section-number">12.7.1</span> 一、觀念理解與數學證明（5 題）</a></li>
+  <li><a href="#二程式實作與實務應用5-題" id="toc-二程式實作與實務應用5-題" class="nav-link" data-scroll-target="#二程式實作與實務應用5-題"><span class="header-section-number">12.7.2</span> 二、程式實作與實務應用（5 題）</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch09_decision_trees.html">第四篇：樹狀模型、集成學習與非監督技術</a></li><li class="breadcrumb-item"><a href="../chapters/ch12_clustering_em.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-ch12" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章導讀" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="本章導讀"><span class="header-section-number">12.1</span> 本章導讀</h2>
+<p>在探索性資料分析（EDA）與非監督學習中，<strong>分群分析（Clustering）</strong>旨在將資料集劃分為若干個有意義的子群體（Clusters），使得<strong>「同一群體內的樣本高度相似，不同群體間的樣本高度相異」</strong>。分群廣泛應用於顧客市場區隔、基因表現模式識別、影像語意分割與異常交易偵測。</p>
+<p>然而，如何數學化「相似度」？如何客觀決定分群數量 <span class="math inline">K</span>？當樣本與群組的隸屬關係不是非黑即白，而是以機率形式存在時，又該如何建模？</p>
+<p>本章將從經典的 <strong><span class="math inline">K</span>-Means（<span class="math inline">K</span>-平均演算法）</strong> 出發，給出其單調收斂性與輪廓係數（Silhouette Coefficient）的嚴格證明；對比自底向上的<strong>階層式分群（Hierarchical Clustering）</strong>與四種鏈結法之差異；提供一組包含了 <span class="math inline">K</span>-Means 與 GMM EM 演算法手把手數值推演範例；深入推導軟分群的極致——<strong>高斯混合模型（GMM）</strong>；嚴格給出統計學中最具美感的演算法之一：<strong>期望最大化演算法（Expectation-Maximization, EM Algorithm）</strong>基於 Jensen 不等式的下界推導；最後在 R 與 Python 雙環境中進行全流程實戰。</p>
+<hr>
+</section>
+<section id="k-means-分群演算法與收斂性證明" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="k-means-分群演算法與收斂性證明"><span class="header-section-number">12.2</span> 12.1 <span class="math inline">K</span>-Means 分群演算法與收斂性證明</h2>
+<section id="最佳化目標函數" class="level3" data-number="12.2.1">
+<h3 data-number="12.2.1" class="anchored" data-anchor-id="最佳化目標函數"><span class="header-section-number">12.2.1</span> 12.1.1 最佳化目標函數</h3>
+<p>設資料集為 <span class="math inline">\mathcal{D} = \{\boldsymbol{x}_1, \boldsymbol{x}_2, \dots, \boldsymbol{x}_n\}</span>，欲劃分為 <span class="math inline">K</span> 個互斥的子集 <span class="math inline">C_1, C_2, \dots, C_K</span>。 <span class="math inline">K</span>-Means 的核心目標是最小化<strong>群內平方和（Within-Cluster Sum of Squares, WCSS）</strong>：</p>
+<p><span class="math display">
+\min_{C_1, \dots, C_K} \sum_{k=1}^K \mathrm{WCSS}(C_k) = \min_{C_1, \dots, C_K} \sum_{k=1}^K \frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2
+</span></p>
+<p>由基本代數恆等式，群內兩兩樣本距離平方和恰好等於樣本到該群質心（Centroid）<span class="math inline">\boldsymbol{\mu}_k</span> 距離平方和的兩倍： <span class="math display">
+\frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2
+</span> 其中 <span class="math inline">\boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum_{i \in C_k} \boldsymbol{x}_i</span> 為群 <span class="math inline">k</span> 的樣本平均向量。</p>
+<p>因此，<span class="math inline">K</span>-Means 的標準目標函數改寫為： <span id="eq-ch12-kmeans-objective"><span class="math display">
+J(C_1, \dots, C_K, \boldsymbol{\mu}_1, \dots, \boldsymbol{\mu}_K) = \sum_{k=1}^K \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2
+\tag{12.1}</span></span></p>
+<hr>
+</section>
+<section id="lloyd-演算法與單調收斂性證明" class="level3" data-number="12.2.2">
+<h3 data-number="12.2.2" class="anchored" data-anchor-id="lloyd-演算法與單調收斂性證明"><span class="header-section-number">12.2.2</span> 12.1.2 Lloyd 演算法與單調收斂性證明</h3>
+<p>Stuart Lloyd (1957) 提出了經典的交替最佳化演算法（Lloyd’s Algorithm）： 1. <strong>初始化</strong>：隨機指定 <span class="math inline">K</span> 個初始質心 <span class="math inline">\boldsymbol{\mu}_1^{(0)}, \dots, \boldsymbol{\mu}_K^{(0)}</span>。 2. <strong>指派步（Assignment Step）</strong>： 固定質心 <span class="math inline">\boldsymbol{\mu}_k</span>，將每個樣本點指派給歐氏距離最近的質心所代表的群： <span class="math display">
+   C_k^{(t)} = \left\{ \boldsymbol{x}_i \;\middle|\; \|\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t)}\|_2 \le \|\boldsymbol{x}_i - \boldsymbol{\mu}_l^{(t)}\|_2, \, \forall l \neq k \right\}
+   </span> 3. <strong>更新步（Update Step）</strong>： 固定分群劃分 <span class="math inline">C_k^{(t)}</span>，重新計算每個群的質心： <span class="math display">
+   \boldsymbol{\mu}_k^{(t+1)} = \frac{1}{|C_k^{(t)}|} \sum_{i \in C_k^{(t)}} \boldsymbol{x}_i
+   </span> 4. 重複步驟 2 與 3，直至質心位置不再改變或變化小於收斂容忍度。</p>
+<section id="單調收斂性定理證明" class="level4" data-number="12.2.2.1">
+<h4 data-number="12.2.2.1" class="anchored" data-anchor-id="單調收斂性定理證明"><span class="header-section-number">12.2.2.1</span> 單調收斂性定理證明：</h4>
+<ul>
+<li><strong>在指派步中</strong>：對於任意樣本 <span class="math inline">\boldsymbol{x}_i</span>，將其歸入最近質心顯然使 <span class="math inline">\|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2</span> 達到最小，故目標函數值 <span class="math inline">J</span> 單調不增。</li>
+<li><strong>在更新步中</strong>：給定固定群 <span class="math inline">C_k</span>，對 <span class="math inline">\boldsymbol{\mu}_k</span> 求導：<span class="math inline">\nabla_{\boldsymbol{\mu}_k} \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2 = -2\sum_{i \in C_k}(\boldsymbol{x}_i - \boldsymbol{\mu}_k) = \boldsymbol{0} \implies \boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum \boldsymbol{x}_i</span>。此解精確為一元二次凸函數的全局最小值，故目標函數值 <span class="math inline">J</span> 再次單調不增。</li>
+<li>目標函數 <span class="math inline">J \ge 0</span> 恆有下界，且有限樣本的可能劃分方式最多只有 <span class="math inline">K^n</span> 種。</li>
+<li><strong>結論</strong>：Lloyd 演算法<strong>必在有限步內收斂至局部極小值（Local Minimum）</strong> <span class="math inline">\quad \blacksquare</span></li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>⚠️ 注意</strong>：<span class="math inline">K</span>-Means 只能保證收斂至局部最優，強烈依賴初始質心的位置。現代工程實務中，一律採用 <strong><span class="math inline">K</span>-Means++</strong> 初始化法（依據點到既有質心的最短距離平方比例，以機率進行分段抽樣），在理論上保證逼近全域最優解的預期誤差界為 <span class="math inline">\mathcal{O}(\log K)</span>。</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="評估群數-k輪廓係數silhouette-coefficient" class="level3" data-number="12.2.3">
+<h3 data-number="12.2.3" class="anchored" data-anchor-id="評估群數-k輪廓係數silhouette-coefficient"><span class="header-section-number">12.2.3</span> 12.1.3 評估群數 <span class="math inline">K</span>：輪廓係數（Silhouette Coefficient）</h3>
+<p>肘部法（Elbow Method）尋找 WCSS 曲線轉折點往往過於主觀。Rousseeuw (1987) 提出了<strong>輪廓係數（Silhouette Coefficient）</strong>：</p>
+<p>對於任意樣本 <span class="math inline">i \in C_k</span>： 1. <strong>群內凝聚度（Intra-cluster Dissimilarity）</strong>：樣本 <span class="math inline">i</span> 到同群其他樣本的平均距離： <span class="math display">
+   a(i) = \frac{1}{|C_k| - 1} \sum_{j \in C_k, j \neq i} \|\boldsymbol{x}_i - \boldsymbol{x}_j\|_2
+   </span> 2. <strong>群間分離度（Nearest-cluster Dissimilarity）</strong>：樣本 <span class="math inline">i</span> 到最近相鄰群 <span class="math inline">C_l</span>（<span class="math inline">l \neq k</span>）中所有樣本的平均距離： <span class="math display">
+   b(i) = \min_{l \neq k} \frac{1}{|C_l|} \sum_{j \in C_l} \|\boldsymbol{x}_i - \boldsymbol{x}_j\|_2
+   </span> 3. <strong>單點輪廓係數</strong>： <span id="eq-ch12-silhouette"><span class="math display">
+   s(i) \triangleq \frac{b(i) - a(i)}{\max(a(i), b(i))} \in [-1, 1]
+    \tag{12.2}</span></span></p>
+<ul>
+<li>若 <span class="math inline">s(i) \approx 1</span>：<span class="math inline">a(i) \ll b(i)</span>，樣本與所屬群高度緊湊，且遠離其他群（分群極佳）。</li>
+<li>若 <span class="math inline">s(i) \approx 0</span>：樣本坐落在兩個群的交界處。</li>
+<li>若 <span class="math inline">s(i) &lt; 0</span>：<span class="math inline">a(i) &gt; b(i)</span>，樣本甚至離鄰近群更近，說明該樣本被錯誤劃分！</li>
+<li><strong>平均輪廓係數（Average Silhouette Score）</strong>取得最大值所對應的 <span class="math inline">K</span>，即為最優群數。</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="階層式分群hierarchical-clustering" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="階層式分群hierarchical-clustering"><span class="header-section-number">12.3</span> 12.2 階層式分群（Hierarchical Clustering）</h2>
+<p><span class="math inline">K</span>-Means 必須預先人為指定群數 <span class="math inline">K</span>。<strong>階層式分群（Hierarchical Clustering）</strong>則打破此限制，建構一棵自底向上的<strong>樹狀圖（Dendrogram）</strong>。</p>
+<section id="凝聚式分群流程agglomerative" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="凝聚式分群流程agglomerative"><span class="header-section-number">12.3.1</span> 12.2.1 凝聚式分群流程（Agglomerative）</h3>
+<ol type="1">
+<li>初始階段：將每一個樣本點視為一個獨立的單點群（共有 <span class="math inline">n</span> 個群）。</li>
+<li>計算所有群兩兩之間的相異度矩陣。</li>
+<li>將相異度最小（最接近）的兩個群合併為一個新群。</li>
+<li>重複步驟 2 與 3，直到全體樣本最終合併為單一根節點群。</li>
+</ol>
+</section>
+<section id="四大鏈結法linkage-methods對比" class="level3" data-number="12.3.2">
+<h3 data-number="12.3.2" class="anchored" data-anchor-id="四大鏈結法linkage-methods對比"><span class="header-section-number">12.3.2</span> 12.2.2 四大鏈結法（Linkage Methods）對比</h3>
+<p>設有兩群體 <span class="math inline">A</span> 與 <span class="math inline">B</span>，如何度量兩個集合之間的距離 <span class="math inline">d(A, B)</span>？</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">鏈結法 (Linkage)</th>
+<th style="text-align: left;">數學定義 <span class="math inline">d(A, B)</span></th>
+<th style="text-align: left;">特性與幾何形態</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>完全鏈結 (Complete)</strong></td>
+<td style="text-align: left;"><span class="math inline">\max_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|</span></td>
+<td style="text-align: left;">最長距離。產生大小均勻、緊密球狀的群（最常用）。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>單一鏈結 (Single)</strong></td>
+<td style="text-align: left;"><span class="math inline">\min_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|</span></td>
+<td style="text-align: left;">最短距離。易發生<strong>鏈狀效應（Chaining）</strong>，形成細長散落群。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>平均鏈結 (Average)</strong></td>
+<td style="text-align: left;"><span class="math inline">\frac{1}{\|A\| \|B\|} \sum_{\boldsymbol{x} \in A} \sum_{\boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|</span></td>
+<td style="text-align: left;">平均距離。折衷平衡，受離群值影響較小。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>質心鏈結 (Centroid)</strong></td>
+<td style="text-align: left;"><span class="math inline">\|\boldsymbol{\mu}_A - \boldsymbol{\mu}_B\|</span></td>
+<td style="text-align: left;">質心距離。樹狀圖可能發生<strong>倒置（Inversion）</strong>跳躍。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="手把手數值推演k-means-迭代與-gmm-em-演算法手算" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="手把手數值推演k-means-迭代與-gmm-em-演算法手算"><span class="header-section-number">12.4</span> 12.3 手把手數值推演：K-Means 迭代與 GMM EM 演算法手算</h2>
+<section id="k-means-演算法單步手算" class="level3" data-number="12.4.1">
+<h3 data-number="12.4.1" class="anchored" data-anchor-id="k-means-演算法單步手算"><span class="header-section-number">12.4.1</span> 12.3.1 K-Means 演算法單步手算</h3>
+<p>考慮 4 筆 1D 樣本：<span class="math inline">x_1 = 1.0, x_2 = 2.0, x_3 = 6.0, x_4 = 7.0</span>。 欲劃分為 <span class="math inline">K=2</span> 個群。 初始質心設定為：<span class="math inline">\mu_1^{(0)} = 1.5, \mu_2^{(0)} = 4.0</span>。</p>
+<section id="第-1-步指派樣本至最近質心" class="level4" data-number="12.4.1.1">
+<h4 data-number="12.4.1.1" class="anchored" data-anchor-id="第-1-步指派樣本至最近質心"><span class="header-section-number">12.4.1.1</span> 第 1 步：指派樣本至最近質心</h4>
+<p>計算各樣本到質心的距離： * <span class="math inline">x_1 = 1.0</span>：<span class="math inline">|1.0 - 1.5| = 0.5</span>，<span class="math inline">|1.0 - 4.0| = 3.0 \implies</span> 指派至群 1。 * <span class="math inline">x_2 = 2.0</span>：<span class="math inline">|2.0 - 1.5| = 0.5</span>，<span class="math inline">|2.0 - 4.0| = 2.0 \implies</span> 指派至群 1。 * <span class="math inline">x_3 = 6.0</span>：<span class="math inline">|6.0 - 1.5| = 4.5</span>，<span class="math inline">|6.0 - 4.0| = 2.0 \implies</span> 指派至群 2。 * <span class="math inline">x_4 = 7.0</span>：<span class="math inline">|7.0 - 1.5| = 5.5</span>，<span class="math inline">|7.0 - 4.0| = 3.0 \implies</span> 指派至群 2。 新分群為：<span class="math inline">C_1 = \{1.0, 2.0\}</span>，<span class="math inline">C_2 = \{6.0, 7.0\}</span>。</p>
+</section>
+<section id="第-2-步更新質心" class="level4" data-number="12.4.1.2">
+<h4 data-number="12.4.1.2" class="anchored" data-anchor-id="第-2-步更新質心"><span class="header-section-number">12.4.1.2</span> 第 2 步：更新質心</h4>
+<ul>
+<li><span class="math inline">\mu_1^{(1)} = \frac{1.0 + 2.0}{2} = \mathbf{1.5}</span></li>
+<li><span class="math inline">\mu_2^{(1)} = \frac{6.0 + 7.0}{2} = \mathbf{6.5}</span></li>
+</ul>
+</section>
+<section id="第-3-步再次指派" class="level4" data-number="12.4.1.3">
+<h4 data-number="12.4.1.3" class="anchored" data-anchor-id="第-3-步再次指派"><span class="header-section-number">12.4.1.3</span> 第 3 步：再次指派</h4>
+<p>依據新質心 <span class="math inline">\mu_1 = 1.5, \mu_2 = 6.5</span> 重新檢查，分群劃分維持 <span class="math inline">C_1 = \{1, 2\}, C_2 = \{6, 7\}</span> 不變。 演算法在第 1 步更新後<strong>立即達成收斂</strong>！ 收斂時群內平方和為： <span class="math display">
+\mathrm{WCSS} = (1 - 1.5)^2 + (2 - 1.5)^2 + (6 - 6.5)^2 + (7 - 6.5)^2 = 0.25 + 0.25 + 0.25 + 0.25 = \mathbf{1.000}
+</span></p>
+<hr>
+</section>
+</section>
+<section id="gmm-之-em-演算法單步手算" class="level3" data-number="12.4.2">
+<h3 data-number="12.4.2" class="anchored" data-anchor-id="gmm-之-em-演算法單步手算"><span class="header-section-number">12.4.2</span> 12.3.2 GMM 之 EM 演算法單步手算</h3>
+<p>考慮 2 筆 1D 樣本：<span class="math inline">x_1 = 0, x_2 = 2</span>。 二成分高斯混合模型（<span class="math inline">K=2</span>），設當前初始參數為： * 權重：<span class="math inline">\pi_1 = 0.5, \pi_2 = 0.5</span> * 均值：<span class="math inline">\mu_1 = 0, \mu_2 = 1</span> * 方差：<span class="math inline">\sigma_1^2 = 1, \sigma_2^2 = 1</span></p>
+<section id="e-步計算後驗責任度-gamma_ik" class="level4" data-number="12.4.2.1">
+<h4 data-number="12.4.2.1" class="anchored" data-anchor-id="e-步計算後驗責任度-gamma_ik"><span class="header-section-number">12.4.2.1</span> E-步：計算後驗責任度 <span class="math inline">\gamma_{ik}</span></h4>
+<p>利用一維高斯密度 <span class="math inline">\mathcal{N}(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2}\right)</span>（<span class="math inline">\frac{1}{\sqrt{2\pi}} \approx 0.3989</span>）： * 對樣本 1 (<span class="math inline">x_1 = 0</span>)： <span class="math display">
+  \mathcal{N}(0 \mid 0, 1) = 0.3989 \cdot e^0 = 0.3989
+  </span> <span class="math display">
+  \mathcal{N}(0 \mid 1, 1) = 0.3989 \cdot e^{-0.5} \approx 0.3989 \times 0.6065 = 0.2420
+  </span> 責任度： <span class="math display">
+  \gamma_{11} = \frac{0.5 \times 0.3989}{0.5 \times 0.3989 + 0.5 \times 0.2420} = \frac{0.3989}{0.6409} \approx \mathbf{0.6224}, \quad \gamma_{12} = 1 - 0.6224 = \mathbf{0.3776}
+  </span> * 對樣本 2 (<span class="math inline">x_2 = 2</span>)： <span class="math display">
+  \mathcal{N}(2 \mid 0, 1) = 0.3989 \cdot e^{-2} \approx 0.3989 \times 0.1353 = 0.0540
+  </span> <span class="math display">
+  \mathcal{N}(2 \mid 1, 1) = 0.3989 \cdot e^{-0.5} = 0.2420
+  </span> 責任度： <span class="math display">
+  \gamma_{21} = \frac{0.5 \times 0.0540}{0.5 \times 0.0540 + 0.5 \times 0.2420} = \frac{0.0540}{0.2960} \approx \mathbf{0.1824}, \quad \gamma_{22} = 1 - 0.1824 = \mathbf{0.8176}
+  </span></p>
+</section>
+<section id="m-步更新參數" class="level4" data-number="12.4.2.2">
+<h4 data-number="12.4.2.2" class="anchored" data-anchor-id="m-步更新參數"><span class="header-section-number">12.4.2.2</span> M-步：更新參數</h4>
+<ol type="1">
+<li>有效樣本數： <span class="math display">
+N_1 = \gamma_{11} + \gamma_{21} = 0.6224 + 0.1824 = 0.8048
+</span> <span class="math display">
+N_2 = \gamma_{12} + \gamma_{22} = 0.3776 + 0.8176 = 1.1952
+</span></li>
+<li>更新權重： <span class="math display">
+\pi_1^{(1)} = \frac{0.8048}{2} = \mathbf{0.4024}, \quad \pi_2^{(1)} = \frac{1.1952}{2} = \mathbf{0.5976}
+</span></li>
+<li>更新均值： <span class="math display">
+\mu_1^{(1)} = \frac{\gamma_{11} x_1 + \gamma_{21} x_2}{N_1} = \frac{0.6224(0) + 0.1824(2)}{0.8048} = \frac{0.3648}{0.8048} \approx \mathbf{0.4533}
+</span> <span class="math display">
+\mu_2^{(1)} = \frac{\gamma_{12} x_1 + \gamma_{22} x_2}{N_2} = \frac{0.3776(0) + 0.8176(2)}{1.1952} = \frac{1.6352}{1.1952} \approx \mathbf{1.3681}
+</span></li>
+</ol>
+<blockquote class="blockquote">
+<p>💡 <strong>數值洞察</strong>： 初始時 <span class="math inline">\mu_1 = 0, \mu_2 = 1</span>。經由一次 EM 迭代，群 2 的均值由 <span class="math inline">1.0</span> 被順暢吸引拉動至 <span class="math inline">1.3681</span>，群 1 均值被微調至 <span class="math inline">0.4533</span>，權重與方差亦隨之優化。這生動展示了軟責任度如何引導高斯球平滑流動。</p>
+</blockquote>
+<hr>
+</section>
+</section>
+</section>
+<section id="高斯混合模型gmm與-em-演算法之嚴格數學推導" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="高斯混合模型gmm與-em-演算法之嚴格數學推導"><span class="header-section-number">12.5</span> 12.4 高斯混合模型（GMM）與 EM 演算法之嚴格數學推導</h2>
+<p><span class="math inline">K</span>-Means 實質上隱含了兩個嚴苛的幾何假設： 1. 各分群的形狀必須是<strong>球狀（Spherical）</strong>的。 2. 各分群的<strong>方差尺度完全相等</strong>。</p>
+<p>當資料呈現橢圓傾斜拉伸（各維度共變異數非零）時，<span class="math inline">K</span>-Means 將徹底失效。此外，<span class="math inline">K</span>-Means 屬於<strong>硬分群（Hard Clustering）</strong>，無法表達模糊性。</p>
+<p><strong>高斯混合模型（Gaussian Mixture Models, GMM）</strong>採用機率生成模型： <span id="eq-ch12-gmm-density"><span class="math display">
+P(\boldsymbol{x}) = \sum_{k=1}^K \pi_k \mathcal{N}(\boldsymbol{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
+\tag{12.3}</span></span></p>
+<p>其中 <span class="math inline">\pi_k</span> 為混合權重先驗機率（<span class="math inline">\sum_{k=1}^K \pi_k = 1, \pi_k \ge 0</span>），<span class="math inline">\boldsymbol{\Sigma}_k</span> 為各群專屬的共變異數矩陣（允許任意橢圓朝向與尺寸）。</p>
+<section id="不完全資料似然與-jensen-不等式" class="level3" data-number="12.5.1">
+<h3 data-number="12.5.1" class="anchored" data-anchor-id="不完全資料似然與-jensen-不等式"><span class="header-section-number">12.5.1</span> 12.4.1 不完全資料似然與 Jensen 不等式</h3>
+<p>設觀測資料為 <span class="math inline">\boldsymbol{X} = \{\boldsymbol{x}_1, \dots, \boldsymbol{x}_n\}</span>，未觀測到的隱變數為 <span class="math inline">\boldsymbol{Z} = \{\boldsymbol{z}_1, \dots, \boldsymbol{z}_n\}</span>，其中 <span class="math inline">\boldsymbol{z}_i \in \{1, \dots, K\}</span> 代表樣本 <span class="math inline">i</span> 來自第幾群。模型全體未知參數記為 <span class="math inline">\boldsymbol{\theta} = \{\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\}_{k=1}^K</span>。</p>
+<p>邊際對數似然函數為： <span class="math display">
+\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln P(\boldsymbol{x}_i \mid \boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta}) \right)
+</span></p>
+<p>引入關於隱變數的任意機率分佈 <span class="math inline">q_i(z_i)</span>（滿足 <span class="math inline">\sum_{k=1}^K q_i(k) = 1</span>），在對數符號內部進行分子分母同乘構造： <span class="math display">
+\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K q_i(k) \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right)
+</span></p>
+<p>由於自然對數函數 <span class="math inline">\ln(\cdot)</span> 是<strong>嚴格凹函數（Strictly Concave）</strong>，依據 <strong>Jensen 不等式</strong>（<span class="math inline">\ln \mathbb{E}[X] \ge \mathbb{E}[\ln X]</span>）： <span id="eq-ch12-elbo"><span class="math display">
+\ell(\boldsymbol{\theta}) \ge \sum_{i=1}^n \sum_{k=1}^K q_i(k) \ln \left( \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right) \triangleq \mathrm{ELBO}(q, \boldsymbol{\theta})
+\tag{12.4}</span></span></p>
+<p>右端這項泛函稱為<strong>證據下界（Evidence Lower Bound, ELBO）</strong>。</p>
+</section>
+<section id="e-步expectation-step與-m-步maximization-step" class="level3" data-number="12.5.2">
+<h3 data-number="12.5.2" class="anchored" data-anchor-id="e-步expectation-step與-m-步maximization-step"><span class="header-section-number">12.5.2</span> 12.4.2 E-步（Expectation Step）與 M-步（Maximization Step）</h3>
+<ol type="1">
+<li><strong>E-步</strong>：令下界緊貼對數似然，隱變數最優分佈即為<strong>後驗責任度（Responsibility）</strong>： <span id="eq-ch12-responsibility"><span class="math display">
+\gamma_{ik} \triangleq P(z_i = k \mid \boldsymbol{x}_i, \boldsymbol{\theta}^{(t)}) = \frac{\pi_k^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_k^{(t)}, \boldsymbol{\Sigma}_k^{(t)})}{\sum_{l=1}^K \pi_l^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_l^{(t)}, \boldsymbol{\Sigma}_l^{(t)})}
+\tag{12.5}</span></span></li>
+<li><strong>M-步</strong>：極大化下界，得到閉式解析更新式：
+<ul>
+<li>有效樣本量：<span class="math inline">N_k \triangleq \sum_{i=1}^n \gamma_{ik}</span></li>
+<li>先驗混合權重：<span class="math inline">\pi_k^{(t+1)} = \frac{N_k}{n}</span></li>
+<li>均值向量：<span class="math inline">\boldsymbol{\mu}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} \boldsymbol{x}_i</span></li>
+<li>共變異數矩陣：<span class="math inline">\boldsymbol{\Sigma}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} (\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})(\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})^\top</span></li>
+</ul></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="雙軌實務實驗室k-means階層式分群與-gmm-實戰" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="雙軌實務實驗室k-means階層式分群與-gmm-實戰"><span class="header-section-number">12.6</span> 12.5 雙軌實務實驗室：K-Means、階層式分群與 GMM 實戰</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">🟦 R 語言雙軌實作</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">🟨 Python 雙軌實作</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::kmeans, hclust 階層分群與 cluster::silhouette 輪廓分析</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, cluster, ISLR2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用 USArrests 資料集 (美國各州犯罪率數據)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(USArrests)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 標準化資料 (以消除不同測量單位之偏差)</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>X_arrests <span class="ot">&lt;-</span> <span class="fu">scale</span>(USArrests)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. K-Means 分群實戰 (測試 K = 3)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>km_out <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(X_arrests, <span class="at">centers =</span> <span class="dv">3</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== K-Means (K=3) 分群結果 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"各群樣本數量: "</span>, km_out<span class="sc">$</span>size, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"群間平方和佔總平方和比例: %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (km_out<span class="sc">$</span>betweenss <span class="sc">/</span> km_out<span class="sc">$</span>totss) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算並輸出平均輪廓係數 (Silhouette Score)</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>sil_km <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(km_out<span class="sc">$</span>cluster, <span class="fu">dist</span>(X_arrests))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"K-Means 平均輪廓係數: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(sil_km[, <span class="st">"sil_width"</span>])))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 階層式分群實戰 (完全鏈結法 Complete Linkage)</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>dist_mat <span class="ot">&lt;-</span> <span class="fu">dist</span>(X_arrests)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>hc_complete <span class="ot">&lt;-</span> <span class="fu">hclust</span>(dist_mat, <span class="at">method =</span> <span class="st">"complete"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 切割樹狀圖為 3 個群 (cutree)</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>hc_clusters <span class="ot">&lt;-</span> <span class="fu">cutree</span>(hc_complete, <span class="at">k =</span> <span class="dv">3</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>sil_hc <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(hc_clusters, dist_mat)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== 階層式分群 (Complete Linkage, K=3) ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"階層式分群平均輪廓係數: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(sil_hc[, <span class="st">"sil_width"</span>])))</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"兩分群法交叉對比混淆表:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(<span class="at">KMeans =</span> km_out<span class="sc">$</span>cluster, <span class="at">Hierarchical =</span> hc_clusters))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：KMeans, AgglomerativeClustering 與 GMM 軟分群對比</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans, AgglomerativeClustering</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.mixture <span class="im">import</span> GaussianMixture</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備橢圓傾斜結構的雙群分佈 (K-Means 難以處理的幾何形態)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>n_per_cluster <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 群 1: 橢圓傾斜分佈</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">2.5</span>, <span class="fl">1.8</span>], [<span class="fl">1.8</span>, <span class="fl">1.5</span>]], n_per_cluster)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 群 2: 獨立高斯分佈</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">4</span>, <span class="dv">4</span>], [[<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">0.6</span>], [<span class="op">-</span><span class="fl">0.6</span>, <span class="fl">1.0</span>]], n_per_cluster)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2])</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合 K-Means</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">2</span>, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit(X_scaled)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>sil_km <span class="op">=</span> silhouette_score(X_scaled, kmeans.labels_)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合凝聚式階層分群 (Complete Linkage)</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>agg <span class="op">=</span> AgglomerativeClustering(n_clusters<span class="op">=</span><span class="dv">2</span>, linkage<span class="op">=</span><span class="st">'complete'</span>).fit(X_scaled)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>sil_agg <span class="op">=</span> silhouette_score(X_scaled, agg.labels_)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合高斯混合模型 (GMM - EM 演算法)</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>gmm <span class="op">=</span> GaussianMixture(n_components<span class="op">=</span><span class="dv">2</span>, covariance_type<span class="op">=</span><span class="st">'full'</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit(X_scaled)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>gmm_labels <span class="op">=</span> gmm.predict(X_scaled)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>gmm_probs <span class="op">=</span> gmm.predict_proba(X_scaled) <span class="co"># 軟分群責任度</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"K-Means 輪廓係數: </span><span class="sc">{</span>sil_km<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"階層分群 (Complete) 輪廓係數: </span><span class="sc">{</span>sil_agg<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GMM EM 演算法收斂迭代次數: </span><span class="sc">{</span>gmm<span class="sc">.</span>n_iter_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GMM 估計先驗混合權重: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(gmm.weights_, <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢視邊界點的軟分群後驗機率模糊性</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>uncertain_points <span class="op">=</span> np.where((gmm_probs[:, <span class="dv">0</span>] <span class="op">&gt;</span> <span class="fl">0.4</span>) <span class="op">&amp;</span> (gmm_probs[:, <span class="dv">0</span>] <span class="op">&lt;</span> <span class="fl">0.6</span>))[<span class="dv">0</span>]</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">處於兩群模糊邊界處之樣本數 (0.4 &lt; P &lt; 0.6): </span><span class="sc">{</span><span class="bu">len</span>(uncertain_points)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(uncertain_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    sample_idx <span class="op">=</span> uncertain_points[<span class="dv">0</span>]</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"範例邊界點 </span><span class="sc">{</span>sample_idx<span class="sc">}</span><span class="ss"> 的軟分群機率指派: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(gmm_probs[sample_idx], <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="課後全方位習題庫10-題" class="level2" data-number="12.7">
+<h2 data-number="12.7" class="anchored" data-anchor-id="課後全方位習題庫10-題"><span class="header-section-number">12.7</span> 12.6 課後全方位習題庫（10 題）</h2>
+<section id="一觀念理解與數學證明5-題" class="level3" data-number="12.7.1">
+<h3 data-number="12.7.1" class="anchored" data-anchor-id="一觀念理解與數學證明5-題"><span class="header-section-number">12.7.1</span> 一、觀念理解與數學證明（5 題）</h3>
+<ol type="1">
+<li><strong>群內兩兩平方和與質心距離恆等式證明</strong>： 嚴格推導恆等式 <span class="math inline">\frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2</span>，並說明為何最小化 WCSS 等價於最小化各點到質心的幾何距離平方。</li>
+<li><strong>K-Means 局部極小值之幾何反例構建</strong>： 在二維平面上構造一組包含 4 個對稱分佈頂點的數據點集，證明存在某個初始質心指派，使得 Lloyd 演算法收斂至一個非全域最優的局部次優解，並計算其與全域最優解的 WCSS 差距。</li>
+<li><strong>輪廓係數的邊界取值證明</strong>： 由式 (<a href="#eq-ch12-silhouette" class="quarto-xref"><span>12.2</span></a>) 證明：單點輪廓係數 <span class="math inline">s(i)</span> 嚴格有界於 <span class="math inline">[-1, 1]</span>。當某群僅包含單一孤立樣本點（<span class="math inline">|C_k| = 1</span>）時，輪廓係數在統計學上應如何定義以避免分母為零？</li>
+<li><strong>階層式分群樹狀圖高度與距離單調性</strong>： 證明在超度量空間（Ultrametric Space）下，完全鏈結法（Complete Linkage）與平均鏈結法（Average Linkage）生成的樹狀圖合併高度必單調不減；並給出反例說明質心鏈結法（Centroid Linkage）何時會產生高度反轉（Inversion）。</li>
+<li><strong>GMM 在零方差極限下退化為 K-Means 證明</strong>： 設 GMM 的各高斯成分共變異數矩陣為 <span class="math inline">\boldsymbol{\Sigma}_k = \sigma^2 \boldsymbol{I}</span>，且權重相等 <span class="math inline">\pi_k = 1/K</span>。證明當 <span class="math inline">\sigma^2 \to 0</span> 時，責任度 <span class="math inline">\gamma_{ik}</span> 收斂至指示函數 <span class="math inline">\mathbb{I}(k = \arg\min_l \|\boldsymbol{x}_i - \boldsymbol{\mu}_l\|^2)</span>，EM 演算法精確等價於 Lloyd 演算法。</li>
+</ol>
+</section>
+<section id="二程式實作與實務應用5-題" class="level3" data-number="12.7.2">
+<h3 data-number="12.7.2" class="anchored" data-anchor-id="二程式實作與實務應用5-題"><span class="header-section-number">12.7.2</span> 二、程式實作與實務應用（5 題）</h3>
+<ol start="6" type="1">
+<li><strong>手刻 K-Means++ 初始化演算法</strong>： 僅使用 NumPy 實作 <span class="math inline">K</span>-Means++ 質心採樣邏輯：第 1 個質心均勻隨機選取，後續質心以機率 <span class="math inline">P(\boldsymbol{x}) = \frac{D(\boldsymbol{x})^2}{\sum D(\boldsymbol{x}')^2}</span> 取樣。比較隨機初始化與 <span class="math inline">K</span>-Means++ 在 100 次隨機試驗中的收斂迭代次數與 WCSS 穩定性。</li>
+<li><strong>輪廓圖（Silhouette Plot）手繪視覺化</strong>： 使用 Python <code>matplotlib</code> 或 R <code>factoextra</code> 繪製標準輪廓分析橫向條形圖，顯示每個樣本在不同 <span class="math inline">K \in \{2, 3, 4, 5\}</span> 下的 <span class="math inline">s(i)</span> 排序分佈與群平均輪廓寬度，找出最優分群數。</li>
+<li><strong>DBSCAN 密度分群對比（克服任意形狀分群）</strong>： 生成雙環形（Concentric Circles）與雙月形非凸幾何數據。對比 <span class="math inline">K</span>-Means、階層分群與 DBSCAN（Density-Based Spatial Clustering of Applications with Noise）的分群效果，展示密度可達性對複雜形狀的識別能力。</li>
+<li><strong>影像色彩量化（Color Quantization with K-Means）</strong>： 載入一張高解析度全彩照片（RGB 24-bit，1600 萬色），將所有像素視為三維空間中的資料點，使用 <span class="math inline">K</span>-Means（<span class="math inline">K=16, 64</span>）進行色彩壓縮與聚類，並重新渲染輸出壓縮影像。</li>
+<li><strong>貝氏資訊準則（BIC）挑選 GMM 最優成分數與共變異數類型</strong>： 對真實多維數據（如 Wine 或 Iris），在共變異數結構（<code>spherical</code>, <code>diag</code>, <code>tied</code>, <code>full</code>）與成分數 <span class="math inline">K \in [1, 8]</span> 間進行網格搜尋，繪製 BIC 曲線並挑選出最優統計模型。</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/ch11_pca_manifold.html" class="pagination-link" aria-label="主成分分析與流形學習">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">主成分分析與流形學習</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/ch13_modern_frontiers.html" class="pagination-link" aria-label="現代前沿：深度學習、分佈偏移與可解釋性">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># 分群演算法與混合模型（EM 演算法） {#sec-ch12}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## 本章導讀</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>在探索性資料分析（EDA）與非監督學習中，**分群分析（Clustering）**旨在將資料集劃分為若干個有意義的子群體（Clusters），使得**「同一群體內的樣本高度相似，不同群體間的樣本高度相異」**。分群廣泛應用於顧客市場區隔、基因表現模式識別、影像語意分割與異常交易偵測。</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>然而，如何數學化「相似度」？如何客觀決定分群數量 $K$？當樣本與群組的隸屬關係不是非黑即白，而是以機率形式存在時，又該如何建模？</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>本章將從經典的 **$K$-Means（$K$-平均演算法）** 出發，給出其單調收斂性與輪廓係數（Silhouette Coefficient）的嚴格證明；對比自底向上的**階層式分群（Hierarchical Clustering）**與四種鏈結法之差異；提供一組包含了 $K$-Means 與 GMM EM 演算法手把手數值推演範例；深入推導軟分群的極致——**高斯混合模型（GMM）**；嚴格給出統計學中最具美感的演算法之一：**期望最大化演算法（Expectation-Maximization, EM Algorithm）**基於 Jensen 不等式的下界推導；最後在 R 與 Python 雙環境中進行全流程實戰。</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.1 $K$-Means 分群演算法與收斂性證明</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.1.1 最佳化目標函數</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>設資料集為 $\mathcal{D} = <span class="sc">\{</span>\boldsymbol{x}_1, \boldsymbol{x}_2, \dots, \boldsymbol{x}_n<span class="sc">\}</span>$，欲劃分為 $K$ 個互斥的子集 $C_1, C_2, \dots, C_K$。</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>$K$-Means 的核心目標是最小化**群內平方和（Within-Cluster Sum of Squares, WCSS）**：</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>\min_{C_1, \dots, C_K} \sum_{k=1}^K \mathrm{WCSS}(C_k) = \min_{C_1, \dots, C_K} \sum_{k=1}^K \frac{1}{|C_k|} \sum_{i, i' \in C_k} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{x}_{i'}<span class="sc">\|</span>_2^2</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>由基本代數恆等式，群內兩兩樣本距離平方和恰好等於樣本到該群質心（Centroid）$\boldsymbol{\mu}_k$ 距離平方和的兩倍：</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>\frac{1}{|C_k|} \sum_{i, i' \in C_k} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_k<span class="sc">\|</span>_2^2</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>其中 $\boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum_{i \in C_k} \boldsymbol{x}_i$ 為群 $k$ 的樣本平均向量。</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>因此，$K$-Means 的標準目標函數改寫為：</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>J(C_1, \dots, C_K, \boldsymbol{\mu}_1, \dots, \boldsymbol{\mu}_K) = \sum_{k=1}^K \sum_{i \in C_k} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_k<span class="sc">\|</span>_2^2</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch12-kmeans-objective}</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.1.2 Lloyd 演算法與單調收斂性證明</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>Stuart Lloyd (1957) 提出了經典的交替最佳化演算法（Lloyd's Algorithm）：</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**初始化**：隨機指定 $K$ 個初始質心 $\boldsymbol{\mu}_1^{(0)}, \dots, \boldsymbol{\mu}_K^{(0)}$。</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**指派步（Assignment Step）**：</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>   固定質心 $\boldsymbol{\mu}_k$，將每個樣本點指派給歐氏距離最近的質心所代表的群：</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>   C_k^{(t)} = \left<span class="sc">\{</span> \boldsymbol{x}_i \;\middle|\; <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t)}<span class="sc">\|</span>_2 \le <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_l^{(t)}<span class="sc">\|</span>_2, \, \forall l \neq k \right<span class="sc">\}</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**更新步（Update Step）**：</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>   固定分群劃分 $C_k^{(t)}$，重新計算每個群的質心：</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>   \boldsymbol{\mu}_k^{(t+1)} = \frac{1}{|C_k^{(t)}|} \sum_{i \in C_k^{(t)}} \boldsymbol{x}_i</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>重複步驟 2 與 3，直至質心位置不再改變或變化小於收斂容忍度。</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 單調收斂性定理證明：</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在指派步中**：對於任意樣本 $\boldsymbol{x}_i$，將其歸入最近質心顯然使 $<span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_k<span class="sc">\|</span>_2^2$ 達到最小，故目標函數值 $J$ 單調不增。</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在更新步中**：給定固定群 $C_k$，對 $\boldsymbol{\mu}_k$ 求導：$\nabla_{\boldsymbol{\mu}_k} \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2 = -2\sum_{i \in C_k}(\boldsymbol{x}_i - \boldsymbol{\mu}_k) = \boldsymbol{0} \implies \boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum \boldsymbol{x}_i$。此解精確為一元二次凸函數的全局最小值，故目標函數值 $J$ 再次單調不增。</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>目標函數 $J \ge 0$ 恆有下界，且有限樣本的可能劃分方式最多只有 $K^n$ 種。</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**結論**：Lloyd 演算法**必在有限步內收斂至局部極小值（Local Minimum）** $\quad \blacksquare$</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **⚠️ 注意**：$K$-Means 只能保證收斂至局部最優，強烈依賴初始質心的位置。現代工程實務中，一律採用 **$K$-Means++** 初始化法（依據點到既有質心的最短距離平方比例，以機率進行分段抽樣），在理論上保證逼近全域最優解的預期誤差界為 $\mathcal{O}(\log K)$。</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.1.3 評估群數 $K$：輪廓係數（Silhouette Coefficient）</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>肘部法（Elbow Method）尋找 WCSS 曲線轉折點往往過於主觀。Rousseeuw (1987) 提出了**輪廓係數（Silhouette Coefficient）**：</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>對於任意樣本 $i \in C_k$：</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**群內凝聚度（Intra-cluster Dissimilarity）**：樣本 $i$ 到同群其他樣本的平均距離：</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>   a(i) = \frac{1}{|C_k| - 1} \sum_{j \in C_k, j \neq i} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{x}_j<span class="sc">\|</span>_2</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**群間分離度（Nearest-cluster Dissimilarity）**：樣本 $i$ 到最近相鄰群 $C_l$（$l \neq k$）中所有樣本的平均距離：</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>   b(i) = \min_{l \neq k} \frac{1}{|C_l|} \sum_{j \in C_l} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{x}_j<span class="sc">\|</span>_2</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**單點輪廓係數**：</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>   s(i) \triangleq \frac{b(i) - a(i)}{\max(a(i), b(i))} \in <span class="co">[</span><span class="ot">-1, 1</span><span class="co">]</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch12-silhouette}</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>若 $s(i) \approx 1$：$a(i) \ll b(i)$，樣本與所屬群高度緊湊，且遠離其他群（分群極佳）。</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>若 $s(i) \approx 0$：樣本坐落在兩個群的交界處。</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>若 $s(i) &lt; 0$：$a(i) &gt; b(i)$，樣本甚至離鄰近群更近，說明該樣本被錯誤劃分！</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**平均輪廓係數（Average Silhouette Score）**取得最大值所對應的 $K$，即為最優群數。</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.2 階層式分群（Hierarchical Clustering）</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>$K$-Means 必須預先人為指定群數 $K$。**階層式分群（Hierarchical Clustering）**則打破此限制，建構一棵自底向上的**樹狀圖（Dendrogram）**。</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.2.1 凝聚式分群流程（Agglomerative）</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>初始階段：將每一個樣本點視為一個獨立的單點群（共有 $n$ 個群）。</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>計算所有群兩兩之間的相異度矩陣。</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>將相異度最小（最接近）的兩個群合併為一個新群。</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>重複步驟 2 與 3，直到全體樣本最終合併為單一根節點群。</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.2.2 四大鏈結法（Linkage Methods）對比</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>設有兩群體 $A$ 與 $B$，如何度量兩個集合之間的距離 $d(A, B)$？</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 鏈結法 (Linkage) <span class="pp">|</span> 數學定義 $d(A, B)$ <span class="pp">|</span> 特性與幾何形態 <span class="pp">|</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **完全鏈結 (Complete)** <span class="pp">|</span> $\max_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} <span class="sc">\|</span>\boldsymbol{x} - \boldsymbol{y}<span class="sc">\|</span>$ <span class="pp">|</span> 最長距離。產生大小均勻、緊密球狀的群（最常用）。 <span class="pp">|</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **單一鏈結 (Single)** | $\min_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|$ | 最短距離。易發生**鏈狀效應（Chaining）**，形成細長散落群。 <span class="pp">|</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **平均鏈結 (Average)** <span class="pp">|</span> $\frac{1}{<span class="sc">\|</span>A<span class="sc">\|</span> <span class="sc">\|</span>B<span class="sc">\|</span>} \sum_{\boldsymbol{x} \in A} \sum_{\boldsymbol{y} \in B} <span class="sc">\|</span>\boldsymbol{x} - \boldsymbol{y}<span class="sc">\|</span>$ <span class="pp">|</span> 平均距離。折衷平衡，受離群值影響較小。 <span class="pp">|</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **質心鏈結 (Centroid)** | $\|\boldsymbol{\mu}_A - \boldsymbol{\mu}_B\|$ | 質心距離。樹狀圖可能發生**倒置（Inversion）**跳躍。 <span class="pp">|</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.3 手把手數值推演：K-Means 迭代與 GMM EM 演算法手算</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.3.1 K-Means 演算法單步手算</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>考慮 4 筆 1D 樣本：$x_1 = 1.0, x_2 = 2.0, x_3 = 6.0, x_4 = 7.0$。</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>欲劃分為 $K=2$ 個群。</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>初始質心設定為：$\mu_1^{(0)} = 1.5, \mu_2^{(0)} = 4.0$。</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 第 1 步：指派樣本至最近質心</span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>計算各樣本到質心的距離：</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$x_1 = 1.0$：$|1.0 - 1.5| = 0.5$，$|1.0 - 4.0| = 3.0 \implies$ 指派至群 1。</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$x_2 = 2.0$：$|2.0 - 1.5| = 0.5$，$|2.0 - 4.0| = 2.0 \implies$ 指派至群 1。</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$x_3 = 6.0$：$|6.0 - 1.5| = 4.5$，$|6.0 - 4.0| = 2.0 \implies$ 指派至群 2。</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$x_4 = 7.0$：$|7.0 - 1.5| = 5.5$，$|7.0 - 4.0| = 3.0 \implies$ 指派至群 2。</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>新分群為：$C_1 = <span class="sc">\{</span>1.0, 2.0<span class="sc">\}</span>$，$C_2 = <span class="sc">\{</span>6.0, 7.0<span class="sc">\}</span>$。</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 第 2 步：更新質心</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mu_1^{(1)} = \frac{1.0 + 2.0}{2} = \mathbf{1.5}$</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mu_2^{(1)} = \frac{6.0 + 7.0}{2} = \mathbf{6.5}$</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 第 3 步：再次指派</span></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>依據新質心 $\mu_1 = 1.5, \mu_2 = 6.5$ 重新檢查，分群劃分維持 $C_1 = <span class="sc">\{</span>1, 2<span class="sc">\}</span>, C_2 = <span class="sc">\{</span>6, 7<span class="sc">\}</span>$ 不變。</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>演算法在第 1 步更新後**立即達成收斂**！</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>收斂時群內平方和為：</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>\mathrm{WCSS} = (1 - 1.5)^2 + (2 - 1.5)^2 + (6 - 6.5)^2 + (7 - 6.5)^2 = 0.25 + 0.25 + 0.25 + 0.25 = \mathbf{1.000}</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.3.2 GMM 之 EM 演算法單步手算</span></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>考慮 2 筆 1D 樣本：$x_1 = 0, x_2 = 2$。</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>二成分高斯混合模型（$K=2$），設當前初始參數為：</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>權重：$\pi_1 = 0.5, \pi_2 = 0.5$</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>均值：$\mu_1 = 0, \mu_2 = 1$</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>方差：$\sigma_1^2 = 1, \sigma_2^2 = 1$</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="fu">#### E-步：計算後驗責任度 $\gamma_{ik}$</span></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>利用一維高斯密度 $\mathcal{N}(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2}\right)$（$\frac{1}{\sqrt{2\pi}} \approx 0.3989$）：</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>對樣本 1 ($x_1 = 0$)：</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>  \mathcal{N}(0 \mid 0, 1) = 0.3989 \cdot e^0 = 0.3989</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>  \mathcal{N}(0 \mid 1, 1) = 0.3989 \cdot e^{-0.5} \approx 0.3989 \times 0.6065 = 0.2420</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>  責任度：</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>  \gamma_{11} = \frac{0.5 \times 0.3989}{0.5 \times 0.3989 + 0.5 \times 0.2420} = \frac{0.3989}{0.6409} \approx \mathbf{0.6224}, \quad \gamma_{12} = 1 - 0.6224 = \mathbf{0.3776}</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>對樣本 2 ($x_2 = 2$)：</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>  \mathcal{N}(2 \mid 0, 1) = 0.3989 \cdot e^{-2} \approx 0.3989 \times 0.1353 = 0.0540</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>  \mathcal{N}(2 \mid 1, 1) = 0.3989 \cdot e^{-0.5} = 0.2420</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>  責任度：</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>  \gamma_{21} = \frac{0.5 \times 0.0540}{0.5 \times 0.0540 + 0.5 \times 0.2420} = \frac{0.0540}{0.2960} \approx \mathbf{0.1824}, \quad \gamma_{22} = 1 - 0.1824 = \mathbf{0.8176}</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="fu">#### M-步：更新參數</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>有效樣本數：</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>   N_1 = \gamma_{11} + \gamma_{21} = 0.6224 + 0.1824 = 0.8048</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>   N_2 = \gamma_{12} + \gamma_{22} = 0.3776 + 0.8176 = 1.1952</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>更新權重：</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>   \pi_1^{(1)} = \frac{0.8048}{2} = \mathbf{0.4024}, \quad \pi_2^{(1)} = \frac{1.1952}{2} = \mathbf{0.5976}</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>更新均值：</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>   \mu_1^{(1)} = \frac{\gamma_{11} x_1 + \gamma_{21} x_2}{N_1} = \frac{0.6224(0) + 0.1824(2)}{0.8048} = \frac{0.3648}{0.8048} \approx \mathbf{0.4533}</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>   \mu_2^{(1)} = \frac{\gamma_{12} x_1 + \gamma_{22} x_2}{N_2} = \frac{0.3776(0) + 0.8176(2)}{1.1952} = \frac{1.6352}{1.1952} \approx \mathbf{1.3681}</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **數值洞察**：</span></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 初始時 $\mu_1 = 0, \mu_2 = 1$。經由一次 EM 迭代，群 2 的均值由 $1.0$ 被順暢吸引拉動至 $1.3681$，群 1 均值被微調至 $0.4533$，權重與方差亦隨之優化。這生動展示了軟責任度如何引導高斯球平滑流動。</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.4 高斯混合模型（GMM）與 EM 演算法之嚴格數學推導</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>$K$-Means 實質上隱含了兩個嚴苛的幾何假設：</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>各分群的形狀必須是**球狀（Spherical）**的。</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>各分群的**方差尺度完全相等**。</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>當資料呈現橢圓傾斜拉伸（各維度共變異數非零）時，$K$-Means 將徹底失效。此外，$K$-Means 屬於**硬分群（Hard Clustering）**，無法表達模糊性。</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>**高斯混合模型（Gaussian Mixture Models, GMM）**採用機率生成模型：</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>P(\boldsymbol{x}) = \sum_{k=1}^K \pi_k \mathcal{N}(\boldsymbol{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch12-gmm-density}</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>其中 $\pi_k$ 為混合權重先驗機率（$\sum_{k=1}^K \pi_k = 1, \pi_k \ge 0$），$\boldsymbol{\Sigma}_k$ 為各群專屬的共變異數矩陣（允許任意橢圓朝向與尺寸）。</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.4.1 不完全資料似然與 Jensen 不等式</span></span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>設觀測資料為 $\boldsymbol{X} = <span class="sc">\{</span>\boldsymbol{x}_1, \dots, \boldsymbol{x}_n\}$，未觀測到的隱變數為 $\boldsymbol{Z} = \{\boldsymbol{z}_1, \dots, \boldsymbol{z}_n\}$，其中 $\boldsymbol{z}_i \in \{1, \dots, K\}$ 代表樣本 $i$ 來自第幾群。模型全體未知參數記為 $\boldsymbol{\theta} = \{\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\}_{k=1}^K$。</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>邊際對數似然函數為：</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln P(\boldsymbol{x}_i \mid \boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta}) \right)</span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>引入關於隱變數的任意機率分佈 $q_i(z_i)$（滿足 $\sum_{k=1}^K q_i(k) = 1$），在對數符號內部進行分子分母同乘構造：</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K q_i(k) \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right)</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>由於自然對數函數 $\ln(\cdot)$ 是**嚴格凹函數（Strictly Concave）**，依據 **Jensen 不等式**（$\ln \mathbb{E}<span class="co">[</span><span class="ot">X</span><span class="co">]</span> \ge \mathbb{E}<span class="co">[</span><span class="ot">\ln X</span><span class="co">]</span>$）：</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\theta}) \ge \sum_{i=1}^n \sum_{k=1}^K q_i(k) \ln \left( \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right) \triangleq \mathrm{ELBO}(q, \boldsymbol{\theta})</span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch12-elbo}</span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>右端這項泛函稱為**證據下界（Evidence Lower Bound, ELBO）**。</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="fu">### 12.4.2 E-步（Expectation Step）與 M-步（Maximization Step）</span></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**E-步**：令下界緊貼對數似然，隱變數最優分佈即為**後驗責任度（Responsibility）**：</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>   \gamma_{ik} \triangleq P(z_i = k \mid \boldsymbol{x}_i, \boldsymbol{\theta}^{(t)}) = \frac{\pi_k^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_k^{(t)}, \boldsymbol{\Sigma}_k^{(t)})}{\sum_{l=1}^K \pi_l^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_l^{(t)}, \boldsymbol{\Sigma}_l^{(t)})}</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch12-responsibility}</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**M-步**：極大化下界，得到閉式解析更新式：</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>有效樣本量：$N_k \triangleq \sum_{i=1}^n \gamma_{ik}$</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>先驗混合權重：$\pi_k^{(t+1)} = \frac{N_k}{n}$</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>均值向量：$\boldsymbol{\mu}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} \boldsymbol{x}_i$</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>共變異數矩陣：$\boldsymbol{\Sigma}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} (\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})(\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})^\top$</span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.5 雙軌實務實驗室：K-Means、階層式分群與 GMM 實戰</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::kmeans, hclust 階層分群與 cluster::silhouette 輪廓分析</span></span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, cluster, ISLR2</span></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用 USArrests 資料集 (美國各州犯罪率數據)</span></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(USArrests)</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="co"># 標準化資料 (以消除不同測量單位之偏差)</span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a>X_arrests <span class="ot">&lt;-</span> <span class="fu">scale</span>(USArrests)</span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. K-Means 分群實戰 (測試 K = 3)</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>km_out <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(X_arrests, <span class="at">centers =</span> <span class="dv">3</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== K-Means (K=3) 分群結果 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"各群樣本數量: "</span>, km_out<span class="sc">$</span>size, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"群間平方和佔總平方和比例: %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (km_out<span class="sc">$</span>betweenss <span class="sc">/</span> km_out<span class="sc">$</span>totss) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算並輸出平均輪廓係數 (Silhouette Score)</span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>sil_km <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(km_out<span class="sc">$</span>cluster, <span class="fu">dist</span>(X_arrests))</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"K-Means 平均輪廓係數: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(sil_km[, <span class="st">"sil_width"</span>])))</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 階層式分群實戰 (完全鏈結法 Complete Linkage)</span></span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>dist_mat <span class="ot">&lt;-</span> <span class="fu">dist</span>(X_arrests)</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>hc_complete <span class="ot">&lt;-</span> <span class="fu">hclust</span>(dist_mat, <span class="at">method =</span> <span class="st">"complete"</span>)</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="co"># 切割樹狀圖為 3 個群 (cutree)</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>hc_clusters <span class="ot">&lt;-</span> <span class="fu">cutree</span>(hc_complete, <span class="at">k =</span> <span class="dv">3</span>)</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>sil_hc <span class="ot">&lt;-</span> <span class="fu">silhouette</span>(hc_clusters, dist_mat)</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== 階層式分群 (Complete Linkage, K=3) ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"階層式分群平均輪廓係數: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(sil_hc[, <span class="st">"sil_width"</span>])))</span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"兩分群法交叉對比混淆表:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(<span class="at">KMeans =</span> km_out<span class="sc">$</span>cluster, <span class="at">Hierarchical =</span> hc_clusters))</span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：KMeans, AgglomerativeClustering 與 GMM 軟分群對比</span></span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans, AgglomerativeClustering</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.mixture <span class="im">import</span> GaussianMixture</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> silhouette_score</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備橢圓傾斜結構的雙群分佈 (K-Means 難以處理的幾何形態)</span></span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>n_per_cluster <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="co"># 群 1: 橢圓傾斜分佈</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">2.5</span>, <span class="fl">1.8</span>], [<span class="fl">1.8</span>, <span class="fl">1.5</span>]], n_per_cluster)</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="co"># 群 2: 獨立高斯分佈</span></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">4</span>, <span class="dv">4</span>], [[<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">0.6</span>], [<span class="op">-</span><span class="fl">0.6</span>, <span class="fl">1.0</span>]], n_per_cluster)</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2])</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> StandardScaler().fit_transform(X)</span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合 K-Means</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">2</span>, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit(X_scaled)</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a>sil_km <span class="op">=</span> silhouette_score(X_scaled, kmeans.labels_)</span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合凝聚式階層分群 (Complete Linkage)</span></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>agg <span class="op">=</span> AgglomerativeClustering(n_clusters<span class="op">=</span><span class="dv">2</span>, linkage<span class="op">=</span><span class="st">'complete'</span>).fit(X_scaled)</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>sil_agg <span class="op">=</span> silhouette_score(X_scaled, agg.labels_)</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合高斯混合模型 (GMM - EM 演算法)</span></span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>gmm <span class="op">=</span> GaussianMixture(n_components<span class="op">=</span><span class="dv">2</span>, covariance_type<span class="op">=</span><span class="st">'full'</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit(X_scaled)</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>gmm_labels <span class="op">=</span> gmm.predict(X_scaled)</span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a>gmm_probs <span class="op">=</span> gmm.predict_proba(X_scaled) <span class="co"># 軟分群責任度</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"K-Means 輪廓係數: </span><span class="sc">{</span>sil_km<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"階層分群 (Complete) 輪廓係數: </span><span class="sc">{</span>sil_agg<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GMM EM 演算法收斂迭代次數: </span><span class="sc">{</span>gmm<span class="sc">.</span>n_iter_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"GMM 估計先驗混合權重: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(gmm.weights_, <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢視邊界點的軟分群後驗機率模糊性</span></span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>uncertain_points <span class="op">=</span> np.where((gmm_probs[:, <span class="dv">0</span>] <span class="op">&gt;</span> <span class="fl">0.4</span>) <span class="op">&amp;</span> (gmm_probs[:, <span class="dv">0</span>] <span class="op">&lt;</span> <span class="fl">0.6</span>))[<span class="dv">0</span>]</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">處於兩群模糊邊界處之樣本數 (0.4 &lt; P &lt; 0.6): </span><span class="sc">{</span><span class="bu">len</span>(uncertain_points)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(uncertain_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a>    sample_idx <span class="op">=</span> uncertain_points[<span class="dv">0</span>]</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"範例邊界點 </span><span class="sc">{</span>sample_idx<span class="sc">}</span><span class="ss"> 的軟分群機率指派: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(gmm_probs[sample_idx], <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="fu">## 12.6 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**群內兩兩平方和與質心距離恆等式證明**：</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>   嚴格推導恆等式 $\frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_k<span class="sc">\|</span>_2^2$，並說明為何最小化 WCSS 等價於最小化各點到質心的幾何距離平方。</span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**K-Means 局部極小值之幾何反例構建**：</span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>   在二維平面上構造一組包含 4 個對稱分佈頂點的數據點集，證明存在某個初始質心指派，使得 Lloyd 演算法收斂至一個非全域最優的局部次優解，並計算其與全域最優解的 WCSS 差距。</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**輪廓係數的邊界取值證明**：</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a>   由式 (<span class="co">[</span><span class="ot">-@eq-ch12-silhouette</span><span class="co">]</span>) 證明：單點輪廓係數 $s(i)$ 嚴格有界於 $<span class="co">[</span><span class="ot">-1, 1</span><span class="co">]</span>$。當某群僅包含單一孤立樣本點（$|C_k| = 1$）時，輪廓係數在統計學上應如何定義以避免分母為零？</span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**階層式分群樹狀圖高度與距離單調性**：</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a>   證明在超度量空間（Ultrametric Space）下，完全鏈結法（Complete Linkage）與平均鏈結法（Average Linkage）生成的樹狀圖合併高度必單調不減；並給出反例說明質心鏈結法（Centroid Linkage）何時會產生高度反轉（Inversion）。</span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**GMM 在零方差極限下退化為 K-Means 證明**：</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a>   設 GMM 的各高斯成分共變異數矩陣為 $\boldsymbol{\Sigma}_k = \sigma^2 \boldsymbol{I}$，且權重相等 $\pi_k = 1/K$。證明當 $\sigma^2 \to 0$ 時，責任度 $\gamma_{ik}$ 收斂至指示函數 $\mathbb{I}(k = \arg\min_l <span class="sc">\|</span>\boldsymbol{x}_i - \boldsymbol{\mu}_l<span class="sc">\|</span>^2)$，EM 演算法精確等價於 Lloyd 演算法。</span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**手刻 K-Means++ 初始化演算法**：</span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a>   僅使用 NumPy 實作 $K$-Means++ 質心採樣邏輯：第 1 個質心均勻隨機選取，後續質心以機率 $P(\boldsymbol{x}) = \frac{D(\boldsymbol{x})^2}{\sum D(\boldsymbol{x}')^2}$ 取樣。比較隨機初始化與 $K$-Means++ 在 100 次隨機試驗中的收斂迭代次數與 WCSS 穩定性。</span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**輪廓圖（Silhouette Plot）手繪視覺化**：</span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>   使用 Python <span class="in">`matplotlib`</span> 或 R <span class="in">`factoextra`</span> 繪製標準輪廓分析橫向條形圖，顯示每個樣本在不同 $K \in <span class="sc">\{</span>2, 3, 4, 5<span class="sc">\}</span>$ 下的 $s(i)$ 排序分佈與群平均輪廓寬度，找出最優分群數。</span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**DBSCAN 密度分群對比（克服任意形狀分群）**：</span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>   生成雙環形（Concentric Circles）與雙月形非凸幾何數據。對比 $K$-Means、階層分群與 DBSCAN（Density-Based Spatial Clustering of Applications with Noise）的分群效果，展示密度可達性對複雜形狀的識別能力。</span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**影像色彩量化（Color Quantization with K-Means）**：</span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a>   載入一張高解析度全彩照片（RGB 24-bit，1600 萬色），將所有像素視為三維空間中的資料點，使用 $K$-Means（$K=16, 64$）進行色彩壓縮與聚類，並重新渲染輸出壓縮影像。</span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**貝氏資訊準則（BIC）挑選 GMM 最優成分數與共變異數類型**：</span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a>    對真實多維數據（如 Wine 或 Iris），在共變異數結構（<span class="in">`spherical`</span>, <span class="in">`diag`</span>, <span class="in">`tied`</span>, <span class="in">`full`</span>）與成分數 $K \in <span class="co">[</span><span class="ot">1, 8</span><span class="co">]</span>$ 間進行網格搜尋，繪製 BIC 曲線並挑選出最優統計模型。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 統計學習理論與實務：深入淺出指南 | 繁體中文第一版</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>基於 R 與 Python 雙軌實作</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

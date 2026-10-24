@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>13&nbsp; 現代前沿：深度學習、分佈偏移與可解釋性 – 統計學習理論與實務：深入淺出指南</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/ch12_clustering_em.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-51b2efe42a832a760ae4a04b3490e69f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-ca310094cc23374170d53419c9f66cfb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch13_modern_frontiers.html">第五篇：現代前沿與統計新典範</a></li><li class="breadcrumb-item"><a href="../chapters/ch13_modern_frontiers.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">統計學習理論與實務：深入淺出指南</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">自序：走向嚴謹與實踐兼備的統計學習</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">統計學習專有名詞與符號對照表</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">第一篇：統計學習基石與泛化理論</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch01_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">統計學習概論與思維典範</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch02_model_assessment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">模型評估、重抽樣與統計學習理論</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">第二篇：連續型預測：迴歸分析、正則化與平滑</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch03_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">多元線性迴歸與古典統計推論</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch04_regularization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">高維特徵選擇與正則化收縮法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch05_splines_gam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">非線性模型與平滑技術</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">第三篇：離散型預測：分類模型與幾何分界</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch06_logistic_glm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">羅吉斯迴歸與廣義線性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch07_generative_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">生成式分類模型：LDA、QDA 與單純貝氏</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch08_svm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">支援向量機與核方法</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">第四篇：樹狀模型、集成學習與非監督技術</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch09_decision_trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">決策樹演算法</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch10_ensemble_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">集成學習：隨機森林與梯度提升</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch11_pca_manifold.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">主成分分析與流形學習</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch12_clustering_em.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">第五篇：現代前沿與統計新典範</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/ch13_modern_frontiers.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">本章目錄</h2>
+   
+  <ul>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">13.1</span> 本章導讀</a></li>
+  <li><a href="#深度學習的統計謎題雙重下降現象double-descent" id="toc-深度學習的統計謎題雙重下降現象double-descent" class="nav-link" data-scroll-target="#深度學習的統計謎題雙重下降現象double-descent"><span class="header-section-number">13.2</span> 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</a>
+  <ul class="collapse">
+  <li><a href="#傳統統計觀點-vs-現代深度學習實踐" id="toc-傳統統計觀點-vs-現代深度學習實踐" class="nav-link" data-scroll-target="#傳統統計觀點-vs-現代深度學習實踐"><span class="header-section-number">13.2.1</span> 13.1.1 傳統統計觀點 vs 現代深度學習實踐</a></li>
+  <li><a href="#雙重下降曲線機制belkin-et-al.-2019" id="toc-雙重下降曲線機制belkin-et-al.-2019" class="nav-link" data-scroll-target="#雙重下降曲線機制belkin-et-al.-2019"><span class="header-section-number">13.2.2</span> 13.1.2 雙重下降曲線機制（Belkin et al.&nbsp;2019）</a></li>
+  </ul></li>
+  <li><a href="#非平穩學習與共變量偏移covariate-shift" id="toc-非平穩學習與共變量偏移covariate-shift" class="nav-link" data-scroll-target="#非平穩學習與共變量偏移covariate-shift"><span class="header-section-number">13.3</span> 13.2 非平穩學習與共變量偏移（Covariate Shift）</a>
+  <ul class="collapse">
+  <li><a href="#共變量偏移定義sugiyama-2015" id="toc-共變量偏移定義sugiyama-2015" class="nav-link" data-scroll-target="#共變量偏移定義sugiyama-2015"><span class="header-section-number">13.3.1</span> 13.2.1 共變量偏移定義（Sugiyama 2015）</a></li>
+  <li><a href="#重要性加權importance-weighting推導" id="toc-重要性加權importance-weighting推導" class="nav-link" data-scroll-target="#重要性加權importance-weighting推導"><span class="header-section-number">13.3.2</span> 13.2.2 重要性加權（Importance Weighting）推導</a></li>
+  </ul></li>
+  <li><a href="#大數據時代的多重假設檢定與-fdr-控制" id="toc-大數據時代的多重假設檢定與-fdr-控制" class="nav-link" data-scroll-target="#大數據時代的多重假設檢定與-fdr-控制"><span class="header-section-number">13.4</span> 13.3 大數據時代的多重假設檢定與 FDR 控制</a>
+  <ul class="collapse">
+  <li><a href="#多重檢定的偽陽性爆炸與-bonferroni-缺陷" id="toc-多重檢定的偽陽性爆炸與-bonferroni-缺陷" class="nav-link" data-scroll-target="#多重檢定的偽陽性爆炸與-bonferroni-缺陷"><span class="header-section-number">13.4.1</span> 13.3.1 多重檢定的「偽陽性爆炸」與 Bonferroni 缺陷</a></li>
+  <li><a href="#偽發現率fdr與-benjamini-hochberg-bh-程序" id="toc-偽發現率fdr與-benjamini-hochberg-bh-程序" class="nav-link" data-scroll-target="#偽發現率fdr與-benjamini-hochberg-bh-程序"><span class="header-section-number">13.4.2</span> 13.3.2 偽發現率（FDR）與 Benjamini-Hochberg (BH) 程序</a></li>
+  </ul></li>
+  <li><a href="#手把手數值推演bh-程序與-shapley-值手算" id="toc-手把手數值推演bh-程序與-shapley-值手算" class="nav-link" data-scroll-target="#手把手數值推演bh-程序與-shapley-值手算"><span class="header-section-number">13.5</span> 13.4 手把手數值推演：BH 程序與 Shapley 值手算</a>
+  <ul class="collapse">
+  <li><a href="#bh-程序-6-假設手算示範" id="toc-bh-程序-6-假設手算示範" class="nav-link" data-scroll-target="#bh-程序-6-假設手算示範"><span class="header-section-number">13.5.1</span> 13.4.1 BH 程序 6 假設手算示範</a></li>
+  <li><a href="#雙特徵-shapley-值手算示範" id="toc-雙特徵-shapley-值手算示範" class="nav-link" data-scroll-target="#雙特徵-shapley-值手算示範"><span class="header-section-number">13.5.2</span> 13.4.2 雙特徵 Shapley 值手算示範</a></li>
+  </ul></li>
+  <li><a href="#可解釋性人工智慧explainable-ai-xai與-shap" id="toc-可解釋性人工智慧explainable-ai-xai與-shap" class="nav-link" data-scroll-target="#可解釋性人工智慧explainable-ai-xai與-shap"><span class="header-section-number">13.6</span> 13.5 可解釋性人工智慧（Explainable AI, XAI）與 SHAP</a></li>
+  <li><a href="#雙軌實務實驗室fdr-多重校正與-shap-解釋實戰" id="toc-雙軌實務實驗室fdr-多重校正與-shap-解釋實戰" class="nav-link" data-scroll-target="#雙軌實務實驗室fdr-多重校正與-shap-解釋實戰"><span class="header-section-number">13.7</span> 13.6 雙軌實務實驗室：FDR 多重校正與 SHAP 解釋實戰</a></li>
+  <li><a href="#課後全方位習題庫10-題" id="toc-課後全方位習題庫10-題" class="nav-link" data-scroll-target="#課後全方位習題庫10-題"><span class="header-section-number">13.8</span> 13.7 課後全方位習題庫（10 題）</a>
+  <ul class="collapse">
+  <li><a href="#一觀念理解與數學證明5-題" id="toc-一觀念理解與數學證明5-題" class="nav-link" data-scroll-target="#一觀念理解與數學證明5-題"><span class="header-section-number">13.8.1</span> 一、觀念理解與數學證明（5 題）</a></li>
+  <li><a href="#二程式實作與實務應用5-題" id="toc-二程式實作與實務應用5-題" class="nav-link" data-scroll-target="#二程式實作與實務應用5-題"><span class="header-section-number">13.8.2</span> 二、程式實作與實務應用（5 題）</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/ch13_modern_frontiers.html">第五篇：現代前沿與統計新典範</a></li><li class="breadcrumb-item"><a href="../chapters/ch13_modern_frontiers.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span id="sec-ch13" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">現代前沿：深度學習、分佈偏移與可解釋性</span></span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="本章導讀" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="本章導讀"><span class="header-section-number">13.1</span> 本章導讀</h2>
+<p>在完成了從線性迴歸、正則化、支援向量機、集成學習到非監督降維與分群的完整巡禮後，我們來到了統計學習的最前沿。</p>
+<p>在二十一世紀第三個十年，資料科學與人工智慧正面臨三大革命性的範式轉移（Paradigm Shifts）： 1. <strong>「雙重下降（Double Descent）」現象</strong>：現代深層神經網路與過度參數化模型（參數量遠大於樣本數），顛覆了古典統計學百年來奉為圭臬的「U 型偏誤-變異數權衡」認知。 2. <strong>「分佈偏移（Distribution Shift）」的現實挑戰</strong>：真實世界並非恆定不變的閉合系統，訓練資料與線上真實環境往往違背獨立同分佈（I.I.D.）假設。 3. <strong>「高維多重檢定」與「可解釋性 AI（XAI）」</strong>：從萬維基因體與巨量特徵中，如何控制偽發現率（FDR）？面對複雜的黑盒子集成模型，如何利用賽局理論（Shapley Values）給出具備公理保證的歸因解釋？</p>
+<p>本章將帶領讀者透視這些前沿課題的底層數學本質，完成全書知識體系的終極昇華。</p>
+<hr>
+</section>
+<section id="深度學習的統計謎題雙重下降現象double-descent" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="深度學習的統計謎題雙重下降現象double-descent"><span class="header-section-number">13.2</span> 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</h2>
+<section id="傳統統計觀點-vs-現代深度學習實踐" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="傳統統計觀點-vs-現代深度學習實踐"><span class="header-section-number">13.2.1</span> 13.1.1 傳統統計觀點 vs 現代深度學習實踐</h3>
+<p>在第 2 章中，我們嚴格證明了古典的<strong>偏誤-變異數權衡定理</strong>： 隨著模型容量（Capacity / Parameters）的增長，偏誤單調下降，但估計變異數單調暴增，導致全域泛化誤差呈現一條先降後升的經典 <strong>U 型曲線（U-shaped Curve）</strong>。</p>
+<p>然而，現代深層大型語言模型（如 GPT 系列）與巨型卷積網路（ResNet）的參數量往往是訓練樣本量的數十倍甚至數萬倍（<span class="math inline">p \gg n</span>）。按照傳統統計理論，這些模型應當產生毀滅性的過度配適。但令人震驚的是：<strong>在過度參數化（Overparameterization）且訓練誤差達到 0 的情況下，模型的測試誤差往往不升反降，甚至取得歷史最優的泛化表現！</strong></p>
+</section>
+<section id="雙重下降曲線機制belkin-et-al.-2019" class="level3" data-number="13.2.2">
+<h3 data-number="13.2.2" class="anchored" data-anchor-id="雙重下降曲線機制belkin-et-al.-2019"><span class="header-section-number">13.2.2</span> 13.1.2 雙重下降曲線機制（Belkin et al.&nbsp;2019）</h3>
+<p>Mikhail Belkin、Daniel Hsu 等學者於 2019 年在《PNAS》發表里程碑論文，將古典統計與現代機器學習調和在一張統一的曲線中——<strong>雙重下降曲線（Double Descent Curve）</strong>，如 <a href="#fig-ch13-double-descent" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> 所示：</p>
+<div id="fig-ch13-double-descent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch13-double-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../figures/fig13_double_descent.png" class="img-fluid figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch13-double-descent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.1: 雙重下降現象與過度參數化區間的良性過度配適幾何曲線
+</figcaption>
+</figure>
+</div>
+<section id="數學機理剖析" class="level4" data-number="13.2.2.1">
+<h4 data-number="13.2.2.1" class="anchored" data-anchor-id="數學機理剖析"><span class="header-section-number">13.2.2.1</span> 數學機理剖析：</h4>
+<ol type="1">
+<li><strong>古典區間（Under-parameterized, <span class="math inline">p &lt; n</span>）</strong>： 模型無法完美插值所有訓練點。隨著 <span class="math inline">p</span> 增加，偏誤減小，方差增大，在 <span class="math inline">p</span> 接近 <span class="math inline">n</span> 之前表現為標準的 U 型曲線。</li>
+<li><strong>插值臨界點（Interpolation Boundary, <span class="math inline">p = n</span>）</strong>： 當模型的有效容量恰好能夠完全穿過（插值）所有訓練資料點時，設計矩陣 <span class="math inline">\boldsymbol{X}^\top \boldsymbol{X}</span> 的最小奇異值趨近於零（<span class="math inline">\lambda_{\min} \to 0</span>），估計量的方差達到極值發散，測試誤差暴增至頂峰。</li>
+<li><strong>過度參數化區間（Over-parameterized, <span class="math inline">p &gt; n</span>）</strong>： 此時存在無窮多個能夠達到訓練誤差為 0 的插值解。現代梯度下降演算法（SGD）隱式地選擇了<strong>具有最小範數（Minimum-norm solution）</strong>的最光滑插值解： <span id="eq-ch13-double-descent"><span class="math display">
+\hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} \|\boldsymbol{\beta}\|_2 \quad \text{s.t.} \quad \boldsymbol{X}\boldsymbol{\beta} = \boldsymbol{y}
+\tag{13.1}</span></span> 隨著參數空間維度 <span class="math inline">p</span> 繼續暴增，超平面的可行解空間急遽膨脹，隱式正則化作用愈發強大，模型的有效曲率反而變得更加平緩，驅使測試誤差展開<strong>第二重單調下降</strong>！這在統計學上被稱為<strong>良性過度配適（Benign Overfitting）</strong>。</li>
+</ol>
+<hr>
+</section>
+</section>
+</section>
+<section id="非平穩學習與共變量偏移covariate-shift" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="非平穩學習與共變量偏移covariate-shift"><span class="header-section-number">13.3</span> 13.2 非平穩學習與共變量偏移（Covariate Shift）</h2>
+<p>經典機器學習的基石是 <strong>I.I.D. 假設</strong>（訓練集與測試集獨立同分佈於同一個聯合分佈 <span class="math inline">\mathcal{P}(\boldsymbol{X}, Y)</span>）。 但在現實世界中，分佈發生動態漂移。</p>
+<section id="共變量偏移定義sugiyama-2015" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="共變量偏移定義sugiyama-2015"><span class="header-section-number">13.3.1</span> 13.2.1 共變量偏移定義（Sugiyama 2015）</h3>
+<p><strong>共變量偏移（Covariate Shift）</strong>是指： 1. 輸入特徵的邊際機率分佈發生改變： <span class="math display">
+   P_{\text{train}}(\boldsymbol{X}) \neq P_{\text{test}}(\boldsymbol{X})
+   </span> 2. 給定特徵下目標變數的條件機率分佈保持不變： <span class="math display">
+   P_{\text{train}}(Y \mid \boldsymbol{X}) = P_{\text{test}}(Y \mid \boldsymbol{X})
+   </span></p>
+</section>
+<section id="重要性加權importance-weighting推導" class="level3" data-number="13.3.2">
+<h3 data-number="13.3.2" class="anchored" data-anchor-id="重要性加權importance-weighting推導"><span class="header-section-number">13.3.2</span> 13.2.2 重要性加權（Importance Weighting）推導</h3>
+<p>我們期望最小化測試集上的真實風險： <span class="math display">
+R_{\text{test}}(f) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{test}}}[L(Y, f(\boldsymbol{X}))] = \int L(y, f(\boldsymbol{x})) P_{\text{test}}(\boldsymbol{x}, y) d\boldsymbol{x} dy
+</span></p>
+<p>由條件機率公式 <span class="math inline">P(\boldsymbol{x}, y) = P(y \mid \boldsymbol{x})P(\boldsymbol{x})</span>，並利用共變量偏移假設 <span class="math inline">P_{\text{test}}(y \mid \boldsymbol{x}) = P_{\text{train}}(y \mid \boldsymbol{x})</span>： <span id="eq-ch13-importance-weighting"><span class="math display">
+\begin{aligned}
+R_{\text{test}}(f) &amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{test}}(\boldsymbol{x}) d\boldsymbol{x} dy \\
+&amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{train}}(\boldsymbol{x}) \cdot \underbrace{\left( \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})} \right)}_{w(\boldsymbol{x})} d\boldsymbol{x} dy \\
+&amp;= \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{train}}}\left[ w(\boldsymbol{X}) L(Y, f(\boldsymbol{X})) \right]
+\end{aligned}
+\tag{13.2}</span></span></p>
+<p>其中 <span class="math inline">w(\boldsymbol{x}) \triangleq \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})}</span> 稱為<strong>重要性權重（Importance Weight）</strong>或<strong>密度比（Density Ratio）</strong>。只需在訓練時對每個訓練樣本點乘以其重要性權重 <span class="math inline">w(\boldsymbol{x}_i)</span> 進行加權經驗風險最小化即可消除偏移影響。</p>
+<hr>
+</section>
+</section>
+<section id="大數據時代的多重假設檢定與-fdr-控制" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="大數據時代的多重假設檢定與-fdr-控制"><span class="header-section-number">13.4</span> 13.3 大數據時代的多重假設檢定與 FDR 控制</h2>
+<p>在現代大數據環境中，我們經常面對數萬個特徵的同步假設檢定。</p>
+<section id="多重檢定的偽陽性爆炸與-bonferroni-缺陷" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="多重檢定的偽陽性爆炸與-bonferroni-缺陷"><span class="header-section-number">13.4.1</span> 13.3.1 多重檢定的「偽陽性爆炸」與 Bonferroni 缺陷</h3>
+<p>若對 <span class="math inline">m = 1000</span> 個檢定均採用標準顯著水準 <span class="math inline">\alpha = 0.05</span>： 當所有假設皆為真時，至少犯下一次型一誤差的家族累積錯誤率為： <span class="math display">
+\mathrm{FWER} = 1 - (1 - \alpha)^m \approx 1 - (0.95)^{1000} \approx 100\%
+</span> 傳統 <strong>Bonferroni 修正</strong> 強制將單個顯著水準降為 <span class="math inline">\alpha / m = 0.05 / 1000 = 0.00005</span>，極度保守，將大幅扼殺真實微弱的統計信號。</p>
+</section>
+<section id="偽發現率fdr與-benjamini-hochberg-bh-程序" class="level3" data-number="13.4.2">
+<h3 data-number="13.4.2" class="anchored" data-anchor-id="偽發現率fdr與-benjamini-hochberg-bh-程序"><span class="header-section-number">13.4.2</span> 13.3.2 偽發現率（FDR）與 Benjamini-Hochberg (BH) 程序</h3>
+<p>Yoav Benjamini 與 Yosef Hochberg (1995) 提出了<strong>偽發現率（False Discovery Rate, FDR）</strong>： <span class="math display">
+\mathrm{FDR} \triangleq \mathbb{E}\left[ \frac{V}{R} \;\middle|\; R &gt; 0 \right] P(R &gt; 0)
+</span> 其中 <span class="math inline">R</span> 為宣稱顯著的總發現數，<span class="math inline">V</span> 為其中誤判的偽陽性數。</p>
+<section id="bh-逐步檢定程序" class="level4" data-number="13.4.2.1">
+<h4 data-number="13.4.2.1" class="anchored" data-anchor-id="bh-逐步檢定程序"><span class="header-section-number">13.4.2.1</span> BH 逐步檢定程序：</h4>
+<ol type="1">
+<li>將所有 <span class="math inline">m</span> 個檢定的 <span class="math inline">p</span>-值由小到大升冪排序：<span class="math inline">p_{(1)} \le p_{(2)} \le \dots \le p_{(m)}</span>。</li>
+<li>給定目標 FDR 控制水準 <span class="math inline">q^*</span>（如 <span class="math inline">q^* = 0.05</span>）。</li>
+<li>尋找滿足以下條件的<strong>最大排序索引值 <span class="math inline">k</span></strong>： <span id="eq-ch13-bh-step"><span class="math display">
+k = \max \left\{ i \;\middle|\; p_{(i)} \le \frac{i}{m} q^* \right\}
+\tag{13.3}</span></span></li>
+<li><strong>拒絕所有對應於最小 <span class="math inline">k</span> 個 <span class="math inline">p</span>-值的虛無假設</strong>（判定 <span class="math inline">H_{(1)}, \dots, H_{(k)}</span> 顯著）。</li>
+</ol>
+<hr>
+</section>
+</section>
+</section>
+<section id="手把手數值推演bh-程序與-shapley-值手算" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="手把手數值推演bh-程序與-shapley-值手算"><span class="header-section-number">13.5</span> 13.4 手把手數值推演：BH 程序與 Shapley 值手算</h2>
+<section id="bh-程序-6-假設手算示範" class="level3" data-number="13.5.1">
+<h3 data-number="13.5.1" class="anchored" data-anchor-id="bh-程序-6-假設手算示範"><span class="header-section-number">13.5.1</span> 13.4.1 BH 程序 6 假設手算示範</h3>
+<p>設有 <span class="math inline">m=6</span> 個特徵檢定，其未校正之原始 <span class="math inline">p</span>-值分別為： <span class="math display">
+p_1 = 0.002, \, p_2 = 0.045, \, p_3 = 0.012, \, p_4 = 0.080, \, p_5 = 0.035, \, p_6 = 0.001
+</span> 設定目標 FDR 水準 <span class="math inline">q^* = 0.05</span>。</p>
+<section id="步驟-1升冪排序-p-值並計算臨界閾值-fracim-q" class="level4" data-number="13.5.1.1">
+<h4 data-number="13.5.1.1" class="anchored" data-anchor-id="步驟-1升冪排序-p-值並計算臨界閾值-fracim-q"><span class="header-section-number">13.5.1.1</span> 步驟 1：升冪排序 <span class="math inline">p</span>-值並計算臨界閾值 <span class="math inline">\frac{i}{m} q^*</span></h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">排序 <span class="math inline">i</span></th>
+<th style="text-align: center;">原假設</th>
+<th style="text-align: center;">排序後 <span class="math inline">p_{(i)}</span></th>
+<th style="text-align: center;">臨界閾值 <span class="math inline">\frac{i}{6} \times 0.05</span></th>
+<th style="text-align: center;">檢驗不等式 <span class="math inline">p_{(i)} \le \frac{i}{m} q^*</span></th>
+<th style="text-align: center;">判定</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><span class="math inline">H_6</span></td>
+<td style="text-align: center;"><span class="math inline">0.0010</span></td>
+<td style="text-align: center;"><span class="math inline">0.00833</span></td>
+<td style="text-align: center;"><span class="math inline">0.0010 \le 0.00833</span> (成立)</td>
+<td style="text-align: center;">滿足</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><span class="math inline">H_1</span></td>
+<td style="text-align: center;"><span class="math inline">0.0020</span></td>
+<td style="text-align: center;"><span class="math inline">0.01667</span></td>
+<td style="text-align: center;"><span class="math inline">0.0020 \le 0.01667</span> (成立)</td>
+<td style="text-align: center;">滿足</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>3</strong></td>
+<td style="text-align: center;"><strong><span class="math inline">H_3</span></strong></td>
+<td style="text-align: center;"><strong><span class="math inline">0.0120</span></strong></td>
+<td style="text-align: center;"><strong><span class="math inline">0.02500</span></strong></td>
+<td style="text-align: center;"><strong><span class="math inline">0.0120 \le 0.02500</span> (成立)</strong></td>
+<td style="text-align: center;"><strong>滿足 (最大點 <span class="math inline">k=3</span>)</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><span class="math inline">H_5</span></td>
+<td style="text-align: center;"><span class="math inline">0.0350</span></td>
+<td style="text-align: center;"><span class="math inline">0.03333</span></td>
+<td style="text-align: center;"><span class="math inline">0.0350 &gt; 0.03333</span> (不成立)</td>
+<td style="text-align: center;">不滿足</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><span class="math inline">H_2</span></td>
+<td style="text-align: center;"><span class="math inline">0.0450</span></td>
+<td style="text-align: center;"><span class="math inline">0.04167</span></td>
+<td style="text-align: center;"><span class="math inline">0.0450 &gt; 0.04167</span> (不成立)</td>
+<td style="text-align: center;">不滿足</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><span class="math inline">H_4</span></td>
+<td style="text-align: center;"><span class="math inline">0.0800</span></td>
+<td style="text-align: center;"><span class="math inline">0.05000</span></td>
+<td style="text-align: center;"><span class="math inline">0.0800 &gt; 0.05000</span> (不成立)</td>
+<td style="text-align: center;">不滿足</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="步驟-2確定決策臨界點" class="level4" data-number="13.5.1.2">
+<h4 data-number="13.5.1.2" class="anchored" data-anchor-id="步驟-2確定決策臨界點"><span class="header-section-number">13.5.1.2</span> 步驟 2：確定決策臨界點</h4>
+<p>滿足條件的最大排序索引為 <span class="math inline">k = 3</span>！ 因此，<strong>拒絕 <span class="math inline">H_{(1)}, H_{(2)}, H_{(3)}</span>（即 <span class="math inline">H_6, H_1, H_3</span>）</strong>，判定這三個特徵為統計顯著；其餘 <span class="math inline">H_5, H_2, H_4</span> 視為不顯著。</p>
+<blockquote class="blockquote">
+<p>💡 <strong>方法對比洞見</strong>： 1. <strong>未校正標準（<span class="math inline">\alpha = 0.05</span>）</strong>：會誤將 <span class="math inline">H_5 (0.035)</span> 與 <span class="math inline">H_2 (0.045)</span> 判定為顯著，引入大量偽發現。 2. <strong>Bonferroni 修正（<span class="math inline">\alpha/6 = 0.00833</span>）</strong>：僅能拒絕 <span class="math inline">H_6</span> 與 <span class="math inline">H_1</span>，導致真實有效信號 <span class="math inline">H_3 (0.012)</span> 被錯誤扼殺。 3. <strong>BH 程序</strong>：成功保留了 <span class="math inline">H_3</span>，同時精準剔除了 <span class="math inline">H_5</span> 與 <span class="math inline">H_2</span>，在靈敏度與特異度間取得最優平衡！</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="雙特徵-shapley-值手算示範" class="level3" data-number="13.5.2">
+<h3 data-number="13.5.2" class="anchored" data-anchor-id="雙特徵-shapley-值手算示範"><span class="header-section-number">13.5.2</span> 13.4.2 雙特徵 Shapley 值手算示範</h3>
+<p>設模型包含 2 個特徵 <span class="math inline">\mathcal{F} = \{x_1, x_2\}</span>。 基準無特徵預測輸出（Base Rate）：<span class="math inline">v(\emptyset) = 20</span>。 各特徵子集預測值如下： * 僅包含特徵 1：<span class="math inline">v(\{x_1\}) = 35</span> * 僅包含特徵 2：<span class="math inline">v(\{x_2\}) = 25</span> * 包含兩者特徵：<span class="math inline">v(\{x_1, x_2\}) = 50</span></p>
+<p>求各特徵之 Shapley 貢獻值 <span class="math inline">\phi_1, \phi_2</span>： 特徵可能進入聯盟的排列順序共有 <span class="math inline">2! = 2</span> 種： 1. <strong>順序一：先加入 <span class="math inline">x_1</span>，後加入 <span class="math inline">x_2</span></strong>（機率各為 <span class="math inline">1/2</span>）： * <span class="math inline">x_1</span> 的邊際貢獻：<span class="math inline">v(\{x_1\}) - v(\emptyset) = 35 - 20 = +15</span>。 * <span class="math inline">x_2</span> 的邊際貢獻：<span class="math inline">v(\{x_1, x_2\}) - v(\{x_1\}) = 50 - 35 = +15</span>。 2. <strong>順序二：先加入 <span class="math inline">x_2</span>，後加入 <span class="math inline">x_1</span></strong>（機率各為 <span class="math inline">1/2</span>）： * <span class="math inline">x_2</span> 的邊際貢獻：<span class="math inline">v(\{x_2\}) - v(\emptyset) = 25 - 20 = +5</span>。 * <span class="math inline">x_1</span> 的邊際貢獻：<span class="math inline">v(\{x_1, x_2\}) - v(\{x_2\}) = 50 - 25 = +25</span>。</p>
+<p>加權計算特徵 Shapley 值： <span class="math display">
+\phi_1 = \frac{1}{2}(15) + \frac{1}{2}(25) = \mathbf{20}
+</span> <span class="math display">
+\phi_2 = \frac{1}{2}(15) + \frac{1}{2}(5) = \mathbf{10}
+</span></p>
+<blockquote class="blockquote">
+<p><strong>驗證效率性公理（Efficiency Axiom）</strong>： <span class="math display">
+\phi_1 + \phi_2 = 20 + 10 = 30 = 50 - 20 = v(\{x_1, x_2\}) - v(\emptyset) \quad \blacksquare
+</span> 兩特徵的邊際歸因值之和精準等於整體預測值與基準值的差額！</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="可解釋性人工智慧explainable-ai-xai與-shap" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="可解釋性人工智慧explainable-ai-xai與-shap"><span class="header-section-number">13.6</span> 13.5 可解釋性人工智慧（Explainable AI, XAI）與 SHAP</h2>
+<p>Scott Lundberg 提出的 <strong>SHAP（SHapley Additive exPlanations）</strong> 是基於式 (<a href="#eq-ch13-shapley-value" class="quarto-xref"><span>13.4</span></a>) 的現代可解釋性標準： <span id="eq-ch13-shapley-value"><span class="math display">
+\phi_i(v) \triangleq \sum_{S \subseteq \mathcal{F} \setminus \{i\}} \frac{|S|! \, (|\mathcal{F}| - |S| - 1)!}{|\mathcal{F}|!} \Big[ v(S \cup \{i\}) - v(S) \Big]
+\tag{13.4}</span></span></p>
+<p>其具備四大唯一公理保證：<strong>效率性（Efficiency）</strong>、<strong>對稱性（Symmetry）</strong>、<strong>虛擬性（Dummy Player）</strong> 與 <strong>可加性（Additivity）</strong>。</p>
+<hr>
+</section>
+<section id="雙軌實務實驗室fdr-多重校正與-shap-解釋實戰" class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="雙軌實務實驗室fdr-多重校正與-shap-解釋實戰"><span class="header-section-number">13.7</span> 13.6 雙軌實務實驗室：FDR 多重校正與 SHAP 解釋實戰</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">🟦 R 語言雙軌實作</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">🟨 Python 雙軌實作</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::p.adjust (BH 程序控制 FDR) 與大規模假設檢定</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, ISLR2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬包含 2000 個特徵的大規模檢定情境 (其中前 50 個特徵為真實有顯著差異)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>m_true <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 前 50 個檢定具有真實效應 (均值不為 0)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>true_pvalues <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(m_true, <span class="at">shape1 =</span> <span class="fl">0.5</span>, <span class="at">shape2 =</span> <span class="dv">10</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 後 1950 個檢定為純隨機噪聲 (服從 [0, 1] 均勻分佈)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>null_pvalues <span class="ot">&lt;-</span> <span class="fu">runif</span>(m <span class="sc">-</span> m_true, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>all_pvalues <span class="ot">&lt;-</span> <span class="fu">c</span>(true_pvalues, null_pvalues)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 未校正之原始 p-值顯著數量 (alpha = 0.05)</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>raw_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(all_pvalues <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"未校正 p &lt; 0.05 檢定出的特徵數: %d (包含大量假陽性噪聲)</span><span class="sc">\n</span><span class="st">"</span>, raw_significant))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 極度保守的 Bonferroni 修正 (控制 FWER &lt;= 0.05)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>bonf_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>bonf_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(bonf_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Bonferroni 修正 (過度保守) 檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, bonf_significant))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Benjamini-Hochberg (BH) 程序控制 FDR &lt;= 0.05</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>fdr_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"BH"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>fdr_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Benjamini-Hochberg (BH) 程序檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, fdr_significant))</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 檢驗 BH 程序在真實信號上的檢出表現 (真陽性 vs 偽陽性)</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>detected_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>true_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&lt;=</span> m_true)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>false_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&gt;</span> m_true)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中真陽性數量 (True Discoveries): %d / %d</span><span class="sc">\n</span><span class="st">"</span>, true_positives, m_true))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中偽陽性數量 (False Discoveries): %d</span><span class="sc">\n</span><span class="st">"</span>, false_positives))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"實證偽發現率 (Empirical FDR): %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (false_positives <span class="sc">/</span> fdr_significant) <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：SHAP (Shapley Additive exPlanations) 解釋黑盒子集成模型</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost, shap</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備清晰物理規律的非線性房價資料 (n=400, p=5)</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">400</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>income <span class="op">=</span> np.random.uniform(<span class="dv">20</span>, <span class="dv">100</span>, n)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>rooms <span class="op">=</span> np.random.uniform(<span class="dv">1</span>, <span class="dv">8</span>, n)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">50</span>, n)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>tax <span class="op">=</span> np.random.uniform(<span class="dv">10</span>, <span class="dv">50</span>, n)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 真實非線性房價方程</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>price <span class="op">=</span> <span class="dv">50</span> <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> income <span class="op">+</span> <span class="fl">8.0</span> <span class="op">*</span> rooms <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> age <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> (income <span class="op">*</span> rooms) <span class="op">+</span> noise</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.DataFrame({<span class="st">'Income'</span>: income, <span class="st">'Rooms'</span>: rooms, <span class="st">'HouseAge'</span>: age, <span class="st">'TaxRate'</span>: tax})</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> price</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合強大的 XGBoost 黑盒子迴歸模型</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.08</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 建構 TreeExplainer 並計算全體樣本之精確 Shapley 值</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.TreeExplainer(model)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer(X)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 驗證 Efficiency 效率性公理</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>sample_pred <span class="op">=</span> model.predict(X.iloc[[sample_idx]])[<span class="dv">0</span>]</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>base_value <span class="op">=</span> explainer.expected_value</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>sum_shap <span class="op">=</span> np.<span class="bu">sum</span>(shap_values.values[sample_idx])</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SHAP 效率性公理 (Efficiency Axiom) 數學驗證 ==="</span>)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"基準期望預測值 (Base E[f(x)]): </span><span class="sc">{</span>base_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之實際模型輸出 f(x): </span><span class="sc">{</span>sample_pred<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之各特徵 Shapley 值總和: </span><span class="sc">{</span>sum_shap<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"驗證差值 (Base + Sum(SHAP) - f(x)): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>((base_value <span class="op">+</span> sum_shap) <span class="op">-</span> sample_pred)<span class="sc">:.8f}</span><span class="ss">"</span>)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 全域特徵平均絕對 Shapley 值</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>mean_abs_shap <span class="op">=</span> np.mean(np.<span class="bu">abs</span>(shap_values.values), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> feat_name, imp <span class="kw">in</span> <span class="bu">zip</span>(X.columns, mean_abs_shap):</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 [</span><span class="sc">{</span>feat_name<span class="sc">}</span><span class="ss">] 之平均邊際貢獻度: </span><span class="sc">{</span>imp<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="課後全方位習題庫10-題" class="level2" data-number="13.8">
+<h2 data-number="13.8" class="anchored" data-anchor-id="課後全方位習題庫10-題"><span class="header-section-number">13.8</span> 13.7 課後全方位習題庫（10 題）</h2>
+<section id="一觀念理解與數學證明5-題" class="level3" data-number="13.8.1">
+<h3 data-number="13.8.1" class="anchored" data-anchor-id="一觀念理解與數學證明5-題"><span class="header-section-number">13.8.1</span> 一、觀念理解與數學證明（5 題）</h3>
+<ol type="1">
+<li><strong>最小範數插值解之 Moore-Penrose 虛擬反矩陣證明</strong>： 在過度參數化迴歸中（<span class="math inline">p &gt; n</span> 且 <span class="math inline">\mathrm{rank}(\boldsymbol{X}) = n</span>），證明式 (<a href="#eq-ch13-double-descent" class="quarto-xref"><span>13.1</span></a>) 的最小 <span class="math inline">L_2</span> 範數插值解具有封閉形式：<span class="math inline">\hat{\boldsymbol{\beta}} = \boldsymbol{X}^\top (\boldsymbol{X} \boldsymbol{X}^\top)^{-1} \boldsymbol{y}</span>，並說明為何梯度下降（從零初始化開始）必收斂至此解。</li>
+<li><strong>BH 程序 FDR 上界定理嚴格證明</strong>： 在所有檢定統計量相互獨立的前提下，利用全期望公式證明式 (<a href="#eq-ch13-bh-step" class="quarto-xref"><span>13.3</span></a>) 的 BH 程序滿足：<span class="math inline">\mathbb{E}\left[\frac{V}{R} \;\middle|\; R &gt; 0\right] P(R &gt; 0) = \frac{m_0}{m} q^* \le q^*</span>。</li>
+<li><strong>密度比重要性加權估計量的方差分析</strong>： 在式 (<a href="#eq-ch13-importance-weighting" class="quarto-xref"><span>13.2</span></a>) 中，雖然重要性加權估計量在期望上是無偏的，但證明當測試分佈與訓練分佈相差懸殊時，<span class="math inline">w(\boldsymbol{X}) = P_{\text{test}}(\boldsymbol{X}) / P_{\text{train}}(\boldsymbol{X})</span> 的變異數會爆炸，導致經驗風險估計量高度不穩定。</li>
+<li><strong>Shapley 值的唯一性定理證明</strong>： 證明符合「效率性、對稱性、虛擬性、可加性」四條公理的特徵貢獻分配方式是唯一的，且必為式 (<a href="#eq-ch13-shapley-value" class="quarto-xref"><span>13.4</span></a>) 的加權形式。</li>
+<li><strong>良性過度配適的特徵值衰減條件（Bartlett et al.&nbsp;2020）</strong>： 簡述彼得·巴特利特教授在過度參數化線性迴歸中提出的「良性過度配適」充要條件：說明為什麼共變異數矩陣的特徵值必須具備「重尾（Heavy Tail）」結構才能使插值噪聲被大量有效維度分散吸收。</li>
+</ol>
+</section>
+<section id="二程式實作與實務應用5-題" class="level3" data-number="13.8.2">
+<h3 data-number="13.8.2" class="anchored" data-anchor-id="二程式實作與實務應用5-題"><span class="header-section-number">13.8.2</span> 二、程式實作與實務應用（5 題）</h3>
+<ol start="6" type="1">
+<li><strong>過度參數化多項式雙重下降現象重現</strong>： 撰寫程式，固定樣本量 <span class="math inline">n=40</span>，將多項式特徵維度 <span class="math inline">p</span> 由 1 逐步增加至 120。使用最小範數偽逆求解，繪製測試 MSE 隨 <span class="math inline">p</span> 變化的完整曲線，重現 <span class="math inline">p=40</span> 處的插值峰值與 <span class="math inline">p &gt; 40</span> 的第二重下降。</li>
+<li><strong>核均值匹配（Kernel Mean Matching, KMM）修正共變量偏移</strong>： 產生一組訓練分佈 <span class="math inline">P_{\text{train}}(X) \sim \mathcal{N}(0, 1)</span> 與測試分佈 <span class="math inline">P_{\text{test}}(X) \sim \mathcal{N}(1.5, 1)</span>。實作核均值匹配（KMM）演算法透過二次規劃求解樣本權重 <span class="math inline">\hat{w}_i</span>，並驗證加權迴歸在測試集上的 RMSE 改進。</li>
+<li><strong>基因微陣列多重檢定與火山圖（Volcano Plot）繪製</strong>： 利用包含數千個基因的微陣列數據，對比患病組與對照組。計算每個基因的兩組獨立樣本 <span class="math inline">t</span>-檢定 <span class="math inline">p</span>-值與 Fold Change，使用 BH 程序校正，並繪製標準火山圖標註顯著差異表現基因。</li>
+<li><strong>TreeSHAP 交互作用值（SHAP Interaction Values）可視化</strong>： 使用 Python <code>shap</code> 套件訓練包含特徵非線性交互的 XGBoost 模型，計算二階特徵交互 Shapley 矩陣，並繪製 SHAP 依賴圖（Dependence Plot）解析特徵間的調節效應。</li>
+<li><strong>LIME vs SHAP 局部歸因一致性比較</strong>： 在分類模型上，挑選 5 筆邊界測試樣本，分別使用 LIME（局部可解釋模型無關解釋器）與 KernelSHAP 估計各特徵的局部重要性權重，量化評估兩者在特徵重要性符號與排序上的一致性指標。</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/ch12_clustering_em.html" class="pagination-link" aria-label="分群演算法與混合模型（EM 演算法）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">分群演算法與混合模型（EM 演算法）</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># 現代前沿：深度學習、分佈偏移與可解釋性 {#sec-ch13}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## 本章導讀</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>在完成了從線性迴歸、正則化、支援向量機、集成學習到非監督降維與分群的完整巡禮後，我們來到了統計學習的最前沿。</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>在二十一世紀第三個十年，資料科學與人工智慧正面臨三大革命性的範式轉移（Paradigm Shifts）：</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**「雙重下降（Double Descent）」現象**：現代深層神經網路與過度參數化模型（參數量遠大於樣本數），顛覆了古典統計學百年來奉為圭臬的「U 型偏誤-變異數權衡」認知。</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**「分佈偏移（Distribution Shift）」的現實挑戰**：真實世界並非恆定不變的閉合系統，訓練資料與線上真實環境往往違背獨立同分佈（I.I.D.）假設。</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**「高維多重檢定」與「可解釋性 AI（XAI）」**：從萬維基因體與巨量特徵中，如何控制偽發現率（FDR）？面對複雜的黑盒子集成模型，如何利用賽局理論（Shapley Values）給出具備公理保證的歸因解釋？</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>本章將帶領讀者透視這些前沿課題的底層數學本質，完成全書知識體系的終極昇華。</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.1 傳統統計觀點 vs 現代深度學習實踐</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>在第 2 章中，我們嚴格證明了古典的**偏誤-變異數權衡定理**：</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>隨著模型容量（Capacity / Parameters）的增長，偏誤單調下降，但估計變異數單調暴增，導致全域泛化誤差呈現一條先降後升的經典 **U 型曲線（U-shaped Curve）**。</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>然而，現代深層大型語言模型（如 GPT 系列）與巨型卷積網路（ResNet）的參數量往往是訓練樣本量的數十倍甚至數萬倍（$p \gg n$）。按照傳統統計理論，這些模型應當產生毀滅性的過度配適。但令人震驚的是：**在過度參數化（Overparameterization）且訓練誤差達到 0 的情況下，模型的測試誤差往往不升反降，甚至取得歷史最優的泛化表現！**</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.2 雙重下降曲線機制（Belkin et al. 2019）</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>Mikhail Belkin、Daniel Hsu 等學者於 2019 年在《PNAS》發表里程碑論文，將古典統計與現代機器學習調和在一張統一的曲線中——**雙重下降曲線（Double Descent Curve）**，如 @fig-ch13-double-descent 所示：</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="al">![雙重下降現象與過度參數化區間的良性過度配適幾何曲線](../figures/fig13_double_descent.png)</span>{#fig-ch13-double-descent width=85%}</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 數學機理剖析：</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**古典區間（Under-parameterized, $p &lt; n$）**：</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>   模型無法完美插值所有訓練點。隨著 $p$ 增加，偏誤減小，方差增大，在 $p$ 接近 $n$ 之前表現為標準的 U 型曲線。</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**插值臨界點（Interpolation Boundary, $p = n$）**：</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>   當模型的有效容量恰好能夠完全穿過（插值）所有訓練資料點時，設計矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 的最小奇異值趨近於零（$\lambda_{\min} \to 0$），估計量的方差達到極值發散，測試誤差暴增至頂峰。</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**過度參數化區間（Over-parameterized, $p &gt; n$）**：</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>   此時存在無窮多個能夠達到訓練誤差為 0 的插值解。現代梯度下降演算法（SGD）隱式地選擇了**具有最小範數（Minimum-norm solution）**的最光滑插值解：</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>   \hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} <span class="sc">\|</span>\boldsymbol{\beta}<span class="sc">\|</span>_2 \quad \text{s.t.} \quad \boldsymbol{X}\boldsymbol{\beta} = \boldsymbol{y}</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-double-descent}</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>   隨著參數空間維度 $p$ 繼續暴增，超平面的可行解空間急遽膨脹，隱式正則化作用愈發強大，模型的有效曲率反而變得更加平緩，驅使測試誤差展開**第二重單調下降**！這在統計學上被稱為**良性過度配適（Benign Overfitting）**。</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.2 非平穩學習與共變量偏移（Covariate Shift）</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>經典機器學習的基石是 **I.I.D. 假設**（訓練集與測試集獨立同分佈於同一個聯合分佈 $\mathcal{P}(\boldsymbol{X}, Y)$）。</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>但在現實世界中，分佈發生動態漂移。</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.1 共變量偏移定義（Sugiyama 2015）</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>**共變量偏移（Covariate Shift）**是指：</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>輸入特徵的邊際機率分佈發生改變：</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(\boldsymbol{X}) \neq P_{\text{test}}(\boldsymbol{X})</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定特徵下目標變數的條件機率分佈保持不變：</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(Y \mid \boldsymbol{X}) = P_{\text{test}}(Y \mid \boldsymbol{X})</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.2 重要性加權（Importance Weighting）推導</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>我們期望最小化測試集上的真實風險：</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{test}}}[L(Y, f(\boldsymbol{X}))] = \int L(y, f(\boldsymbol{x})) P_{\text{test}}(\boldsymbol{x}, y) d\boldsymbol{x} dy</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>由條件機率公式 $P(\boldsymbol{x}, y) = P(y \mid \boldsymbol{x})P(\boldsymbol{x})$，並利用共變量偏移假設 $P_{\text{test}}(y \mid \boldsymbol{x}) = P_{\text{train}}(y \mid \boldsymbol{x})$：</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) &amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{test}}(\boldsymbol{x}) d\boldsymbol{x} dy <span class="sc">\\</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>&amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{train}}(\boldsymbol{x}) \cdot \underbrace{\left( \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})} \right)}_{w(\boldsymbol{x})} d\boldsymbol{x} dy <span class="sc">\\</span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{train}}}\left<span class="co">[</span><span class="ot"> w(\boldsymbol{X}) L(Y, f(\boldsymbol{X})) \right</span><span class="co">]</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-importance-weighting}</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>其中 $w(\boldsymbol{x}) \triangleq \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})}$ 稱為**重要性權重（Importance Weight）**或**密度比（Density Ratio）**。只需在訓練時對每個訓練樣本點乘以其重要性權重 $w(\boldsymbol{x}_i)$ 進行加權經驗風險最小化即可消除偏移影響。</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.3 大數據時代的多重假設檢定與 FDR 控制</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>在現代大數據環境中，我們經常面對數萬個特徵的同步假設檢定。</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.1 多重檢定的「偽陽性爆炸」與 Bonferroni 缺陷</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>若對 $m = 1000$ 個檢定均採用標準顯著水準 $\alpha = 0.05$：</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>當所有假設皆為真時，至少犯下一次型一誤差的家族累積錯誤率為：</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>\mathrm{FWER} = 1 - (1 - \alpha)^m \approx 1 - (0.95)^{1000} \approx 100\%</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>傳統 **Bonferroni 修正** 強制將單個顯著水準降為 $\alpha / m = 0.05 / 1000 = 0.00005$，極度保守，將大幅扼殺真實微弱的統計信號。</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.2 偽發現率（FDR）與 Benjamini-Hochberg (BH) 程序</span></span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>Yoav Benjamini 與 Yosef Hochberg (1995) 提出了**偽發現率（False Discovery Rate, FDR）**：</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>\mathrm{FDR} \triangleq \mathbb{E}\left<span class="co">[</span><span class="ot"> \frac{V}{R} \;\middle|\; R &gt; 0 \right</span><span class="co">]</span> P(R &gt; 0)</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>其中 $R$ 為宣稱顯著的總發現數，$V$ 為其中誤判的偽陽性數。</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="fu">#### BH 逐步檢定程序：</span></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>將所有 $m$ 個檢定的 $p$-值由小到大升冪排序：$p_{(1)} \le p_{(2)} \le \dots \le p_{(m)}$。</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定目標 FDR 控制水準 $q^*$（如 $q^* = 0.05$）。</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>尋找滿足以下條件的**最大排序索引值 $k$**：</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>   k = \max \left<span class="sc">\{</span> i \;\middle|\; p_{(i)} \le \frac{i}{m} q^* \right<span class="sc">\}</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-bh-step}</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**拒絕所有對應於最小 $k$ 個 $p$-值的虛無假設**（判定 $H_{(1)}, \dots, H_{(k)}$ 顯著）。</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.4 手把手數值推演：BH 程序與 Shapley 值手算</span></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.1 BH 程序 6 假設手算示範</span></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>設有 $m=6$ 個特徵檢定，其未校正之原始 $p$-值分別為：</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>p_1 = 0.002, \, p_2 = 0.045, \, p_3 = 0.012, \, p_4 = 0.080, \, p_5 = 0.035, \, p_6 = 0.001</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>設定目標 FDR 水準 $q^* = 0.05$。</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 1：升冪排序 $p$-值並計算臨界閾值 $\frac{i}{m} q^*$</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 排序 $i$ <span class="pp">|</span> 原假設 <span class="pp">|</span> 排序後 $p_{(i)}$ <span class="pp">|</span> 臨界閾值 $\frac{i}{6} \times 0.05$ <span class="pp">|</span> 檢驗不等式 $p_{(i)} \le \frac{i}{m} q^*$ <span class="pp">|</span> 判定 <span class="pp">|</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> $H_6$ <span class="pp">|</span> $0.0010$ <span class="pp">|</span> $0.00833$ <span class="pp">|</span> $0.0010 \le 0.00833$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> $H_1$ <span class="pp">|</span> $0.0020$ <span class="pp">|</span> $0.01667$ <span class="pp">|</span> $0.0020 \le 0.01667$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **3** | **$H_3$** | **$0.0120$** | **$0.02500$** | **$0.0120 \le 0.02500$ (成立)** | **滿足 (最大點 $k=3$)** <span class="pp">|</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> $H_5$ <span class="pp">|</span> $0.0350$ <span class="pp">|</span> $0.03333$ <span class="pp">|</span> $0.0350 &gt; 0.03333$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> $H_2$ <span class="pp">|</span> $0.0450$ <span class="pp">|</span> $0.04167$ <span class="pp">|</span> $0.0450 &gt; 0.04167$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 6 <span class="pp">|</span> $H_4$ <span class="pp">|</span> $0.0800$ <span class="pp">|</span> $0.05000$ <span class="pp">|</span> $0.0800 &gt; 0.05000$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 2：確定決策臨界點</span></span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>滿足條件的最大排序索引為 $k = 3$！</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>因此，**拒絕 $H_{(1)}, H_{(2)}, H_{(3)}$（即 $H_6, H_1, H_3$）**，判定這三個特徵為統計顯著；其餘 $H_5, H_2, H_4$ 視為不顯著。</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **方法對比洞見**：</span></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 1. **未校正標準（$\alpha = 0.05$）**：會誤將 $H_5 (0.035)$ 與 $H_2 (0.045)$ 判定為顯著，引入大量偽發現。</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 2. **Bonferroni 修正（$\alpha/6 = 0.00833$）**：僅能拒絕 $H_6$ 與 $H_1$，導致真實有效信號 $H_3 (0.012)$ 被錯誤扼殺。</span></span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 3. **BH 程序**：成功保留了 $H_3$，同時精準剔除了 $H_5$ 與 $H_2$，在靈敏度與特異度間取得最優平衡！</span></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.2 雙特徵 Shapley 值手算示範</span></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>設模型包含 2 個特徵 $\mathcal{F} = <span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>$。</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>基準無特徵預測輸出（Base Rate）：$v(\emptyset) = 20$。</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>各特徵子集預測值如下：</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 1：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 35$</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 2：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 25$</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>包含兩者特徵：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) = 50$</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>求各特徵之 Shapley 貢獻值 $\phi_1, \phi_2$：</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>特徵可能進入聯盟的排列順序共有 $2! = 2$ 種：</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**順序一：先加入 $x_1$，後加入 $x_2$**（機率各為 $1/2$）：</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) - v(\emptyset) = 35 - 20 = +15$。</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 50 - 35 = +15$。</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**順序二：先加入 $x_2$，後加入 $x_1$**（機率各為 $1/2$）：</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) - v(\emptyset) = 25 - 20 = +5$。</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 50 - 25 = +25$。</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>加權計算特徵 Shapley 值：</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>\phi_1 = \frac{1}{2}(15) + \frac{1}{2}(25) = \mathbf{20}</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>\phi_2 = \frac{1}{2}(15) + \frac{1}{2}(5) = \mathbf{10}</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證效率性公理（Efficiency Axiom）**：</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; \phi_1 + \phi_2 = 20 + 10 = 30 = 50 - 20 = v(</span><span class="sc">\{</span><span class="at">x_1, x_2</span><span class="sc">\}</span><span class="at">) - v(\emptyset) \quad \blacksquare</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 兩特徵的邊際歸因值之和精準等於整體預測值與基準值的差額！</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.5 可解釋性人工智慧（Explainable AI, XAI）與 SHAP</span></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>Scott Lundberg 提出的 **SHAP（SHapley Additive exPlanations）** 是基於式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的現代可解釋性標準：</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>\phi_i(v) \triangleq \sum_{S \subseteq \mathcal{F} \setminus <span class="sc">\{</span>i<span class="sc">\}</span>} \frac{|S|! \, (|\mathcal{F}| - |S| - 1)!}{|\mathcal{F}|!} \Big<span class="co">[</span><span class="ot"> v(S \cup \{i\}) - v(S) \Big</span><span class="co">]</span></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-shapley-value}</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>其具備四大唯一公理保證：**效率性（Efficiency）**、**對稱性（Symmetry）**、**虛擬性（Dummy Player）** 與 **可加性（Additivity）**。</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.6 雙軌實務實驗室：FDR 多重校正與 SHAP 解釋實戰</span></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::p.adjust (BH 程序控制 FDR) 與大規模假設檢定</span></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, ISLR2</span></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬包含 2000 個特徵的大規模檢定情境 (其中前 50 個特徵為真實有顯著差異)</span></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>m_true <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="co"># 前 50 個檢定具有真實效應 (均值不為 0)</span></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>true_pvalues <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(m_true, <span class="at">shape1 =</span> <span class="fl">0.5</span>, <span class="at">shape2 =</span> <span class="dv">10</span>)</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="co"># 後 1950 個檢定為純隨機噪聲 (服從 [0, 1] 均勻分佈)</span></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>null_pvalues <span class="ot">&lt;-</span> <span class="fu">runif</span>(m <span class="sc">-</span> m_true, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>all_pvalues <span class="ot">&lt;-</span> <span class="fu">c</span>(true_pvalues, null_pvalues)</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 未校正之原始 p-值顯著數量 (alpha = 0.05)</span></span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>raw_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(all_pvalues <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"未校正 p &lt; 0.05 檢定出的特徵數: %d (包含大量假陽性噪聲)</span><span class="sc">\n</span><span class="st">"</span>, raw_significant))</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 極度保守的 Bonferroni 修正 (控制 FWER &lt;= 0.05)</span></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>bonf_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>bonf_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(bonf_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Bonferroni 修正 (過度保守) 檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, bonf_significant))</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Benjamini-Hochberg (BH) 程序控制 FDR &lt;= 0.05</span></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>fdr_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"BH"</span>)</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>fdr_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Benjamini-Hochberg (BH) 程序檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, fdr_significant))</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 檢驗 BH 程序在真實信號上的檢出表現 (真陽性 vs 偽陽性)</span></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>detected_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>true_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&lt;=</span> m_true)</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>false_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&gt;</span> m_true)</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中真陽性數量 (True Discoveries): %d / %d</span><span class="sc">\n</span><span class="st">"</span>, true_positives, m_true))</span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中偽陽性數量 (False Discoveries): %d</span><span class="sc">\n</span><span class="st">"</span>, false_positives))</span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"實證偽發現率 (Empirical FDR): %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (false_positives <span class="sc">/</span> fdr_significant) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：SHAP (Shapley Additive exPlanations) 解釋黑盒子集成模型</span></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost, shap</span></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備清晰物理規律的非線性房價資料 (n=400, p=5)</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">400</span></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>income <span class="op">=</span> np.random.uniform(<span class="dv">20</span>, <span class="dv">100</span>, n)</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>rooms <span class="op">=</span> np.random.uniform(<span class="dv">1</span>, <span class="dv">8</span>, n)</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">50</span>, n)</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>tax <span class="op">=</span> np.random.uniform(<span class="dv">10</span>, <span class="dv">50</span>, n)</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="co"># 真實非線性房價方程</span></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>price <span class="op">=</span> <span class="dv">50</span> <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> income <span class="op">+</span> <span class="fl">8.0</span> <span class="op">*</span> rooms <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> age <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> (income <span class="op">*</span> rooms) <span class="op">+</span> noise</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.DataFrame({<span class="st">'Income'</span>: income, <span class="st">'Rooms'</span>: rooms, <span class="st">'HouseAge'</span>: age, <span class="st">'TaxRate'</span>: tax})</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> price</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合強大的 XGBoost 黑盒子迴歸模型</span></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.08</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 建構 TreeExplainer 並計算全體樣本之精確 Shapley 值</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.TreeExplainer(model)</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer(X)</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 驗證 Efficiency 效率性公理</span></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>sample_pred <span class="op">=</span> model.predict(X.iloc[[sample_idx]])[<span class="dv">0</span>]</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>base_value <span class="op">=</span> explainer.expected_value</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>sum_shap <span class="op">=</span> np.<span class="bu">sum</span>(shap_values.values[sample_idx])</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SHAP 效率性公理 (Efficiency Axiom) 數學驗證 ==="</span>)</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"基準期望預測值 (Base E[f(x)]): </span><span class="sc">{</span>base_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之實際模型輸出 f(x): </span><span class="sc">{</span>sample_pred<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之各特徵 Shapley 值總和: </span><span class="sc">{</span>sum_shap<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"驗證差值 (Base + Sum(SHAP) - f(x)): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>((base_value <span class="op">+</span> sum_shap) <span class="op">-</span> sample_pred)<span class="sc">:.8f}</span><span class="ss">"</span>)</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 全域特徵平均絕對 Shapley 值</span></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>mean_abs_shap <span class="op">=</span> np.mean(np.<span class="bu">abs</span>(shap_values.values), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> feat_name, imp <span class="kw">in</span> <span class="bu">zip</span>(X.columns, mean_abs_shap):</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 [</span><span class="sc">{</span>feat_name<span class="sc">}</span><span class="ss">] 之平均邊際貢獻度: </span><span class="sc">{</span>imp<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**最小範數插值解之 Moore-Penrose 虛擬反矩陣證明**：</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>   在過度參數化迴歸中（$p &gt; n$ 且 $\mathrm{rank}(\boldsymbol{X}) = n$），證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-double-descent</span><span class="co">]</span>) 的最小 $L_2$ 範數插值解具有封閉形式：$\hat{\boldsymbol{\beta}} = \boldsymbol{X}^\top (\boldsymbol{X} \boldsymbol{X}^\top)^{-1} \boldsymbol{y}$，並說明為何梯度下降（從零初始化開始）必收斂至此解。</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**BH 程序 FDR 上界定理嚴格證明**：</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>   在所有檢定統計量相互獨立的前提下，利用全期望公式證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-bh-step</span><span class="co">]</span>) 的 BH 程序滿足：$\mathbb{E}\left<span class="co">[</span><span class="ot">\frac{V}{R} \;\middle|\; R &gt; 0\right</span><span class="co">]</span> P(R &gt; 0) = \frac{m_0}{m} q^* \le q^*$。</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**密度比重要性加權估計量的方差分析**：</span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch13-importance-weighting</span><span class="co">]</span>) 中，雖然重要性加權估計量在期望上是無偏的，但證明當測試分佈與訓練分佈相差懸殊時，$w(\boldsymbol{X}) = P_{\text{test}}(\boldsymbol{X}) / P_{\text{train}}(\boldsymbol{X})$ 的變異數會爆炸，導致經驗風險估計量高度不穩定。</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Shapley 值的唯一性定理證明**：</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>   證明符合「效率性、對稱性、虛擬性、可加性」四條公理的特徵貢獻分配方式是唯一的，且必為式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的加權形式。</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**良性過度配適的特徵值衰減條件（Bartlett et al. 2020）**：</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>   簡述彼得·巴特利特教授在過度參數化線性迴歸中提出的「良性過度配適」充要條件：說明為什麼共變異數矩陣的特徵值必須具備「重尾（Heavy Tail）」結構才能使插值噪聲被大量有效維度分散吸收。</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**過度參數化多項式雙重下降現象重現**：</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>   撰寫程式，固定樣本量 $n=40$，將多項式特徵維度 $p$ 由 1 逐步增加至 120。使用最小範數偽逆求解，繪製測試 MSE 隨 $p$ 變化的完整曲線，重現 $p=40$ 處的插值峰值與 $p &gt; 40$ 的第二重下降。</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**核均值匹配（Kernel Mean Matching, KMM）修正共變量偏移**：</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>   產生一組訓練分佈 $P_{\text{train}}(X) \sim \mathcal{N}(0, 1)$ 與測試分佈 $P_{\text{test}}(X) \sim \mathcal{N}(1.5, 1)$。實作核均值匹配（KMM）演算法透過二次規劃求解樣本權重 $\hat{w}_i$，並驗證加權迴歸在測試集上的 RMSE 改進。</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**基因微陣列多重檢定與火山圖（Volcano Plot）繪製**：</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a>   利用包含數千個基因的微陣列數據，對比患病組與對照組。計算每個基因的兩組獨立樣本 $t$-檢定 $p$-值與 Fold Change，使用 BH 程序校正，並繪製標準火山圖標註顯著差異表現基因。</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**TreeSHAP 交互作用值（SHAP Interaction Values）可視化**：</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>   使用 Python <span class="in">`shap`</span> 套件訓練包含特徵非線性交互的 XGBoost 模型，計算二階特徵交互 Shapley 矩陣，並繪製 SHAP 依賴圖（Dependence Plot）解析特徵間的調節效應。</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**LIME vs SHAP 局部歸因一致性比較**：</span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>    在分類模型上，挑選 5 筆邊界測試樣本，分別使用 LIME（局部可解釋模型無關解釋器）與 KernelSHAP 估計各特徵的局部重要性權重，量化評估兩者在特徵重要性符號與排序上的一致性指標。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026 統計學習理論與實務：深入淺出指南 | 繁體中文第一版</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>基於 R 與 Python 雙軌實作</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
