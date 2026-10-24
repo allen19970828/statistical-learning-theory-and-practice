@@ -1,0 +1,375 @@
+# 分群演算法與混合模型（EM 演算法） {#sec-ch12}
+
+## 本章導讀
+
+在探索性資料分析（EDA）與非監督學習中，**分群分析（Clustering）**旨在將資料集劃分為若干個有意義的子群體（Clusters），使得**「同一群體內的樣本高度相似，不同群體間的樣本高度相異」**。分群廣泛應用於顧客市場區隔、基因表現模式識別、影像語意分割與異常交易偵測。
+
+然而，如何數學化「相似度」？如何客觀決定分群數量 $K$？當樣本與群組的隸屬關係不是非黑即白，而是以機率形式存在時，又該如何建模？
+
+本章將從經典的 **$K$-Means（$K$-平均演算法）** 出發，給出其單調收斂性與輪廓係數（Silhouette Coefficient）的嚴格證明；對比自底向上的**階層式分群（Hierarchical Clustering）**與四種鏈結法之差異；提供一組包含了 $K$-Means 與 GMM EM 演算法手把手數值推演範例；深入推導軟分群的極致——**高斯混合模型（GMM）**；嚴格給出統計學中最具美感的演算法之一：**期望最大化演算法（Expectation-Maximization, EM Algorithm）**基於 Jensen 不等式的下界推導；最後在 R 與 Python 雙環境中進行全流程實戰。
+
+---
+
+## 12.1 $K$-Means 分群演算法與收斂性證明
+
+### 12.1.1 最佳化目標函數
+
+設資料集為 $\mathcal{D} = \{\boldsymbol{x}_1, \boldsymbol{x}_2, \dots, \boldsymbol{x}_n\}$，欲劃分為 $K$ 個互斥的子集 $C_1, C_2, \dots, C_K$。
+$K$-Means 的核心目標是最小化**群內平方和（Within-Cluster Sum of Squares, WCSS）**：
+
+$$
+\min_{C_1, \dots, C_K} \sum_{k=1}^K \mathrm{WCSS}(C_k) = \min_{C_1, \dots, C_K} \sum_{k=1}^K \frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2
+$$
+
+由基本代數恆等式，群內兩兩樣本距離平方和恰好等於樣本到該群質心（Centroid）$\boldsymbol{\mu}_k$ 距離平方和的兩倍：
+$$
+\frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2
+$$
+其中 $\boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum_{i \in C_k} \boldsymbol{x}_i$ 為群 $k$ 的樣本平均向量。
+
+因此，$K$-Means 的標準目標函數改寫為：
+$$
+J(C_1, \dots, C_K, \boldsymbol{\mu}_1, \dots, \boldsymbol{\mu}_K) = \sum_{k=1}^K \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2
+$$ {#eq-ch12-kmeans-objective}
+
+---
+
+### 12.1.2 Lloyd 演算法與單調收斂性證明
+
+Stuart Lloyd (1957) 提出了經典的交替最佳化演算法（Lloyd's Algorithm）：
+1. **初始化**：隨機指定 $K$ 個初始質心 $\boldsymbol{\mu}_1^{(0)}, \dots, \boldsymbol{\mu}_K^{(0)}$。
+2. **指派步（Assignment Step）**：
+   固定質心 $\boldsymbol{\mu}_k$，將每個樣本點指派給歐氏距離最近的質心所代表的群：
+   $$
+   C_k^{(t)} = \left\{ \boldsymbol{x}_i \;\middle|\; \|\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t)}\|_2 \le \|\boldsymbol{x}_i - \boldsymbol{\mu}_l^{(t)}\|_2, \, \forall l \neq k \right\}
+   $$
+3. **更新步（Update Step）**：
+   固定分群劃分 $C_k^{(t)}$，重新計算每個群的質心：
+   $$
+   \boldsymbol{\mu}_k^{(t+1)} = \frac{1}{|C_k^{(t)}|} \sum_{i \in C_k^{(t)}} \boldsymbol{x}_i
+   $$
+4. 重複步驟 2 與 3，直至質心位置不再改變或變化小於收斂容忍度。
+
+#### 單調收斂性定理證明：
+* **在指派步中**：對於任意樣本 $\boldsymbol{x}_i$，將其歸入最近質心顯然使 $\|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2$ 達到最小，故目標函數值 $J$ 單調不增。
+* **在更新步中**：給定固定群 $C_k$，對 $\boldsymbol{\mu}_k$ 求導：$\nabla_{\boldsymbol{\mu}_k} \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2 = -2\sum_{i \in C_k}(\boldsymbol{x}_i - \boldsymbol{\mu}_k) = \boldsymbol{0} \implies \boldsymbol{\mu}_k = \frac{1}{|C_k|}\sum \boldsymbol{x}_i$。此解精確為一元二次凸函數的全局最小值，故目標函數值 $J$ 再次單調不增。
+* 目標函數 $J \ge 0$ 恆有下界，且有限樣本的可能劃分方式最多只有 $K^n$ 種。
+* **結論**：Lloyd 演算法**必在有限步內收斂至局部極小值（Local Minimum）** $\quad \blacksquare$
+
+> **⚠️ 注意**：$K$-Means 只能保證收斂至局部最優，強烈依賴初始質心的位置。現代工程實務中，一律採用 **$K$-Means++** 初始化法（依據點到既有質心的最短距離平方比例，以機率進行分段抽樣），在理論上保證逼近全域最優解的預期誤差界為 $\mathcal{O}(\log K)$。
+
+---
+
+### 12.1.3 評估群數 $K$：輪廓係數（Silhouette Coefficient）
+
+肘部法（Elbow Method）尋找 WCSS 曲線轉折點往往過於主觀。Rousseeuw (1987) 提出了**輪廓係數（Silhouette Coefficient）**：
+
+對於任意樣本 $i \in C_k$：
+1. **群內凝聚度（Intra-cluster Dissimilarity）**：樣本 $i$ 到同群其他樣本的平均距離：
+   $$
+   a(i) = \frac{1}{|C_k| - 1} \sum_{j \in C_k, j \neq i} \|\boldsymbol{x}_i - \boldsymbol{x}_j\|_2
+   $$
+2. **群間分離度（Nearest-cluster Dissimilarity）**：樣本 $i$ 到最近相鄰群 $C_l$（$l \neq k$）中所有樣本的平均距離：
+   $$
+   b(i) = \min_{l \neq k} \frac{1}{|C_l|} \sum_{j \in C_l} \|\boldsymbol{x}_i - \boldsymbol{x}_j\|_2
+   $$
+3. **單點輪廓係數**：
+   $$
+   s(i) \triangleq \frac{b(i) - a(i)}{\max(a(i), b(i))} \in [-1, 1]
+   $$ {#eq-ch12-silhouette}
+
+* 若 $s(i) \approx 1$：$a(i) \ll b(i)$，樣本與所屬群高度緊湊，且遠離其他群（分群極佳）。
+* 若 $s(i) \approx 0$：樣本坐落在兩個群的交界處。
+* 若 $s(i) < 0$：$a(i) > b(i)$，樣本甚至離鄰近群更近，說明該樣本被錯誤劃分！
+* **平均輪廓係數（Average Silhouette Score）**取得最大值所對應的 $K$，即為最優群數。
+
+---
+
+## 12.2 階層式分群（Hierarchical Clustering）
+
+$K$-Means 必須預先人為指定群數 $K$。**階層式分群（Hierarchical Clustering）**則打破此限制，建構一棵自底向上的**樹狀圖（Dendrogram）**。
+
+### 12.2.1 凝聚式分群流程（Agglomerative）
+1. 初始階段：將每一個樣本點視為一個獨立的單點群（共有 $n$ 個群）。
+2. 計算所有群兩兩之間的相異度矩陣。
+3. 將相異度最小（最接近）的兩個群合併為一個新群。
+4. 重複步驟 2 與 3，直到全體樣本最終合併為單一根節點群。
+
+### 12.2.2 四大鏈結法（Linkage Methods）對比
+
+設有兩群體 $A$ 與 $B$，如何度量兩個集合之間的距離 $d(A, B)$？
+
+| 鏈結法 (Linkage) | 數學定義 $d(A, B)$ | 特性與幾何形態 |
+| :--- | :--- | :--- |
+| **完全鏈結 (Complete)** | $\max_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|$ | 最長距離。產生大小均勻、緊密球狀的群（最常用）。 |
+| **單一鏈結 (Single)** | $\min_{\boldsymbol{x} \in A, \boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|$ | 最短距離。易發生**鏈狀效應（Chaining）**，形成細長散落群。 |
+| **平均鏈結 (Average)** | $\frac{1}{\|A\| \|B\|} \sum_{\boldsymbol{x} \in A} \sum_{\boldsymbol{y} \in B} \|\boldsymbol{x} - \boldsymbol{y}\|$ | 平均距離。折衷平衡，受離群值影響較小。 |
+| **質心鏈結 (Centroid)** | $\|\boldsymbol{\mu}_A - \boldsymbol{\mu}_B\|$ | 質心距離。樹狀圖可能發生**倒置（Inversion）**跳躍。 |
+
+---
+
+## 12.3 手把手數值推演：K-Means 迭代與 GMM EM 演算法手算
+
+### 12.3.1 K-Means 演算法單步手算
+考慮 4 筆 1D 樣本：$x_1 = 1.0, x_2 = 2.0, x_3 = 6.0, x_4 = 7.0$。
+欲劃分為 $K=2$ 個群。
+初始質心設定為：$\mu_1^{(0)} = 1.5, \mu_2^{(0)} = 4.0$。
+
+#### 第 1 步：指派樣本至最近質心
+計算各樣本到質心的距離：
+* $x_1 = 1.0$：$|1.0 - 1.5| = 0.5$，$|1.0 - 4.0| = 3.0 \implies$ 指派至群 1。
+* $x_2 = 2.0$：$|2.0 - 1.5| = 0.5$，$|2.0 - 4.0| = 2.0 \implies$ 指派至群 1。
+* $x_3 = 6.0$：$|6.0 - 1.5| = 4.5$，$|6.0 - 4.0| = 2.0 \implies$ 指派至群 2。
+* $x_4 = 7.0$：$|7.0 - 1.5| = 5.5$，$|7.0 - 4.0| = 3.0 \implies$ 指派至群 2。
+新分群為：$C_1 = \{1.0, 2.0\}$，$C_2 = \{6.0, 7.0\}$。
+
+#### 第 2 步：更新質心
+* $\mu_1^{(1)} = \frac{1.0 + 2.0}{2} = \mathbf{1.5}$
+* $\mu_2^{(1)} = \frac{6.0 + 7.0}{2} = \mathbf{6.5}$
+
+#### 第 3 步：再次指派
+依據新質心 $\mu_1 = 1.5, \mu_2 = 6.5$ 重新檢查，分群劃分維持 $C_1 = \{1, 2\}, C_2 = \{6, 7\}$ 不變。
+演算法在第 1 步更新後**立即達成收斂**！
+收斂時群內平方和為：
+$$
+\mathrm{WCSS} = (1 - 1.5)^2 + (2 - 1.5)^2 + (6 - 6.5)^2 + (7 - 6.5)^2 = 0.25 + 0.25 + 0.25 + 0.25 = \mathbf{1.000}
+$$
+
+---
+
+### 12.3.2 GMM 之 EM 演算法單步手算
+考慮 2 筆 1D 樣本：$x_1 = 0, x_2 = 2$。
+二成分高斯混合模型（$K=2$），設當前初始參數為：
+* 權重：$\pi_1 = 0.5, \pi_2 = 0.5$
+* 均值：$\mu_1 = 0, \mu_2 = 1$
+* 方差：$\sigma_1^2 = 1, \sigma_2^2 = 1$
+
+#### E-步：計算後驗責任度 $\gamma_{ik}$
+利用一維高斯密度 $\mathcal{N}(x \mid \mu, \sigma^2) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2}\right)$（$\frac{1}{\sqrt{2\pi}} \approx 0.3989$）：
+* 對樣本 1 ($x_1 = 0$)：
+  $$
+  \mathcal{N}(0 \mid 0, 1) = 0.3989 \cdot e^0 = 0.3989
+  $$
+  $$
+  \mathcal{N}(0 \mid 1, 1) = 0.3989 \cdot e^{-0.5} \approx 0.3989 \times 0.6065 = 0.2420
+  $$
+  責任度：
+  $$
+  \gamma_{11} = \frac{0.5 \times 0.3989}{0.5 \times 0.3989 + 0.5 \times 0.2420} = \frac{0.3989}{0.6409} \approx \mathbf{0.6224}, \quad \gamma_{12} = 1 - 0.6224 = \mathbf{0.3776}
+  $$
+* 對樣本 2 ($x_2 = 2$)：
+  $$
+  \mathcal{N}(2 \mid 0, 1) = 0.3989 \cdot e^{-2} \approx 0.3989 \times 0.1353 = 0.0540
+  $$
+  $$
+  \mathcal{N}(2 \mid 1, 1) = 0.3989 \cdot e^{-0.5} = 0.2420
+  $$
+  責任度：
+  $$
+  \gamma_{21} = \frac{0.5 \times 0.0540}{0.5 \times 0.0540 + 0.5 \times 0.2420} = \frac{0.0540}{0.2960} \approx \mathbf{0.1824}, \quad \gamma_{22} = 1 - 0.1824 = \mathbf{0.8176}
+  $$
+
+#### M-步：更新參數
+1. 有效樣本數：
+   $$
+   N_1 = \gamma_{11} + \gamma_{21} = 0.6224 + 0.1824 = 0.8048
+   $$
+   $$
+   N_2 = \gamma_{12} + \gamma_{22} = 0.3776 + 0.8176 = 1.1952
+   $$
+2. 更新權重：
+   $$
+   \pi_1^{(1)} = \frac{0.8048}{2} = \mathbf{0.4024}, \quad \pi_2^{(1)} = \frac{1.1952}{2} = \mathbf{0.5976}
+   $$
+3. 更新均值：
+   $$
+   \mu_1^{(1)} = \frac{\gamma_{11} x_1 + \gamma_{21} x_2}{N_1} = \frac{0.6224(0) + 0.1824(2)}{0.8048} = \frac{0.3648}{0.8048} \approx \mathbf{0.4533}
+   $$
+   $$
+   \mu_2^{(1)} = \frac{\gamma_{12} x_1 + \gamma_{22} x_2}{N_2} = \frac{0.3776(0) + 0.8176(2)}{1.1952} = \frac{1.6352}{1.1952} \approx \mathbf{1.3681}
+   $$
+
+> 💡 **數值洞察**：
+> 初始時 $\mu_1 = 0, \mu_2 = 1$。經由一次 EM 迭代，群 2 的均值由 $1.0$ 被順暢吸引拉動至 $1.3681$，群 1 均值被微調至 $0.4533$，權重與方差亦隨之優化。這生動展示了軟責任度如何引導高斯球平滑流動。
+
+---
+
+## 12.4 高斯混合模型（GMM）與 EM 演算法之嚴格數學推導
+
+$K$-Means 實質上隱含了兩個嚴苛的幾何假設：
+1. 各分群的形狀必須是**球狀（Spherical）**的。
+2. 各分群的**方差尺度完全相等**。
+
+當資料呈現橢圓傾斜拉伸（各維度共變異數非零）時，$K$-Means 將徹底失效。此外，$K$-Means 屬於**硬分群（Hard Clustering）**，無法表達模糊性。
+
+**高斯混合模型（Gaussian Mixture Models, GMM）**採用機率生成模型：
+$$
+P(\boldsymbol{x}) = \sum_{k=1}^K \pi_k \mathcal{N}(\boldsymbol{x} \mid \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
+$$ {#eq-ch12-gmm-density}
+
+其中 $\pi_k$ 為混合權重先驗機率（$\sum_{k=1}^K \pi_k = 1, \pi_k \ge 0$），$\boldsymbol{\Sigma}_k$ 為各群專屬的共變異數矩陣（允許任意橢圓朝向與尺寸）。
+
+### 12.4.1 不完全資料似然與 Jensen 不等式
+
+設觀測資料為 $\boldsymbol{X} = \{\boldsymbol{x}_1, \dots, \boldsymbol{x}_n\}$，未觀測到的隱變數為 $\boldsymbol{Z} = \{\boldsymbol{z}_1, \dots, \boldsymbol{z}_n\}$，其中 $\boldsymbol{z}_i \in \{1, \dots, K\}$ 代表樣本 $i$ 來自第幾群。模型全體未知參數記為 $\boldsymbol{\theta} = \{\pi_k, \boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k\}_{k=1}^K$。
+
+邊際對數似然函數為：
+$$
+\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln P(\boldsymbol{x}_i \mid \boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta}) \right)
+$$
+
+引入關於隱變數的任意機率分佈 $q_i(z_i)$（滿足 $\sum_{k=1}^K q_i(k) = 1$），在對數符號內部進行分子分母同乘構造：
+$$
+\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \ln \left( \sum_{k=1}^K q_i(k) \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right)
+$$
+
+由於自然對數函數 $\ln(\cdot)$ 是**嚴格凹函數（Strictly Concave）**，依據 **Jensen 不等式**（$\ln \mathbb{E}[X] \ge \mathbb{E}[\ln X]$）：
+$$
+\ell(\boldsymbol{\theta}) \ge \sum_{i=1}^n \sum_{k=1}^K q_i(k) \ln \left( \frac{P(\boldsymbol{x}_i, z_i = k \mid \boldsymbol{\theta})}{q_i(k)} \right) \triangleq \mathrm{ELBO}(q, \boldsymbol{\theta})
+$$ {#eq-ch12-elbo}
+
+右端這項泛函稱為**證據下界（Evidence Lower Bound, ELBO）**。
+
+### 12.4.2 E-步（Expectation Step）與 M-步（Maximization Step）
+
+1. **E-步**：令下界緊貼對數似然，隱變數最優分佈即為**後驗責任度（Responsibility）**：
+   $$
+   \gamma_{ik} \triangleq P(z_i = k \mid \boldsymbol{x}_i, \boldsymbol{\theta}^{(t)}) = \frac{\pi_k^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_k^{(t)}, \boldsymbol{\Sigma}_k^{(t)})}{\sum_{l=1}^K \pi_l^{(t)} \mathcal{N}(\boldsymbol{x}_i \mid \boldsymbol{\mu}_l^{(t)}, \boldsymbol{\Sigma}_l^{(t)})}
+   $$ {#eq-ch12-responsibility}
+2. **M-步**：極大化下界，得到閉式解析更新式：
+   * 有效樣本量：$N_k \triangleq \sum_{i=1}^n \gamma_{ik}$
+   * 先驗混合權重：$\pi_k^{(t+1)} = \frac{N_k}{n}$
+   * 均值向量：$\boldsymbol{\mu}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} \boldsymbol{x}_i$
+   * 共變異數矩陣：$\boldsymbol{\Sigma}_k^{(t+1)} = \frac{1}{N_k} \sum_{i=1}^n \gamma_{ik} (\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})(\boldsymbol{x}_i - \boldsymbol{\mu}_k^{(t+1)})^\top$
+
+---
+
+## 12.5 雙軌實務實驗室：K-Means、階層式分群與 GMM 實戰
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：stats::kmeans, hclust 階層分群與 cluster::silhouette 輪廓分析
+# 依賴套件：stats, cluster, ISLR2
+# ==============================================================================
+
+library(cluster)
+library(ISLR2)
+
+# 1. 使用 USArrests 資料集 (美國各州犯罪率數據)
+data(USArrests)
+
+# 標準化資料 (以消除不同測量單位之偏差)
+X_arrests <- scale(USArrests)
+
+# 2. K-Means 分群實戰 (測試 K = 3)
+set.seed(42)
+km_out <- kmeans(X_arrests, centers = 3, nstart = 25)
+
+cat("=== K-Means (K=3) 分群結果 ===\n")
+cat("各群樣本數量: ", km_out$size, "\n")
+cat(sprintf("群間平方和佔總平方和比例: %.2f%%\n", (km_out$betweenss / km_out$totss) * 100))
+
+# 計算並輸出平均輪廓係數 (Silhouette Score)
+sil_km <- silhouette(km_out$cluster, dist(X_arrests))
+cat(sprintf("K-Means 平均輪廓係數: %.4f\n\n", mean(sil_km[, "sil_width"])))
+
+# 3. 階層式分群實戰 (完全鏈結法 Complete Linkage)
+dist_mat <- dist(X_arrests)
+hc_complete <- hclust(dist_mat, method = "complete")
+
+# 切割樹狀圖為 3 個群 (cutree)
+hc_clusters <- cutree(hc_complete, k = 3)
+sil_hc <- silhouette(hc_clusters, dist_mat)
+
+cat("=== 階層式分群 (Complete Linkage, K=3) ===\n")
+cat(sprintf("階層式分群平均輪廓係數: %.4f\n", mean(sil_hc[, "sil_width"])))
+cat("兩分群法交叉對比混淆表:\n")
+print(table(KMeans = km_out$cluster, Hierarchical = hc_clusters))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：KMeans, AgglomerativeClustering 與 GMM 軟分群對比
+# 依賴套件：numpy, pandas, scikit-learn
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.mixture import GaussianMixture
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
+
+# 1. 模擬具備橢圓傾斜結構的雙群分佈 (K-Means 難以處理的幾何形態)
+np.random.seed(42)
+n_per_cluster = 200
+
+# 群 1: 橢圓傾斜分佈
+X1 = np.random.multivariate_normal([0, 0], [[2.5, 1.8], [1.8, 1.5]], n_per_cluster)
+# 群 2: 獨立高斯分佈
+X2 = np.random.multivariate_normal([4, 4], [[1.0, -0.6], [-0.6, 1.0]], n_per_cluster)
+
+X = np.vstack([X1, X2])
+X_scaled = StandardScaler().fit_transform(X)
+
+# 2. 擬合 K-Means
+kmeans = KMeans(n_clusters=2, n_init=10, random_state=42).fit(X_scaled)
+sil_km = silhouette_score(X_scaled, kmeans.labels_)
+
+# 3. 擬合凝聚式階層分群 (Complete Linkage)
+agg = AgglomerativeClustering(n_clusters=2, linkage='complete').fit(X_scaled)
+sil_agg = silhouette_score(X_scaled, agg.labels_)
+
+# 4. 擬合高斯混合模型 (GMM - EM 演算法)
+gmm = GaussianMixture(n_components=2, covariance_type='full', random_state=42).fit(X_scaled)
+gmm_labels = gmm.predict(X_scaled)
+gmm_probs = gmm.predict_proba(X_scaled) # 軟分群責任度
+
+print(f"K-Means 輪廓係數: {sil_km:.4f}")
+print(f"階層分群 (Complete) 輪廓係數: {sil_agg:.4f}")
+print(f"GMM EM 演算法收斂迭代次數: {gmm.n_iter_}")
+print(f"GMM 估計先驗混合權重: {np.round(gmm.weights_, 3)}")
+
+# 檢視邊界點的軟分群後驗機率模糊性
+uncertain_points = np.where((gmm_probs[:, 0] > 0.4) & (gmm_probs[:, 0] < 0.6))[0]
+print(f"\n處於兩群模糊邊界處之樣本數 (0.4 < P < 0.6): {len(uncertain_points)}")
+if len(uncertain_points) > 0:
+    sample_idx = uncertain_points[0]
+    print(f"範例邊界點 {sample_idx} 的軟分群機率指派: {np.round(gmm_probs[sample_idx], 3)}")
+```
+:::
+
+---
+
+## 12.6 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **群內兩兩平方和與質心距離恆等式證明**：
+   嚴格推導恆等式 $\frac{1}{|C_k|} \sum_{i, i' \in C_k} \|\boldsymbol{x}_i - \boldsymbol{x}_{i'}\|_2^2 = 2 \sum_{i \in C_k} \|\boldsymbol{x}_i - \boldsymbol{\mu}_k\|_2^2$，並說明為何最小化 WCSS 等價於最小化各點到質心的幾何距離平方。
+2. **K-Means 局部極小值之幾何反例構建**：
+   在二維平面上構造一組包含 4 個對稱分佈頂點的數據點集，證明存在某個初始質心指派，使得 Lloyd 演算法收斂至一個非全域最優的局部次優解，並計算其與全域最優解的 WCSS 差距。
+3. **輪廓係數的邊界取值證明**：
+   由式 ([-@eq-ch12-silhouette]) 證明：單點輪廓係數 $s(i)$ 嚴格有界於 $[-1, 1]$。當某群僅包含單一孤立樣本點（$|C_k| = 1$）時，輪廓係數在統計學上應如何定義以避免分母為零？
+4. **階層式分群樹狀圖高度與距離單調性**：
+   證明在超度量空間（Ultrametric Space）下，完全鏈結法（Complete Linkage）與平均鏈結法（Average Linkage）生成的樹狀圖合併高度必單調不減；並給出反例說明質心鏈結法（Centroid Linkage）何時會產生高度反轉（Inversion）。
+5. **GMM 在零方差極限下退化為 K-Means 證明**：
+   設 GMM 的各高斯成分共變異數矩陣為 $\boldsymbol{\Sigma}_k = \sigma^2 \boldsymbol{I}$，且權重相等 $\pi_k = 1/K$。證明當 $\sigma^2 \to 0$ 時，責任度 $\gamma_{ik}$ 收斂至指示函數 $\mathbb{I}(k = \arg\min_l \|\boldsymbol{x}_i - \boldsymbol{\mu}_l\|^2)$，EM 演算法精確等價於 Lloyd 演算法。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **手刻 K-Means++ 初始化演算法**：
+   僅使用 NumPy 實作 $K$-Means++ 質心採樣邏輯：第 1 個質心均勻隨機選取，後續質心以機率 $P(\boldsymbol{x}) = \frac{D(\boldsymbol{x})^2}{\sum D(\boldsymbol{x}')^2}$ 取樣。比較隨機初始化與 $K$-Means++ 在 100 次隨機試驗中的收斂迭代次數與 WCSS 穩定性。
+7. **輪廓圖（Silhouette Plot）手繪視覺化**：
+   使用 Python `matplotlib` 或 R `factoextra` 繪製標準輪廓分析橫向條形圖，顯示每個樣本在不同 $K \in \{2, 3, 4, 5\}$ 下的 $s(i)$ 排序分佈與群平均輪廓寬度，找出最優分群數。
+8. **DBSCAN 密度分群對比（克服任意形狀分群）**：
+   生成雙環形（Concentric Circles）與雙月形非凸幾何數據。對比 $K$-Means、階層分群與 DBSCAN（Density-Based Spatial Clustering of Applications with Noise）的分群效果，展示密度可達性對複雜形狀的識別能力。
+9. **影像色彩量化（Color Quantization with K-Means）**：
+   載入一張高解析度全彩照片（RGB 24-bit，1600 萬色），將所有像素視為三維空間中的資料點，使用 $K$-Means（$K=16, 64$）進行色彩壓縮與聚類，並重新渲染輸出壓縮影像。
+10. **貝氏資訊準則（BIC）挑選 GMM 最優成分數與共變異數類型**：
+    對真實多維數據（如 Wine 或 Iris），在共變異數結構（`spherical`, `diag`, `tied`, `full`）與成分數 $K \in [1, 8]$ 間進行網格搜尋，繪製 BIC 曲線並挑選出最優統計模型。

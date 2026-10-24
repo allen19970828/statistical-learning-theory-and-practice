@@ -1,0 +1,340 @@
+# 非線性模型與平滑技術 {#sec-ch05}
+
+## 本章導讀
+
+在真實世界中，特徵與反應變數之間的關係很少是純粹線性的。當真實規律呈現彎曲、飽和（Saturation）或週期性波動時，硬套線性迴歸將導致嚴重的**配適不足（Underfitting）**。然而，若直接引入高階多項式（如 10 階以上），又會在邊界處引發劇烈震盪（著名的 Runge 現象）。
+
+如何在「維持線性模型的可解釋性」與「捕捉任意平滑非線性曲線」之間取得平衡？統計學給出的優雅答案是**仿樣函數（Splines）**與**廣義加法模型（Generalized Additive Models, GAM）**。
+
+本章將剖析多項式之侷限，嚴格定義分段多項式與連續性約束；推導**三次仿樣（Cubic Splines）**與**自然三次仿樣（Natural Cubic Splines）**的截斷冪次基底；提供一組 4 筆樣本單節點仿樣手把手數值求解推演；詳解帶有二階導數曲率懲罰的**平滑仿樣（Smoothing Splines）**之變分極值定理；最後引介由 Trevor Hastie 與 Robert Tibshirani 創立的**廣義加法模型（GAM）**與 Backfitting 演算法，並於 R 與 Python 雙環境中實戰。
+
+---
+
+## 5.1 多項式之侷限與分段多項式
+
+### 5.1.1 Runge 現象與全域多項式之缺陷
+
+全域多項式迴歸模型為：
+$$
+y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \cdots + \beta_d x_i^d + \epsilon_i
+$$
+
+當次數 $d$ 提高時，模型在資料中心區域配適良好，但在資料的兩端邊界區域，高階項 $x^d$ 的權重會導致曲線出現不受控制的劇烈上下震盪，此即數值分析中的 **Runge 現象**。此外，全域多項式的致命弱點在於**缺乏局部性（Locality）**：改變資料集中某一個局部的單一點，會牽動整條全域曲線的形狀。
+
+### 5.1.2 局部化解方：分段多項式（Piecewise Polynomials）
+
+為克服全域問題，我們在自變數的取值範圍內設定 $K$ 個分割點，稱為**節點（Knots）**：
+$$
+\xi_1 < \xi_2 < \dots < \xi_K
+$$
+
+這些節點將實數軸劃分為 $K+1$ 個互斥區間：$(-\infty, \xi_1], (\xi_1, \xi_2], \dots, (\xi_K, \infty)$。在每一個區間內，我們分別擬合一個獨立的低階多項式（例如 3 次多項式）。
+
+然而，若完全不對相鄰區間施加銜接約束，曲線將在各節點 $\xi_k$ 處發生**斷裂跳躍（Discontinuity）**，物理上極不合理。
+
+---
+
+## 5.2 迴歸仿樣（Regression Splines）
+
+### 5.2.1 連續性與光滑性約束
+
+為了使分段多項式銜接平滑，我們在每個節點處施加**光滑性階數約束**。對於一個階數為 $d$ 的仿樣函數 $S(x)$，在每個節點 $\xi_k$ 處要求：
+1. **函數值連續（$C^0$ 連續）**：$\lim_{x \to \xi_k^-} S(x) = \lim_{x \to \xi_k^+} S(x)$
+2. **一階導數連續（$C^1$ 連續）**：$\lim_{x \to \xi_k^-} S'(x) = \lim_{x \to \xi_k^+} S'(x)$（斜率無折角）
+3. **二階導數連續（$C^2$ 連續）**：$\lim_{x \to \xi_k^-} S''(x) = \lim_{x \to \xi_k^+} S''(x)$（曲率平滑銜接）
+
+在統計學中，最常使用的黃金標準是**三次仿樣（Cubic Spline, $d=3$）**。人眼在幾何視覺上無法察覺二階導數連續曲線的微小轉折，因此三次仿樣在外觀上極具自然平滑感。
+
+### 5.2.2 自由度精算法則
+* 共有 $K+1$ 個區間，每個區間為 3 次多項式（具有 4 個待估係數 $\beta_0, \beta_1, \beta_2, \beta_3$），原始參數共有 $4(K+1)$ 個。
+* 共有 $K$ 個內部節點，每個節點處施加 3 個約束條件（$C^0, C^1, C^2$），總約束數為 $3K$。
+* **三次仿樣的淨自由度（Degrees of Freedom）**為：
+  $$
+  \mathrm{df} = 4(K+1) - 3K = K + 4
+  $$
+
+---
+
+### 5.2.3 截斷冪次基底（Truncated Power Basis）
+
+為了將三次仿樣化為標準線性迴歸求解，我們定義**截斷冪次函數（Truncated Power Function）**：
+$$
+(x - \xi)_+^3 \triangleq \begin{cases}
+(x - \xi)^3 & \text{若 } x > \xi \\
+0 & \text{若 } x \le \xi
+\end{cases}
+$$ {#eq-ch05-truncated-power}
+
+#### 定理：具有 $K$ 個節點的三次仿樣可唯一表示為基底函數的線性組合：
+$$
+S(x) = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3
+$$ {#eq-ch05-spline-basis}
+
+**證明**：
+1. 當 $x \le \xi_1$ 時，所有截斷項均為 $0$，$S(x)$ 顯然是標準三次多項式。
+2. 當 $x$ 越過節點 $\xi_k$ 時，函數增添了 $\theta_k (x - \xi_k)^3$ 項。
+3. 檢驗其在 $\xi_k$ 處的導數：
+   * 零階：$(\xi_k - \xi_k)_+^3 = 0$（連續）。
+   * 一階導數：$\left.\frac{d}{dx}(x - \xi_k)_+^3\right|_{x=\xi_k} = 3(0)^2 = 0$（一階導連續）。
+   * 二階導數：$\left.\frac{d^2}{dx^2}(x - \xi_k)_+^3\right|_{x=\xi_k} = 6(0) = 0$（二階導連續）。
+   * 三階導數：在 $\xi_k$ 處從 $0$ 突跳至 $6\theta_k$（允許三階導不連續）。
+因此式 ([-@eq-ch05-spline-basis]) 嚴格滿足三次仿樣的全部定義。待估係數共有 $4 + K$ 個，與自由度精確一致 $\quad \blacksquare$
+
+---
+
+### 5.2.4 自然三次仿樣（Natural Cubic Splines, NCS）
+
+一般三次仿樣在最外側節點之外（邊界區域 $x < \xi_1$ 或 $x > \xi_K$）依然是 3 次曲線，估計變異數較大。
+**自然三次仿樣（NCS）**追加了邊界條件：**在兩個邊界區域強制曲線為線性直線（Linear）**。
+
+* **約束條件**：在 $x \le \xi_1$ 與 $x \ge \xi_K$ 處，其二階與三階導數嚴格為零：
+  $$
+  S''(x) = 0, \quad S'''(x) = 0
+  $$
+* 邊界左側節省 2 個自由度，右側節省 2 個自由度，總計節省 4 個參數。
+* **自然三次仿樣自由度**：$\mathrm{df} = (K + 4) - 4 = K$。
+* NCS 大幅壓制了邊界處的估計變異數，是實務中最推薦的基底函數形式。
+
+---
+
+## 5.3 手把手數值推演：4 筆樣本單節點分段線性仿樣手算
+
+為了直觀理解截斷基底函數如何轉化為線性迴歸求解，我們構造一組 4 筆樣本的玩具資料，擬合在節點 $\xi = 1.5$ 處連續銜接的分段線性仿樣（Piecewise Linear Spline）：
+
+| 樣本編號 $i$ | $x_i$ | $y_i$ |
+| :---: | :---: | :---: |
+| 1 | 0.0 | 1.0 |
+| 2 | 1.0 | 3.0 |
+| 3 | 2.0 | 2.0 |
+| 4 | 3.0 | 5.0 |
+
+模型設定為：
+$$
+f(x) = \beta_0 + \beta_1 x + \theta_1 (x - 1.5)_+
+$$
+其中截斷線性基底 $(x - 1.5)_+ = \max(0, x - 1.5)$。
+
+### 步驟 1：建立設計矩陣 $\boldsymbol{X}$ 與響應向量 $\boldsymbol{y}$
+* 樣本 1 ($x=0$)：$[1, \, 0, \, 0]$
+* 樣本 2 ($x=1$)：$[1, \, 1, \, 0]$
+* 樣本 3 ($x=2$)：$[1, \, 2, \, (2 - 1.5)_+] = [1, \, 2, \, 0.5]$
+* 樣本 4 ($x=3$)：$[1, \, 3, \, (3 - 1.5)_+] = [1, \, 3, \, 1.5]$
+
+$$
+\boldsymbol{X} = \begin{bmatrix} 1 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 2 & 0.5 \\ 1 & 3 & 1.5 \end{bmatrix}, \quad \boldsymbol{y} = \begin{bmatrix} 1.0 \\ 3.0 \\ 2.0 \\ 5.0 \end{bmatrix}
+$$
+
+### 步驟 2：計算正規方程矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 與向量 $\boldsymbol{X}^\top \boldsymbol{y}$
+* $\boldsymbol{X}^\top \boldsymbol{X}$：
+  $$
+  \boldsymbol{X}^\top \boldsymbol{X} = \begin{bmatrix} 
+  1+1+1+1 & 0+1+2+3 & 0+0+0.5+1.5 \\ 
+  0+1+2+3 & 0+1+4+9 & 0+0+1+4.5 \\ 
+  0+0+0.5+1.5 & 0+0+1+4.5 & 0+0+0.25+2.25 
+  \end{bmatrix} = \begin{bmatrix} 4.0 & 6.0 & 2.0 \\ 6.0 & 14.0 & 5.5 \\ 2.0 & 5.5 & 2.5 \end{bmatrix}
+  $$
+* $\boldsymbol{X}^\top \boldsymbol{y}$：
+  $$
+  \boldsymbol{X}^\top \boldsymbol{y} = \begin{bmatrix} 
+  1(1) + 1(3) + 1(2) + 1(5) \\ 
+  0(1) + 1(3) + 2(2) + 3(5) \\ 
+  0(1) + 0(3) + 0.5(2) + 1.5(5) 
+  \end{bmatrix} = \begin{bmatrix} 11.0 \\ 22.0 \\ 8.5 \end{bmatrix}
+  $$
+
+### 步驟 3：高斯消去求解聯立方程
+方程組為：
+1. $4\beta_0 + 6\beta_1 + 2\theta_1 = 11.0 \implies 2\beta_0 + 3\beta_1 + \theta_1 = 5.5 \implies \theta_1 = 5.5 - 2\beta_0 - 3\beta_1$
+2. $6\beta_0 + 14\beta_1 + 5.5\theta_1 = 22.0$
+3. $2\beta_0 + 5.5\beta_1 + 2.5\theta_1 = 8.5$
+
+將 $\theta_1$ 代入第 3 式：
+$$
+2\beta_0 + 5.5\beta_1 + 2.5(5.5 - 2\beta_0 - 3\beta_1) = 8.5 \implies -3\beta_0 - 2\beta_1 = -5.25 \implies 3\beta_0 + 2\beta_1 = 5.25
+$$
+將 $\theta_1$ 代入第 2 式：
+$$
+6\beta_0 + 14\beta_1 + 5.5(5.5 - 2\beta_0 - 3\beta_1) = 22.0 \implies -5\beta_0 - 2.5\beta_1 = -8.25 \implies 2\beta_0 + \beta_1 = 3.30 \implies \beta_1 = 3.30 - 2\beta_0
+$$
+代入上一式：
+$$
+3\beta_0 + 2(3.30 - 2\beta_0) = 5.25 \implies -\beta_0 + 6.60 = 5.25 \implies \boldsymbol{\beta_0 = 1.35}
+$$
+解出其餘係數：
+$$
+\boldsymbol{\beta_1 = 3.30 - 2(1.35) = 0.60}
+$$
+$$
+\boldsymbol{\theta_1 = 5.5 - 2(1.35) - 3(0.60) = 5.5 - 2.7 - 1.8 = 1.00}
+$$
+
+### 步驟 4：分段函數解析與連續性檢驗
+擬合出的仿樣模型為：
+$$
+\hat{f}(x) = 1.35 + 0.60x + 1.00(x - 1.5)_+
+$$
+* **在節點左側（$x \le 1.5$）**：
+  $$
+  \hat{f}_L(x) = 1.35 + 0.60x, \quad \text{斜率為 } 0.60
+  $$
+* **在節點右側（$x > 1.5$）**：
+  $$
+  \hat{f}_R(x) = 1.35 + 0.60x + 1.00(x - 1.5) = -0.15 + 1.60x, \quad \text{斜率躍升至 } 1.60
+  $$
+* **節點 $x = 1.5$ 處連續性檢驗**：
+  * 左極限：$\hat{f}_L(1.5) = 1.35 + 0.60(1.5) = 1.35 + 0.90 = \mathbf{2.25}$
+  * 右極限：$\hat{f}_R(1.5) = -0.15 + 1.60(1.5) = -0.15 + 2.40 = \mathbf{2.25}$
+  兩側在節點處精準銜接，無縫平滑！
+
+### 步驟 5：殘差正交性檢驗
+* $\hat{y}_1 = 1.35 + 0.60(0) = 1.35 \implies e_1 = 1.0 - 1.35 = -0.35$
+* $\hat{y}_2 = 1.35 + 0.60(1) = 1.95 \implies e_2 = 3.0 - 1.95 = +1.05$
+* $\hat{y}_3 = -0.15 + 1.60(2) = 3.05 \implies e_3 = 2.0 - 3.05 = -1.05$
+* $\hat{y}_4 = -0.15 + 1.60(3) = 4.65 \implies e_4 = 5.0 - 4.65 = +0.35$
+* 殘差和：$\sum e_i = -0.35 + 1.05 - 1.05 + 0.35 = \mathbf{0.00}$（完全滿足 OLS 性質）。
+
+---
+
+## 5.4 平滑仿樣（Smoothing Splines）
+
+迴歸仿樣需要人為手動挑選節點的個數與擺放位置。**平滑仿樣（Smoothing Splines）**則跳出參數思維，透過無限維函數空間的變分最佳化來尋求解：
+
+$$
+\min_{g \in \mathcal{C}^2} \left\{ \sum_{i=1}^n (y_i - g(x_i))^2 + \lambda \int_{a}^{b} [g''(t)]^2 dt \right\}
+$$ {#eq-ch05-smoothing-objective}
+
+其中 $\lambda \ge 0$ 為平滑調節參數：
+* 第一項衡量模型對樣本點的**擬合優度（Fit to Data）**。
+* 第二項衡量函數整體的**粗糙度 / 彎曲度（Roughness Penalty）**。
+* 當 $\lambda \to \infty$ 時，$g(x)$ 被強行壓制為 OLS 線性迴歸直線；當 $\lambda = 0$ 時，$g(x)$ 為插值所有數據點的任意劇烈波動曲線。
+
+### 5.4.1 變分極值定理（Reinsch 1967）
+
+> **定理**：在全體具備二階連續可導的函數空間 $\mathcal{C}^2[a, b]$ 中，式 ([-@eq-ch05-smoothing-objective]) 的唯一全域極小值解，必然是一個**以全體相異樣本觀測點 $x_1, x_2, \dots, x_n$ 為節點的自然三次仿樣（Natural Cubic Spline）**！
+
+### 5.4.2 平滑矩陣與有效自由度
+平滑仿樣在所有觀測點上的預測值向量 $\hat{\boldsymbol{g}} = \boldsymbol{S}_\lambda \boldsymbol{y}$，其有效自由度定義為：
+$$
+\mathrm{df}_\lambda = \mathrm{tr}(\boldsymbol{S}_\lambda)
+$$
+
+---
+
+## 5.5 廣義加法模型（GAM）與 Backfitting
+
+Hastie & Tibshirani (1986) 提出了**廣義加法模型（GAM）**：
+$$
+y_i = \beta_0 + \sum_{j=1}^p f_j(x_{ij}) + \epsilon_i
+$$ {#eq-ch05-gam-model}
+
+### Backfitting 演算法核心步驟：
+1. **初始化**：令 $\alpha = \frac{1}{n}\sum_{i=1}^n y_i$，$f_j \equiv 0$。
+2. **循序更新**：遍歷特徵 $j = 1, \dots, p$：
+   * 計算部分殘差：$\boldsymbol{r}_j = \boldsymbol{y} - \alpha \boldsymbol{1} - \sum_{k \neq j} \boldsymbol{f}_k$
+   * 平滑擬合更新：$\boldsymbol{f}_j \leftarrow \boldsymbol{S}_j \boldsymbol{r}_j$
+   * 中心化約束：$\boldsymbol{f}_j \leftarrow \boldsymbol{f}_j - \frac{1}{n}\sum_{i=1}^n f_j(x_{ij})$
+
+---
+
+## 5.6 雙軌實務實驗室：仿樣與 GAM 模型實戰
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：自然三次仿樣 (ns) 與廣義加法模型 (mgcv::gam)
+# 依賴套件：splines, mgcv, ISLR2
+# ==============================================================================
+
+library(ISLR2)
+library(splines)
+library(mgcv)
+
+data(Wage)
+
+# 1. 自然三次仿樣 (Natural Cubic Splines)
+fit_ncs <- lm(wage ~ ns(age, df = 4), data = Wage)
+
+# 預測年齡網格區間
+age_grid <- seq(min(Wage$age), max(Wage$age))
+pred_ncs <- predict(fit_ncs, newdata = list(age = age_grid), se.fit = TRUE)
+
+cat("自然三次仿樣 (df=4) 擬合完成。\n")
+
+# 2. 廣義加法模型 (GAM) 實戰
+fit_gam <- mgcv::gam(wage ~ s(age, bs = "cr", k = 10) + s(year, k = 4) + education, data = Wage)
+
+# 輸出 GAM 模型統計摘要
+summary(fit_gam)
+
+# 檢驗非線性顯著性與有效自由度 (edf)
+edf_values <- summary(fit_gam)$edf
+cat(sprintf("\n年齡 (age) 之有效自由度 (EDF): %.2f\n", edf_values[1]))
+cat(sprintf("年份 (year) 之有效自由度 (EDF): %.2f\n", edf_values[2]))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：patsy 生成仿樣基底與非線性曲線配適
+# 依賴套件：numpy, pandas, statsmodels, patsy
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from patsy import dmatrix
+
+# 1. 模擬具備強烈非線性趨勢的資料
+np.random.seed(42)
+n = 300
+age = np.random.uniform(18, 70, size=n)
+true_wage = 20 + 2.5 * age - 0.03 * (age**2) + 5 * np.sin(age / 5)
+wage = true_wage + np.random.normal(0, 15, size=n)
+
+df = pd.DataFrame({'age': age, 'wage': wage})
+
+# 2. 使用 patsy 建立三次 B-仿樣 (B-Splines) 基底
+knots = np.percentile(age, [25, 50, 75])
+transformed_x = dmatrix("bs(age, knots=knots, degree=3, include_intercept=False)", {"age": age}, return_type='dataframe')
+
+# 3. 擬合 OLS 線性迴歸 (基於仿樣基底)
+spline_model = sm.OLS(wage, sm.add_constant(transformed_x)).fit()
+
+print(f"B-仿樣模型 R-squared: {spline_model.rsquared:.4f}")
+print(f"內部節點位置: {np.round(knots, 2)}")
+print(f"模型自由度估計數: {spline_model.df_model}")
+```
+:::
+
+---
+
+## 5.7 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **三次仿樣基底函數的各階導數連續性驗證**：
+   依據式 ([-@eq-ch05-spline-basis])，逐階計算 $S(x)$ 在節點 $\xi_k$ 處的一階、二階與三階左右導數極限，嚴格證明其二階導連續且三階導發生階梯跳躍。
+2. **自然邊界條件之矩陣約束形式**：
+   對於三次仿樣 $S(x) = \sum_{j=0}^3 \beta_j x^j + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3$，證明邊界條件 $S''(x) = 0$ 與 $S'''(x) = 0$（在 $x > \xi_K$ 處）等價於兩個線性約束：$\sum_{k=1}^K \theta_k = 0$ 與 $\sum_{k=1}^K \theta_k \xi_k = 0$。
+3. **Reinsch 變分定理之分部積分推導**：
+   設 $g(x)$ 為式 ([-@eq-ch05-smoothing-objective]) 的解，$h(x)$ 為任意二階可導的擾動函數。利用分部積分法 $\int g''(t) h''(t) dt = [g''(t)h'(t)] - [g'''(t)h(t)] + \int g^{(4)}(t)h(t)dt$，證明最優解在區間內部必滿足四階常微分方程 $g^{(4)}(x) = 0$（即分段三次多項式）。
+4. **平滑矩陣 $\boldsymbol{S}_\lambda$ 的對稱性與半正定性**：
+   證明平滑仿樣的投影平滑矩陣 $\boldsymbol{S}_\lambda = (\boldsymbol{I} + \lambda \boldsymbol{K})^{-1}$ 在適當基底變換下為對稱半正定矩陣，其特徵值均介於 $(0, 1]$ 之間。
+5. **Backfitting 演算法的高斯-賽德爾（Gauss-Seidel）代數等價性**：
+   將 GAM 視為聯立線性算子方程組 $\boldsymbol{S}_j (\boldsymbol{y} - \sum_{k \neq j} \boldsymbol{f}_k) = \boldsymbol{f}_j$，證明 Backfitting 迭代本質上是求解該大型線性區塊方程組的高斯-賽德爾迭代法。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **不同多項式階數與節點位置之交叉驗證**：
+   在真實薪資資料（如 Wage）中，比較節點數 $K \in \{1, 3, 5, 10\}$ 以及均勻節點與分位數節點對 10-Fold CV MSE 的影響，繪製誤差條形圖。
+7. **平滑仿樣 GCV（廣義交叉驗證）自動選取 $\lambda$ 實作**：
+   利用 R `smooth.spline(..., cv = FALSE)`（使用 GCV 準則），手刻 GCV 公式：$\mathrm{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left(\frac{y_i - \hat{g}_\lambda(x_i)}{1 - \mathrm{tr}(\boldsymbol{S}_\lambda)/n}\right)^2$，繪製 GCV 隨 $\lambda$ 變化的平滑 U 型曲線。
+8. **多元非線性 GAM 視覺化與部分效應圖（Partial Dependence Plot）**：
+   使用 R `mgcv` 或 Python `pyGAM` 建立包含 3 個連續特徵與 1 個類別特徵的 GAM 模型，繪製各特徵邊際效應曲線與 95% 漸近信賴帶（Pointwise Confidence Bands）。
+9. **二維薄板仿樣（Thin Plate Splines）處理空間地理數據**：
+   利用具有空間經緯度的氣象觀測站氣溫數據，使用薄板仿樣擬合二維平滑空間曲面 $f(\text{lat}, \text{lon})$，並繪製等高線熱力圖。
+10. **二元分類 Logistic GAM 實作**：
+    在分類問題中將 GAM 的連結函數改為 Logit 連結：$\ln \frac{p(\boldsymbol{x})}{1-p(\boldsymbol{x})} = \beta_0 + \sum f_j(x_j)$。在心臟病或信用卡違約資料集上評估其 ROC-AUC 並對比標準線性羅吉斯迴歸。

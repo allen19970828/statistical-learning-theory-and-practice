@@ -1,0 +1,68 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "統計學習理論與實務：深入淺出指南"
+  subtitle: "演算法數學原理、模型診斷與 R/Python 程式實現"
+  author: "梁成瑜 與 Antigravity 團隊"
+  date: "2026-10-24"
+  page-footer:
+    left: "© 2026 統計學習理論與實務：深入淺出指南 | 繁體中文第一版"
+    right: "基於 R 與 Python 雙軌實作"
+  sidebar:
+    style: "docked"
+    search: true
+  chapters:
+    - index.qmd
+    - glossary.qmd
+    - part: "第一篇：統計學習基石與泛化理論"
+      chapters:
+        - chapters/ch01_introduction.qmd
+        - chapters/ch02_model_assessment.qmd
+    - part: "第二篇：連續型預測：迴歸分析、正則化與平滑"
+      chapters:
+        - chapters/ch03_linear_regression.qmd
+        - chapters/ch04_regularization.qmd
+        - chapters/ch05_splines_gam.qmd
+    - part: "第三篇：離散型預測：分類模型與幾何分界"
+      chapters:
+        - chapters/ch06_logistic_glm.qmd
+        - chapters/ch07_generative_models.qmd
+        - chapters/ch08_svm.qmd
+    - part: "第四篇：樹狀模型、集成學習與非監督技術"
+      chapters:
+        - chapters/ch09_decision_trees.qmd
+        - chapters/ch10_ensemble_learning.qmd
+        - chapters/ch11_pca_manifold.qmd
+        - chapters/ch12_clustering_em.qmd
+    - part: "第五篇：現代前沿與統計新典範"
+      chapters:
+        - chapters/ch13_modern_frontiers.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    toc-title: "本章目錄"
+    number-sections: true
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    html-math-method: katex
+    smooth-scroll: true
+  pdf:
+    documentclass: scrreprt
+    number-sections: true
+    toc: true
+    toc-depth: 3
+    pdf-engine: xelatex
+    include-in-header:
+      text: |
+        \usepackage{xeCJK}
+        \usepackage{amsmath,amssymb}

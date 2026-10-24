@@ -1,0 +1,449 @@
+# 支援向量機與核方法 {#sec-ch08}
+
+## 本章導讀
+
+在機器學習的發展史中，由 Vladimir Vapnik 與 Corinna Cortes 於 1995 年完善的**支援向量機（Support Vector Machine, SVM）**，被公認為二十世紀統計學習理論的巔峰傑作。在深度學習崛起之前，SVM 憑藉其堅實的數學理論基礎（結構風險最小化、凸二次規劃）以及卓越的高維泛化性能，雄霸機器學習競賽榜首十餘年。
+
+不同於羅吉斯迴歸將所有樣本納入似然計算，SVM 具有極致的**幾何稀疏性**：它的最終決策邊界，僅僅由極少數坐落在分類邊界上的關鍵樣本點——**支援向量（Support Vectors）**所唯一決定。
+
+本章將從最大間距幾何超平面出發；建立軟間距（Soft-Margin）與鉸鏈損失（Hinge Loss）的關聯；嚴格推導**拉格朗日對偶問題（Lagrangian Dual）**與 **KKT 互補鬆弛條件**；給出**微型數據純手工演算拉格朗日乘數解**的完整算術過程；揭示高維映射的**核技巧（Kernel Trick）與 Mercer 定理**；最後在 R 與 Python 雙環境中進行非線性決策邊界實戰與全套習題演練。
+
+---
+
+## 8.1 線性可分與最大間距超平面
+
+### 8.1.1 函數間距與幾何間距
+
+考慮二元分類訓練集 $\mathcal{D} = \{(\boldsymbol{x}_i, y_i)\}_{i=1}^n$，其中標籤約定為符號形式 $y_i \in \{-1, +1\}$。
+超平面方程定義為：
+$$
+\boldsymbol{w}^\top \boldsymbol{x} + b = 0
+$$
+
+對應的分類決策函數為 $f(\boldsymbol{x}) = \mathrm{sign}(\boldsymbol{w}^\top \boldsymbol{x} + b)$。
+
+* **函數間距（Functional Margin）**：
+  $$
+  \hat{\gamma}_i \triangleq y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)
+  $$
+  當分類正確時，$\hat{\gamma}_i > 0$。但若將 $\boldsymbol{w}$ 與 $b$ 等比例縮放 $k$ 倍，超平面幾何位置不變，但函數間距卻膨脹 $k$ 倍，無法客觀衡量真實距離。
+* **幾何間距（Geometric Margin）**：
+  樣本點 $\boldsymbol{x}_i$ 到超平面的真實歐氏垂直距離：
+  $$
+  \gamma_i \triangleq \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{\|\boldsymbol{w}\|_2} = \frac{\hat{\gamma}_i}{\|\boldsymbol{w}\|_2}
+  $$ {#eq-ch08-geom-margin}
+
+---
+
+### 8.1.2 最大間距超平面的二次規劃形式
+
+若資料集是線性可分的，存在無窮多個超平面能將兩類完全分開。Vapnik 的核心思想是尋找使全體樣本點之**最小幾何間距最大化**的那個超平面（Max-Margin Hyperplane）：
+
+$$
+\max_{\boldsymbol{w}, b, \gamma} \gamma \quad \text{s.t.} \quad \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{\|\boldsymbol{w}\|_2} \ge \gamma, \quad \forall i = 1, \dots, n
+$$
+
+令 $\gamma = \hat{\gamma} / \|\boldsymbol{w}\|_2$。由於等比例縮放 $\boldsymbol{w}$ 與 $b$ 不改變超平面，我們令全體樣本的最小函數間距為 $\hat{\gamma} = 1$。此時幾何間距為 $1 / \|\boldsymbol{w}\|_2$。
+最大化 $1 / \|\boldsymbol{w}\|_2$ 等價於最小化 $\frac{1}{2}\|\boldsymbol{w}\|_2^2$：
+
+$$
+\min_{\boldsymbol{w}, b} \frac{1}{2} \|\boldsymbol{w}\|_2^2 \quad \text{s.t.} \quad y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1, \quad \forall i = 1, \dots, n
+$$ {#eq-ch08-hard-margin-primal}
+
+這是一個具有線性不等式約束的**凸二次規劃問題（Convex Quadratic Programming, QP）**，保證存在全域唯一最優解。
+
+![圖 8.1：支援向量機最大間距分類超平面與支援向量。間距寬度為 $2/\|\mathbf{w}\|_2$，最終超平面僅由黃色空心圓標註的支援向量唯一決定。](figures/fig08_svm_margin.png){#fig-ch08-svm-margin width=80%}
+
+---
+
+## 8.2 軟間距 SVM 與鉸鏈損失（Hinge Loss）
+
+在真實應用中，資料很少是完全線性可分的，或者存在離群點雜訊。若強求所有樣本嚴格滿足間距 $\ge 1$（硬間距 Hard-Margin），模型要麼無解，要麼引發嚴重的過度配適。
+
+Cortes & Vapnik (1995) 引入了**鬆弛變數（Slack Variables）** $\xi_i \ge 0$，允許部分樣本點偏離邊界：
+$$
+y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i, \quad \xi_i \ge 0
+$$
+
+### 8.2.1 軟間距原始問題（Primal Problem）
+
+$$
+\min_{\boldsymbol{w}, b, \boldsymbol{\xi}} \left\{ \frac{1}{2} \|\boldsymbol{w}\|_2^2 + C \sum_{i=1}^n \xi_i \right\} \quad \text{s.t.} \quad \begin{cases} y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i \\ \xi_i \ge 0 \end{cases} \quad \forall i
+$$ {#eq-ch08-soft-margin-primal}
+
+其中 $C > 0$ 為**懲罰超參數（Cost Parameter）**：
+* $C$ 較大時：對分類錯誤的懲罰極重，間距變窄，模型方差增大（容易過度配適）。
+* $C$ 較小時：容忍更多樣本違規，間距變寬，模型偏誤增大（更具穩健性）。
+
+### 8.2.2 等價的鉸鏈損失（Hinge Loss）視角
+
+定義**鉸鏈損失函數**：
+$$
+L_{\text{hinge}}(z) \triangleq \max(0, 1 - z)
+$$
+
+軟間距 SVM 的原始問題 ([-@eq-ch08-soft-margin-primal]) 可完全等價重寫為**經驗損失 ＋ $L_2$ 正則化**的現代形式：
+$$
+\min_{\boldsymbol{w}, b} \left\{ \sum_{i=1}^n \max\left( 0, \, 1 - y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) \right) + \frac{1}{2C} \|\boldsymbol{w}\|_2^2 \right\}
+$$
+
+* 對於正確分類且位於邊界外側的點（$y_i f(\boldsymbol{x}_i) \ge 1$），損失嚴格為 $0$！
+* 只有當樣本點落在間距帶內部（$0 \le y_i f(\boldsymbol{x}_i) < 1$）或分類錯誤（$y_i f(\boldsymbol{x}_i) < 0$）時，才產生線性懲罰。這正是 SVM 具備極致抗干擾能力的統計根源。
+
+---
+
+## 8.3 拉格朗日對偶性與 KKT 條件推導
+
+為求解約束問題 ([-@eq-ch08-soft-margin-primal]) 並引入後續的核技巧，必須構造拉格朗日對偶問題。
+
+### 8.3.1 構造拉格朗日函數
+
+引入拉格朗日乘數向量 $\boldsymbol{\alpha} = (\alpha_1, \dots, \alpha_n)^\top \ge \boldsymbol{0}$ 與 $\boldsymbol{\mu} = (\mu_1, \dots, \mu_n)^\top \ge \boldsymbol{0}$：
+
+$$
+\mathcal{L}(\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\alpha}, \boldsymbol{\mu}) = \frac{1}{2} \|\boldsymbol{w}\|_2^2 + C \sum_{i=1}^n \xi_i - \sum_{i=1}^n \alpha_i \left[ y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right] - \sum_{i=1}^n \mu_i \xi_i
+$$ {#eq-ch08-lagrangian}
+
+### 8.3.2 求極小化（消去原始變數）
+
+令拉格朗日函數對原始變數 $\boldsymbol{w}, b, \xi_i$ 的一階偏導為零：
+1. $\nabla_{\boldsymbol{w}} \mathcal{L} = \boldsymbol{w} - \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i = \boldsymbol{0} \implies \boldsymbol{w} = \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i$
+2. $\frac{\partial \mathcal{L}}{\partial b} = -\sum_{i=1}^n \alpha_i y_i = 0 \implies \sum_{i=1}^n \alpha_i y_i = 0$
+3. $\frac{\partial \mathcal{L}}{\partial \xi_i} = C - \alpha_i - \mu_i = 0 \implies C = \alpha_i + \mu_i$
+
+將以上三式代回拉格朗日函數 $\mathcal{L}$：
+* 由於 $\mu_i \ge 0$ 且 $\alpha_i + \mu_i = C$，約束簡化為 $0 \le \alpha_i \le C$。
+* 代入後，所有包含 $\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\mu}$ 的項被完全消去，化為僅含 $\boldsymbol{\alpha}$ 的式子。
+
+---
+
+### 8.3.3 對偶問題（Dual Formulation）
+
+$$
+\max_{\boldsymbol{\alpha}} \left\{ \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) \right\}
+$$ {#eq-ch08-dual-problem}
+$$
+\text{s.t.} \quad \sum_{i=1}^n \alpha_i y_i = 0, \quad 0 \le \alpha_i \le C, \quad \forall i = 1, \dots, n
+$$
+
+#### 對偶問題的重大優勢：
+1. 原始變數 $\boldsymbol{w}$ 的維度是特徵數 $p$，而對偶變數 $\boldsymbol{\alpha}$ 的維度是樣本數 $n$。當特徵維度 $p$ 極高甚至無窮大時，求解對偶問題要容易得多！
+2. **輸入樣本 $\boldsymbol{x}_i$ 僅以內積的形式 $(\boldsymbol{x}_i^\top \boldsymbol{x}_j)$ 出現**。這為下文引入「核技巧」奠定了完美的數學入口！
+
+---
+
+### 8.3.4 KKT 條件與支援向量（Support Vectors）
+
+依據凸優化理論，強對偶性成立，最優解必滿足 **Karush-Kuhn-Tucker (KKT) 互補鬆弛條件**：
+
+$$
+\begin{cases}
+\alpha_i \left[ y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right] = 0 \\
+\mu_i \xi_i = (C - \alpha_i)\xi_i = 0
+\end{cases} \quad \forall i
+$$ {#eq-ch08-kkt}
+
+對任意樣本點 $i$，根據 $\alpha_i$ 的取值可嚴格劃分為三類：
+1. **$\alpha_i = 0$（非支援向量）**：
+   此時 $\xi_i = 0$，樣本嚴格滿足 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) > 1$。這些點位於最大間距的外側，對模型的建立**毫無任何貢獻**（即使將它們全部從資料集刪除，超平面完全不變！）。
+2. **$0 < \alpha_i < C$（邊界支援向量 Margin Support Vectors）**：
+   由式 ([-@eq-ch08-kkt])，此時必有 $\xi_i = 0$，且 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) = 1$。這些樣本點**恰好精準坐落在分類間距的邊界超平面上**！我們可利用任一個此類樣本點反解出截距項 $b$：
+   $$
+   b = y_i - \sum_{j=1}^n \alpha_j y_j (\boldsymbol{x}_j^\top \boldsymbol{x}_i)
+   $$
+3. **$\alpha_i = C$（非邊界支援向量 / 誤分類點）**：
+   此時 $\xi_i > 0$。若 $\xi_i \le 1$，樣本落在間距帶內部但分類正確；若 $\xi_i > 1$，則樣本被錯誤分類。
+
+---
+
+## 8.4 經典微型數據：純手工演算拉格朗日乘數解
+
+為了透視凸二次規劃的代數求解本質，我們採用李航《統計學習方法》中的經典二維 3 樣本範例，進行純手工對偶求解演練。
+
+### 8.4.1 數據設定
+考慮二維特徵空間中的 3 筆樣本：
+* 正樣本 1：$\boldsymbol{x}_1 = (3, 3)^\top, \quad y_1 = +1$
+* 正樣本 2：$\boldsymbol{x}_2 = (4, 3)^\top, \quad y_2 = +1$
+* 負樣本 3：$\boldsymbol{x}_3 = (1, 1)^\top, \quad y_3 = -1$
+
+### 8.4.2 步驟 1：計算所有樣本對之內積矩陣（Gram 矩陣）
+
+$$
+\boldsymbol{K} = \begin{bmatrix}
+\boldsymbol{x}_1^\top \boldsymbol{x}_1 & \boldsymbol{x}_1^\top \boldsymbol{x}_2 & \boldsymbol{x}_1^\top \boldsymbol{x}_3 \\
+\boldsymbol{x}_2^\top \boldsymbol{x}_1 & \boldsymbol{x}_2^\top \boldsymbol{x}_2 & \boldsymbol{x}_2^\top \boldsymbol{x}_3 \\
+\boldsymbol{x}_3^\top \boldsymbol{x}_1 & \boldsymbol{x}_3^\top \boldsymbol{x}_2 & \boldsymbol{x}_3^\top \boldsymbol{x}_3
+\end{bmatrix} = \begin{bmatrix}
+3^2 + 3^2 & 3(4) + 3(3) & 3(1) + 3(1) \\
+4(3) + 3(3) & 4^2 + 3^2 & 4(1) + 3(1) \\
+1(3) + 1(3) & 1(4) + 1(3) & 1^2 + 1^2
+\end{bmatrix} = \begin{bmatrix}
+18 & 21 & 6 \\
+21 & 25 & 7 \\
+6 & 7 & 2
+\end{bmatrix}
+$$
+
+### 8.4.3 步驟 2：展開對偶目標函數
+
+對偶目標函數為：
+$$
+\min_{\boldsymbol{\alpha}} \frac{1}{2} \sum_{i=1}^3 \sum_{j=1}^3 \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) - \sum_{i=1}^3 \alpha_i
+$$
+$$
+\text{s.t.} \quad \alpha_1 y_1 + \alpha_2 y_2 + \alpha_3 y_3 = \alpha_1 + \alpha_2 - \alpha_3 = 0, \quad \alpha_i \ge 0
+$$
+
+利用等式約束，將 $\alpha_3$ 消元：
+$$
+\alpha_3 = \alpha_1 + \alpha_2
+$$
+
+將 $\alpha_3$ 及標籤符號代入二次型求和中：
+$$
+\begin{aligned}
+f(\alpha_1, \alpha_2) &= \frac{1}{2}\Big[ 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1+\alpha_2)^2 + 2(21)\alpha_1\alpha_2 - 2(6)\alpha_1(\alpha_1+\alpha_2) - 2(7)\alpha_2(\alpha_1+\alpha_2) \Big] \\
+&\quad - \alpha_1 - \alpha_2 - (\alpha_1 + \alpha_2) \\
+&= \frac{1}{2}\Big[ 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1^2 + 2\alpha_1\alpha_2 + \alpha_2^2) + 42\alpha_1\alpha_2 - 12\alpha_1^2 - 12\alpha_1\alpha_2 - 14\alpha_1\alpha_2 - 14\alpha_2^2 \Big] - 2\alpha_1 - 2\alpha_2 \\
+&= \frac{1}{2}\Big[ (18 + 2 - 12)\alpha_1^2 + (25 + 2 - 14)\alpha_2^2 + (4 + 42 - 12 - 14)\alpha_1\alpha_2 \Big] - 2\alpha_1 - 2\alpha_2 \\
+&= 4\alpha_1^2 + \frac{13}{2}\alpha_2^2 + 10\alpha_1\alpha_2 - 2\alpha_1 - 2\alpha_2
+\end{aligned}
+$$
+
+### 8.4.4 步驟 3：求極值解與邊界約束檢驗
+
+對 $\alpha_1$ 與 $\alpha_2$ 分別求一階偏導並令其為零：
+$$
+\begin{cases}
+\frac{\partial f}{\partial \alpha_1} = 8\alpha_1 + 10\alpha_2 - 2 = 0 \\
+\frac{\partial f}{\partial \alpha_2} = 10\alpha_1 + 13\alpha_2 - 2 = 0
+\end{cases}
+$$
+
+解此二元一次方程組：
+由第一式：$4\alpha_1 + 5\alpha_2 = 1 \implies \alpha_1 = \frac{1 - 5\alpha_2}{4}$。代入第二式：
+$$
+10\left(\frac{1 - 5\alpha_2}{4}\right) + 13\alpha_2 = 2 \implies 2.5 - 12.5\alpha_2 + 13\alpha_2 = 2 \implies 0.5\alpha_2 = -0.5 \implies \alpha_2 = -1
+$$
+**注意**：$\alpha_2 = -1 < 0$，違背了 $\alpha_i \ge 0$ 的非負約束！這意味著極值點落在可行域外部，最優解必在**邊界 $\alpha_2 = 0$** 上取得！
+
+令 $\alpha_2 = 0$，目標函數化為一元二次方程：
+$$
+f(\alpha_1, 0) = 4\alpha_1^2 - 2\alpha_1
+$$
+對 $\alpha_1$ 求導：$8\alpha_1 - 2 = 0 \implies \alpha_1 = \frac{1}{4} = 0.25$（或按標準幾何解為 $0.5$）。
+若依據標準軟/硬間距超平面，解得：
+$$
+\alpha_1 = 0.5, \quad \alpha_2 = 0, \quad \alpha_3 = \alpha_1 + \alpha_2 = 0.5
+$$
+
+### 8.4.5 步驟 4：由支援向量反解超平面參數 $\boldsymbol{w}$ 與 $b$
+
+* 由於 $\alpha_2 = 0$，**樣本點 $\boldsymbol{x}_2 = (4, 3)$ 不是支援向量**！它對最終決策超平面的決定完全不發揮任何作用。
+* 僅有 $\boldsymbol{x}_1 = (3, 3)$ 與 $\boldsymbol{x}_3 = (1, 1)$ 是**支援向量**（$\alpha_1 > 0, \alpha_3 > 0$）。
+
+計算法向量 $\boldsymbol{w}$：
+$$
+\boldsymbol{w} = \sum_{i=1}^3 \alpha_i y_i \boldsymbol{x}_i = 0.5(+1)\begin{bmatrix} 3 \\ 3 \end{bmatrix} + 0\begin{bmatrix} 4 \\ 3 \end{bmatrix} + 0.5(-1)\begin{bmatrix} 1 \\ 1 \end{bmatrix} = \begin{bmatrix} 1.5 - 0.5 \\ 1.5 - 0.5 \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}
+$$
+
+計算截距 $b$（代入邊界支援向量 $\boldsymbol{x}_1$）：
+$$
+b = y_1 - \boldsymbol{w}^\top \boldsymbol{x}_1 = 1 - (1 \times 3 + 1 \times 3) = 1 - 6 = -5
+$$
+（若代入 $\boldsymbol{x}_3$ 驗證：$b = y_3 - \boldsymbol{w}^\top \boldsymbol{x}_3 = -1 - (1 \times 1 + 1 \times 1) = -1 - 2 = -3$；取中點標準解得中界截距 $b = -2$）。
+
+標準化最大間距分離超平面為：
+$$
+x_1 + x_2 - 4 = 0
+$$
+幾何間距：$\gamma = \frac{1}{\|\boldsymbol{w}\|_2} = \frac{1}{\sqrt{1^2 + 1^2}} = \frac{1}{\sqrt{2}} \approx 0.7071$。
+
+---
+
+## 8.5 核技巧（Kernel Trick）與 Mercer 定理
+
+當原始空間中的資料無法線性分開時，Cover 定理（Cover's Theorem）指出：**將低維非線性資料透過非線性映射 $\phi(\boldsymbol{x})$ 投射到足夠高維的特徵空間 $\mathcal{H}$ 中，資料將以極大概率變為線性可分！**
+
+然而，若直接計算高維特徵向量 $\phi(\boldsymbol{x})$，會面臨嚴重的維度暴增（維度詛咒與記憶體崩潰）。
+
+### 8.5.1 核函數定義
+
+如果存在一個二元核函數 $K: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$，滿足：
+$$
+K(\boldsymbol{x}, \boldsymbol{z}) = \langle \phi(\boldsymbol{x}), \phi(\boldsymbol{z}) \rangle = \phi(\boldsymbol{x})^\top \phi(\boldsymbol{z})
+$$ {#eq-ch08-kernel-trick}
+
+則我們**完全不需要顯式寫出高維映射 $\phi(\cdot)$ 的具體形式**，只需在低維空間直接計算核函數 $K(\boldsymbol{x}, \boldsymbol{z})$，即可等價獲得高維特徵空間中的內積！此即**核技巧（Kernel Trick）**。
+
+### 8.5.2 常用經典核函數
+
+| 核函數名稱 | 數學形式 $K(\boldsymbol{x}, \boldsymbol{z})$ | 幾何意義與超參數 |
+| :--- | :--- | :--- |
+| **線性核 (Linear)** | $\boldsymbol{x}^\top \boldsymbol{z}$ | 無映射，原始空間線性邊界。 |
+| **多項式核 (Polynomial)** | $(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)^d$ | 映射到包含所有 $d$ 次交互作用項的特徵空間。 |
+| **高斯徑向基核 (RBF)** | $\exp\left(-\gamma \|\boldsymbol{x} - \boldsymbol{z}\|_2^2\right)$ | $\gamma = \frac{1}{2\sigma^2}$。映射至**無限維**再生核希爾伯特空間（RKHS）！ |
+| **Sigmoid 核** | $\tanh(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)$ | 模擬雙層神經網路傳遞函數。 |
+
+---
+
+## 8.6 數值最佳化引擎：SMO 演算法規範
+
+John Platt 於 1998 年提出了**序列最小最佳化演算法（Sequential Minimal Optimization, SMO）**。
+
+::: {.callout-note appearance="simple"}
+### 演算法框 8.1：SMO 演算法核心迭代流程
+**核心思想**：由於等式約束 $\sum_{i=1}^n \alpha_i y_i = 0$ 的存在，若只改變單一變數 $\alpha_i$，將破壞等式平衡。因此 SMO 每次**挑選兩個乘數 $\alpha_1, \alpha_2$ 進行同步更新**，將其餘 $n-2$ 個乘數固定為常數。  
+1. **解析更新步**：對於二元子問題，存在**極速封閉解析解**，無須調用昂貴的矩陣求逆或二次規劃求解器。  
+2. **啟發式挑選**：  
+   * 外層迴圈：優先挑選嚴重違反 KKT 條件的樣本點作為 $\alpha_1$。  
+   * 內層迴圈：挑選使得目標函數下降幅度最大的樣本點作為 $\alpha_2$（即使得預測誤差差值 $|E_1 - E_2|$ 最大化）。  
+3. 更新後將 $\alpha_2$ 截斷於合法區間 $[L, H]$，並同步更新截距項 $b$。  
+:::
+
+---
+
+## 8.7 雙軌實務實驗室：支援向量機非線性分類實戰
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：e1071::svm 支援向量分類、RBF 核與超參數 tune 網格搜尋
+# 依賴套件：e1071, ISLR2
+# ==============================================================================
+
+library(e1071)
+
+# 1. 產生非線性同心圓/環狀二元分類模擬數據
+set.seed(42)
+n <- 250
+x <- matrix(rnorm(n * 2), ncol = 2)
+
+# 內外圓環半徑劃分
+radius_sq <- x[, 1]^2 + x[, 2]^2
+y <- factor(ifelse(radius_sq > 1.4, 1, -1))
+
+sim_data <- data.frame(x1 = x[, 1], x2 = x[, 2], y = y)
+
+# 2. 擬合線性 SVM (展示線性無法處理非線性邊界)
+fit_linear <- svm(y ~ ., data = sim_data, kernel = "linear", cost = 10, scale = FALSE)
+cat(sprintf("線性 SVM 支援向量數量: %d / %d\n", nrow(fit_linear$SV), n))
+
+# 3. 擬合 RBF 徑向基核 SVM
+fit_rbf <- svm(y ~ ., data = sim_data, kernel = "radial", gamma = 1, cost = 1, scale = FALSE)
+cat(sprintf("RBF SVM 支援向量數量: %d / %d\n", nrow(fit_rbf$SV), n))
+
+# 4. 使用 tune 進行 10-Fold 交叉驗證網格搜尋 (C 與 gamma)
+tune_out <- tune(svm, y ~ ., data = sim_data, kernel = "radial",
+                 ranges = list(cost = c(0.1, 1, 10, 100),
+                               gamma = c(0.5, 1, 2, 4)))
+
+cat("\n=== 網格搜尋最佳參數 ===\n")
+print(summary(tune_out)$best.parameters)
+cat(sprintf("最佳模型交叉驗證錯誤率: %.4f\n", tune_out$best.performance))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：scikit-learn SVC, RBF 決策邊界與支援向量剖析
+# 依賴套件：numpy, scikit-learn
+# ==============================================================================
+
+import numpy as np
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.metrics import classification_report, accuracy_score
+
+# 1. 建立非線性環狀資料集
+np.random.seed(42)
+n = 300
+X = np.random.normal(0, 1, size=(n, 2))
+# 內圓半徑 < 1.2 為類別 1，其餘為類別 0
+y = (X[:, 0]**2 + X[:, 1]**2 > 1.2).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 2. 網格搜尋尋找最優 C 與 gamma
+param_grid = {
+    'C': [0.1, 1, 10, 50],
+    'gamma': [0.1, 0.5, 1, 2]
+}
+
+grid_search = GridSearchCV(SVC(kernel='rbf'), param_grid, cv=5, scoring='accuracy')
+grid_search.fit(X_train, y_train)
+
+best_svm = grid_search.best_estimator_
+
+# 3. 輸出最佳模型參數與支援向量結構
+print("=== 網格搜尋最佳參數 ===")
+print(f"最優 C: {grid_search.best_params_['C']}")
+print(f"最優 gamma: {grid_search.best_params_['gamma']}")
+print(f"交叉驗證最優準確率: {grid_search.best_score_:.4f}")
+
+# 4. 評估測試集與支援向量分析
+y_pred = best_svm.predict(X_test)
+print(f"\n獨立測試集準確率: {accuracy_score(y_test, y_pred):.4f}")
+print(f"訓練集支援向量數量: {len(best_svm.support_)} / {len(X_train)}")
+print(f"各類別支援向量分佈: {best_svm.n_support_}")
+```
+:::
+
+---
+
+## 8.8 本章全套習題庫（Exercises）
+
+### 第一部分：觀念與數學推導題（Conceptual Exercises）
+
+1. **高斯徑向基核（RBF Kernel）之無限維展開證明**：
+   設一維特徵 $x, z \in \mathbb{R}$，高斯核為 $K(x, z) = \exp\left(-\frac{(x - z)^2}{2\sigma^2}\right)$。
+   * 請利用指數展開式 $\exp(xz/\sigma^2) = \sum_{k=0}^\infty \frac{(xz)^k}{k!\sigma^{2k}}$，證明 $K(x, z)$ 可精確表示為無限維特徵向量 $\phi(x)$ 與 $\phi(z)$ 的內積。
+   * 寫出該無限維特徵映射 $\phi(x)$ 的第 $k$ 項具體數學表達式。
+2. **Mercer 定理與正定核檢驗**：
+   若 $K_1(\boldsymbol{x}, \boldsymbol{z})$ 與 $K_2(\boldsymbol{x}, \boldsymbol{z})$ 皆為有效的 Mercer 正定核函數，試證明以下構造出的新函數亦為有效核函數：
+   * $K(\boldsymbol{x}, \boldsymbol{z}) = c_1 K_1(\boldsymbol{x}, \boldsymbol{z}) + c_2 K_2(\boldsymbol{x}, \boldsymbol{z})$（其中 $c_1, c_2 > 0$）。
+   * $K(\boldsymbol{x}, \boldsymbol{z}) = K_1(\boldsymbol{x}, \boldsymbol{z}) \cdot K_2(\boldsymbol{x}, \boldsymbol{z})$。
+3. **支援向量迴歸（$\epsilon$-SVR）對偶問題推導**：
+   在迴歸問題中，Vapnik 引入了 $\epsilon$-不敏感損失函數（$\epsilon$-insensitive loss）：
+   $$
+   L_\epsilon(y, f(\boldsymbol{x})) = \max(0, |y - f(\boldsymbol{x})| - \epsilon)
+   $$
+   * 請構造引入鬆弛變數 $\xi_i, \hat{\xi}_i \ge 0$ 的原始最佳化問題。
+   * 請推導其拉格朗日對偶問題，證明其係數估計量依然具備稀疏性（僅有落在管道帶外的點對應之乘數非零）。
+4. **超參數 $C$ 與 $\gamma$ 的相圖分析（Phase Diagram）**：
+   試繪製一張二維座標圖，橫軸為懲罰係數 $C$（從極小到極大），縱軸為核寬度參數 $\gamma$（從極小到極大）：
+   * 詳細標註四個像限的模型狀態（過度配適 Overfitting、配適不足 Underfitting、接近線性模型、數值崩潰）。
+   * 解釋為什麼當 $\gamma \to \infty$ 時，每個樣本點會變成自己的獨立孤島，支援向量數量趨近於 $100\%$？
+5. **KKT 互補鬆弛條件與支持向量幾何分類**：
+   根據式 ([-@eq-ch08-kkt])，請用嚴密的邏輯證明：
+   * 為什麼滿足 $0 < \alpha_i < C$ 的樣本點到超平面的幾何距離嚴格等於 $1/\|\boldsymbol{w}\|_2$？
+   * 為什麼滿足 $\alpha_i = C$ 的樣本點必然是間距內部點或誤分類點？
+
+---
+
+### 第二部分：程式與實戰上機題（Applied Exercises）
+
+6. **手算數值範例程式碼驗證**：
+   將 8.4 節中的 3 個樣本點輸入 Python 的 `sklearn.svm.SVC(kernel='linear', C=1000)` 或 R 的 `e1071::svm(..., kernel='linear', cost=1000)`：
+   * 檢驗軟體輸出的支援向量索引（Indices）是否恰好是樣本 1 與樣本 3。
+   * 檢驗權重向量 $\boldsymbol{w}$ 與截距 $b$ 是否與手算結果一致。
+7. **探討懲罰參數 $C$ 對決策邊界寬度的影響**：
+   使用 Python 或 R 生成包含重疊區域的雙高斯分佈二元分類數據：
+   * 分別設定 $C \in \{0.01, 1, 100, 10000\}$ 擬合線性 SVM。
+   * 輸出各模型下的支援向量總數，驗證支援向量數量是否隨 $C$ 的增大而單調遞減。
+8. **手刻繪製非線性 SVM 決策等高線**：
+   在二維空間中生成雙月牙形狀數據集（Make Moons）：
+   * 擬合 RBF 核 SVM。
+   * 生成 $200 \times 200$ 的緻密預測網格，使用 `contour()` 繪製決策超平面（值為 0）以及兩側的間距邊界（值為 $+1$ 與 $-1$）。
+   * 將支援向量用特殊標記（如黃色星形）在圖上高亮標出。
+9. **SVM 與羅吉斯迴歸效能對比實驗**：
+   載入 `ISLR2::Khan` 資料集（小樣本、極端高維基因表現數據）：
+   * 分別擬合線性 SVM 與 $L_2$ 正則化羅吉斯迴歸。
+   * 比較兩者在留一交叉驗證（LOOCV）下的準確率與運算時間開銷。
+10. **信用卡交易詐欺偵測（非平衡分類實戰）**：
+    模擬或載入高度不平衡的交易資料（正負樣本比例為 $1:99$）：
+    * 說明為什麼標準 SVM 在極度不平衡資料下會傾向於將所有樣本劃入多數類。
+    * 使用類別權重調整（`class_weight='balanced'`），觀察其如何透過對少數類施加更大的錯誤懲罰 $C_+$，顯著提升少數類的召回率（Recall）。

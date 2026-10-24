@@ -1,0 +1,353 @@
+# 主成分分析與流形學習 {#sec-ch11}
+
+## 本章導讀
+
+在先前的章節中，我們討論的全部是「**監督式學習（Supervised Learning）**」，每個輸入向量 $\boldsymbol{x}_i$ 都伴隨著一個已知的標籤 $y_i$ 指引模型的學習方向。
+
+然而，在現代海量數據世界中，未標註的資料佔據了 99% 以上。我們經常面對數百、數千甚至數萬維的高維特徵空間（如單細胞 RNA 定序、金融高頻市場微結構、多光譜遙測影像）。如何跨越無標籤的迷霧，從高維觀測中發掘資料內在的低維幾何流形，過濾無效隨機雜訊並實現數據視覺化？這便是**非監督式學習（Unsupervised Learning）**的核心使命。
+
+本章將從**最大化投影變異數**與**最小化幾何重建誤差**雙重視角，給出**主成分分析（Principal Component Analysis, PCA）**的嚴格拉格朗日乘數推導；剖析奇異值分解（SVD）與 PCA 的代數等價性；提供一組 3 筆 2D 樣本的手把手特徵值、載荷向量與投影分數數值推演；進一步突破線性降維的局限，解析當代流形學習雙雄——**t-SNE**（利用學生 $t$ 分佈克服擁擠問題）與 **UMAP** 的幾何拓撲原理；最後在 R 與 Python 雙環境中進行高維降維全流程實戰。
+
+---
+
+## 11.1 主成分分析（PCA）之雙重數學推導
+
+設已中心化（Centered）的數據矩陣為 $\boldsymbol{X} \in \mathbb{R}^{n \times p}$，滿足各特徵欄之樣本平均值為零：$\frac{1}{n}\sum_{i=1}^n x_{ij} = 0$。
+樣本共變異數矩陣為：
+$$
+\boldsymbol{\Sigma} = \frac{1}{n} \boldsymbol{X}^\top \boldsymbol{X} \in \mathbb{R}^{p \times p}
+$$
+
+PCA 旨在尋找一組相互正交的單位方向向量 $\boldsymbol{\phi}_1, \boldsymbol{\phi}_2, \dots, \boldsymbol{\phi}_p \in \mathbb{R}^p$（稱為**主成分載荷向量 Loading Vectors**），將高維數據正交投影至低維空間。
+
+---
+
+### 11.1.1 視角一：最大化投影變異數（Maximum Variance Formulation）
+
+第一主成分 $\boldsymbol{z}_1 = \boldsymbol{X}\boldsymbol{\phi}_1 \in \mathbb{R}^n$ 是所有特徵的線性組合：
+$$
+z_{i1} = \phi_{11}x_{i1} + \phi_{21}x_{i2} + \cdots + \phi_{p1}x_{ip} = \boldsymbol{x}_i^\top \boldsymbol{\phi}_1
+$$
+
+因為數據已中心化，$z_{i1}$ 的樣本平均值亦為零：$\bar{z}_1 = 0$。
+第一主成分的樣本變異數為：
+$$
+\mathrm{Var}(\boldsymbol{z}_1) = \frac{1}{n} \sum_{i=1}^n z_{i1}^2 = \frac{1}{n} \boldsymbol{z}_1^\top \boldsymbol{z}_1 = \frac{1}{n} \boldsymbol{\phi}_1^\top \boldsymbol{X}^\top \boldsymbol{X} \boldsymbol{\phi}_1 = \boldsymbol{\phi}_1^\top \boldsymbol{\Sigma} \boldsymbol{\phi}_1
+$$
+
+為了避免變異數隨向量模長任意放大，施加單位長度約束：$\|\boldsymbol{\phi}_1\|_2^2 = \boldsymbol{\phi}_1^\top \boldsymbol{\phi}_1 = 1$。
+建立約束最佳化目標：
+$$
+\max_{\boldsymbol{\phi}_1} \boldsymbol{\phi}_1^\top \boldsymbol{\Sigma} \boldsymbol{\phi}_1 \quad \text{s.t.} \quad \boldsymbol{\phi}_1^\top \boldsymbol{\phi}_1 = 1
+$$
+
+引入拉格朗日乘數 $\lambda_1$：
+$$
+\mathcal{L}(\boldsymbol{\phi}_1, \lambda_1) = \boldsymbol{\phi}_1^\top \boldsymbol{\Sigma} \boldsymbol{\phi}_1 - \lambda_1 (\boldsymbol{\phi}_1^\top \boldsymbol{\phi}_1 - 1)
+$$
+
+對向量 $\boldsymbol{\phi}_1$ 求導並令其為零：
+$$
+\nabla_{\boldsymbol{\phi}_1} \mathcal{L} = 2\boldsymbol{\Sigma} \boldsymbol{\phi}_1 - 2\lambda_1 \boldsymbol{\phi}_1 = \boldsymbol{0} \implies \boldsymbol{\Sigma} \boldsymbol{\phi}_1 = \lambda_1 \boldsymbol{\phi}_1
+$$ {#eq-ch11-eigen-equation}
+
+#### 深刻結論：
+1. 式 ([-@eq-ch11-eigen-equation]) 正好是標準的**矩陣特徵值與特徵向量方程**！載荷向量 $\boldsymbol{\phi}_1$ 必為共變異數矩陣 $\boldsymbol{\Sigma}$ 的特徵向量，$\lambda_1$ 為其對應的特徵值。
+2. 將 $\boldsymbol{\Sigma} \boldsymbol{\phi}_1 = \lambda_1 \boldsymbol{\phi}_1$ 代回變異數式：
+   $$
+   \mathrm{Var}(\boldsymbol{z}_1) = \boldsymbol{\phi}_1^\top \boldsymbol{\Sigma} \boldsymbol{\phi}_1 = \boldsymbol{\phi}_1^\top (\lambda_1 \boldsymbol{\phi}_1) = \lambda_1 (\boldsymbol{\phi}_1^\top \boldsymbol{\phi}_1) = \lambda_1
+   $$
+   **第一主成分的樣本變異數，正好等於共變異數矩陣 $\boldsymbol{\Sigma}$ 的最大特徵值 $\lambda_1$**！
+3. 後續的第 $k$ 主成分 $\boldsymbol{\phi}_k$，是在與前 $k-1$ 個主成分相互正交（$\boldsymbol{\phi}_k^\top \boldsymbol{\phi}_j = 0, \forall j < k$）的約束下最大化變異數，解即為對應第 $k$ 大特徵值的特徵向量。
+
+---
+
+### 11.1.2 視角二：最小化幾何重建誤差（Minimum Reconstruction Error）
+
+從訊號重建角度，我們希望尋找一個 $q$ 維線性超子空間（$q < p$），將資料點投影至該子空間後，**原始樣本點與投影點之間的歐式重建誤差平方和最小化**。
+
+設子空間的正交基底為 $\boldsymbol{V}_q = [\boldsymbol{v}_1, \dots, \boldsymbol{v}_q] \in \mathbb{R}^{p \times q}$，滿足 $\boldsymbol{V}_q^\top \boldsymbol{V}_q = \boldsymbol{I}_q$。
+第 $i$ 筆樣本在此子空間上的投影重構點為 $\hat{\boldsymbol{x}}_i = \boldsymbol{V}_q \boldsymbol{V}_q^\top \boldsymbol{x}_i$。
+
+全體樣本的重建誤差為：
+$$
+\min_{\boldsymbol{V}_q} \sum_{i=1}^n \|\boldsymbol{x}_i - \boldsymbol{V}_q \boldsymbol{V}_q^\top \boldsymbol{x}_i\|_2^2 = \min_{\boldsymbol{V}_q} \|\boldsymbol{X} - \boldsymbol{X}\boldsymbol{V}_q\boldsymbol{V}_q^\top\|_F^2
+$$
+
+依據著名的 **Eckart-Young-Mirsky 矩陣近似定理**：
+任意矩陣在 Frobenius 範數下的最佳 $q$ 秩近似，必由其**奇異值分解（SVD）**的前 $q$ 個奇異向量所唯一張成。該子空間正交基底 $\boldsymbol{V}_q$，精確等價於共變異數矩陣的前 $q$ 個特徵向量 $\boldsymbol{\Phi}_q = [\boldsymbol{\phi}_1, \dots, \boldsymbol{\phi}_q]$！
+
+> **結論**：「最大化保留資訊變異數」與「最小化幾何重建失真」，在數學上是完全等價的同一枚硬幣的兩面。
+
+---
+
+## 11.2 手把手數值推演：3 筆 2D 樣本之 PCA 全流程手算
+
+為了徹底破除對特徵分解的黑箱神秘感，我們構造一組 3 筆樣本的二維數據，進行從中心化、共變異數矩陣、特徵多項式求解、單位載荷向量到主成分得分的全流程計算：
+
+| 樣本編號 | 原始特徵 $x_1$ | 原始特徵 $x_2$ |
+| :---: | :---: | :---: |
+| 1 | 1.0 | 2.0 |
+| 2 | 2.0 | 1.0 |
+| 3 | 3.0 | 6.0 |
+
+### 步驟 1：計算特徵均值與資料中心化（Centering）
+* 特徵 1 均值：$\bar{x}_1 = \frac{1.0 + 2.0 + 3.0}{3} = 2.0$
+* 特徵 2 均值：$\bar{x}_2 = \frac{2.0 + 1.0 + 6.0}{3} = 3.0$
+* 中心化數據矩陣 $\tilde{\boldsymbol{X}}$：
+  $$
+  \tilde{\boldsymbol{x}}_1 = \begin{bmatrix} 1.0 - 2.0 \\ 2.0 - 3.0 \end{bmatrix} = \begin{bmatrix} -1.0 \\ -1.0 \end{bmatrix}, \quad
+  \tilde{\boldsymbol{x}}_2 = \begin{bmatrix} 2.0 - 2.0 \\ 1.0 - 3.0 \end{bmatrix} = \begin{bmatrix} 0.0 \\ -2.0 \end{bmatrix}, \quad
+  \tilde{\boldsymbol{x}}_3 = \begin{bmatrix} 3.0 - 2.0 \\ 6.0 - 3.0 \end{bmatrix} = \begin{bmatrix} +1.0 \\ +3.0 \end{bmatrix}
+  $$
+  $$
+  \tilde{\boldsymbol{X}} = \begin{bmatrix} -1.0 & -1.0 \\ 0.0 & -2.0 \\ +1.0 & +3.0 \end{bmatrix}
+  $$
+
+### 步驟 2：計算樣本共變異數矩陣 $\boldsymbol{S}$
+以無偏估計除以 $n - 1 = 3 - 1 = 2$：
+$$
+\tilde{\boldsymbol{X}}^\top \tilde{\boldsymbol{X}} = \begin{bmatrix} -1 & 0 & 1 \\ -1 & -2 & 3 \end{bmatrix} \begin{bmatrix} -1 & -1 \\ 0 & -2 \\ 1 & 3 \end{bmatrix} = \begin{bmatrix} (-1)^2 + 0^2 + 1^2 & (-1)(-1) + 0 + 1(3) \\ (-1)(-1) + 0 + 3(1) & (-1)^2 + (-2)^2 + 3^2 \end{bmatrix} = \begin{bmatrix} 2 & 4 \\ 4 & 14 \end{bmatrix}
+$$
+樣本共變異數矩陣為：
+$$
+\boldsymbol{S} = \frac{1}{2} \begin{bmatrix} 2 & 4 \\ 4 & 14 \end{bmatrix} = \begin{bmatrix} 1 & 2 \\ 2 & 7 \end{bmatrix}
+$$
+
+### 步驟 3：求解特徵方程式（Eigenvalues）
+特徵多項式 $\det(\boldsymbol{S} - \lambda \boldsymbol{I}) = 0$：
+$$
+\det \begin{bmatrix} 1 - \lambda & 2 \\ 2 & 7 - \lambda \end{bmatrix} = (1 - \lambda)(7 - \lambda) - 4 = \lambda^2 - 8\lambda + 7 - 4 = \lambda^2 - 8\lambda + 3 = 0
+$$
+利用二次方程式求根公式：
+$$
+\lambda = \frac{8 \pm \sqrt{(-8)^2 - 4(1)(3)}}{2} = \frac{8 \pm \sqrt{64 - 12}}{2} = \frac{8 \pm \sqrt{52}}{2} = 4 \pm \sqrt{13} \approx 4 \pm 3.60555
+$$
+兩特徵值為：
+$$
+\lambda_1 = 4 + \sqrt{13} \approx \mathbf{7.6056}, \quad \lambda_2 = 4 - \sqrt{13} \approx \mathbf{0.3944}
+$$
+> **數值檢驗**：
+> * 跡數定理：$\lambda_1 + \lambda_2 = 7.6056 + 0.3944 = 8.0 = 1 + 7 = \mathrm{Tr}(\boldsymbol{S})$。
+> * 行列式定理：$\lambda_1 \lambda_2 = (4+\sqrt{13})(4-\sqrt{13}) = 16 - 13 = 3 = \det(\boldsymbol{S})$。完全吻合！
+
+### 步驟 4：計算單位特徵向量（主成分載荷 Loadings）
+對第一特徵值 $\lambda_1 = 4 + \sqrt{13}$：
+$$
+(\boldsymbol{S} - \lambda_1 \boldsymbol{I})\boldsymbol{\phi}_1 = \begin{bmatrix} 1 - (4+\sqrt{13}) & 2 \\ 2 & 7 - (4+\sqrt{13}) \end{bmatrix} \begin{bmatrix} \phi_{11} \\ \phi_{21} \end{bmatrix} = \begin{bmatrix} -3-\sqrt{13} & 2 \\ 2 & 3-\sqrt{13} \end{bmatrix} \begin{bmatrix} \phi_{11} \\ \phi_{21} \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}
+$$
+由第二列得 $2\phi_{11} + (3 - \sqrt{13})\phi_{21} = 0 \implies \phi_{11} = \frac{\sqrt{13} - 3}{2} \phi_{21} \approx 0.30278 \, \phi_{21}$。
+令 $\phi_{21} = 1$，則方向向量為 $[0.30278, 1.0]^\top$。
+計算模長進行單位歸一化：
+$$
+\|\boldsymbol{v}_1\| = \sqrt{0.30278^2 + 1.0^2} = \sqrt{0.09167 + 1} = \sqrt{1.09167} \approx 1.04483
+$$
+第一主成分單位載荷向量：
+$$
+\boldsymbol{\phi}_1 = \begin{bmatrix} \frac{0.30278}{1.04483} \\ \frac{1.0}{1.04483} \end{bmatrix} \approx \begin{bmatrix} \mathbf{0.2898} \\ \mathbf{0.9571} \end{bmatrix}
+$$
+同理求得正交的第二主成分載荷向量：
+$$
+\boldsymbol{\phi}_2 \approx \begin{bmatrix} -\mathbf{0.9571} \\ \mathbf{0.2898} \end{bmatrix}
+$$
+正交性驗證：$\boldsymbol{\phi}_1^\top \boldsymbol{\phi}_2 = (0.2898)(-0.9571) + (0.9571)(0.2898) = 0$。
+
+### 步驟 5：計算解釋變異數比例（PVE）
+* 第一主成分解釋比例：
+  $$
+  \mathrm{PVE}_1 = \frac{\lambda_1}{\lambda_1 + \lambda_2} = \frac{7.6056}{8.0} = \mathbf{95.07\%}
+  $$
+* 第二主成分解釋比例：
+  $$
+  \mathrm{PVE}_2 = \frac{\lambda_2}{\lambda_1 + \lambda_2} = \frac{0.3944}{8.0} = \mathbf{4.93\%}
+  $$
+第一主成分獨自吸收了超過 95% 的全體數據變異！
+
+### 步驟 6：計算各樣本之第一主成分得分（PC Scores）
+由 $\boldsymbol{z}_1 = \tilde{\boldsymbol{X}} \boldsymbol{\phi}_1$：
+* 樣本 1：$z_{11} = (-1.0)(0.2898) + (-1.0)(0.9571) = -1.2469$
+* 樣本 2：$z_{21} = (0.0)(0.2898) + (-2.0)(0.9571) = -1.9142$
+* 樣本 3：$z_{31} = (1.0)(0.2898) + (3.0)(0.9571) = +3.1611$
+
+> **主成分變異數檢驗**：
+> 得分均值：$\bar{z}_1 = \frac{-1.2469 - 1.9142 + 3.1611}{3} = 0.0$。
+> 得分樣本變異數：
+> $$
+> \frac{(-1.2469)^2 + (-1.9142)^2 + (3.1611)^2}{3 - 1} = \frac{1.5548 + 3.6642 + 9.9926}{2} = \frac{15.2116}{2} \approx \mathbf{7.6058} \approx \lambda_1
+> $$
+> 投影分數的樣本變異數與特徵值 $\lambda_1$ 完全相符！
+
+---
+
+## 11.3 奇異值分解（SVD）與 PCA 的代數等價性
+
+在數值計算工程中，直接計算共變異數矩陣 $\frac{1}{n}\boldsymbol{X}^\top \boldsymbol{X}$ 並對其特徵分解（複雜度 $\mathcal{O}(p^3)$）往往面臨數值精度損失。現代套件（如 R 的 `prcomp` 與 scikit-learn 的 `PCA`）全部採用設計矩陣的**奇異值分解（Singular Value Decomposition, SVD）**。
+
+設中心化矩陣 $\boldsymbol{X} \in \mathbb{R}^{n \times p}$ 的 SVD 分解為：
+$$
+\boldsymbol{X} = \boldsymbol{U} \boldsymbol{D} \boldsymbol{V}^\top
+$$ {#eq-ch11-svd}
+
+其中：
+* $\boldsymbol{U} \in \mathbb{R}^{n \times n}$ 為左奇異矩陣（滿足 $\boldsymbol{U}^\top \boldsymbol{U} = \boldsymbol{I}_n$）。
+* $\boldsymbol{V} \in \mathbb{R}^{p \times p}$ 為右奇異矩陣（滿足 $\boldsymbol{V}^\top \boldsymbol{V} = \boldsymbol{I}_p$）。
+* $\boldsymbol{D} = \mathrm{diag}(d_1, d_2, \dots, d_{\min(n, p)})$ 為非負對角奇異值矩陣。
+
+代入共變異數矩陣：
+$$
+\boldsymbol{\Sigma} = \frac{1}{n} \boldsymbol{X}^\top \boldsymbol{X} = \frac{1}{n} (\boldsymbol{V} \boldsymbol{D} \boldsymbol{U}^\top)(\boldsymbol{U} \boldsymbol{D} \boldsymbol{V}^\top) = \boldsymbol{V} \left( \frac{\boldsymbol{D}^2}{n} \right) \boldsymbol{V}^\top
+$$
+
+#### 關鍵對偶關係：
+1. **右奇異向量 $\boldsymbol{V}$ 就是 PCA 的載荷矩陣 $\boldsymbol{\Phi}$**！
+2. **奇異值平方除以 $n$ 即為特徵值**：$\lambda_j = \frac{d_j^2}{n}$。
+3. **主成分分數（PC Scores）矩陣**：
+   $$
+   \boldsymbol{Z} = \boldsymbol{X}\boldsymbol{V} = (\boldsymbol{U}\boldsymbol{D}\boldsymbol{V}^\top)\boldsymbol{V} = \boldsymbol{U}\boldsymbol{D}
+   $$
+   主成分投影得分直接等於左奇異向量乘以奇異值，完全無須顯式計算共變異數矩陣！
+
+---
+
+## 11.4 現代流形學習：t-SNE 與 UMAP
+
+PCA 本質上是**全域線性投影**。當資料結構呈現高度非線性的彎曲流形（如著名的瑞士捲 Swiss Roll、高維細胞分化軌跡）時，線性投影會將原本相距甚遠的點強行重疊在低維平面上，造成不可逆的拓撲扭曲。
+
+### 11.4.1 t-SNE 演算法原理（van der Maaten & Hinton 2008）
+
+**t-分佈隨機鄰近嵌入（t-Distributed Stochastic Neighbor Embedding, t-SNE）**的核心是將幾何距離轉化為**條件機率**，並專注於保留數據的**局部鄰域結構（Local Structure）**。
+
+#### 1. 高維空間中的高斯機率分佈：
+高維樣本點 $\boldsymbol{x}_j$ 作為 $\boldsymbol{x}_i$ 之鄰居的條件機率定義為高斯分佈：
+$$
+p_{j|i} = \frac{\exp\left(-\|\boldsymbol{x}_i - \boldsymbol{x}_j\|_2^2 / 2\sigma_i^2\right)}{\sum_{k \neq i} \exp\left(-\|\boldsymbol{x}_i - \boldsymbol{x}_k\|_2^2 / 2\sigma_i^2\right)}, \quad p_{ii} = 0
+$$
+對稱化聯合機率為 $p_{ij} = \frac{p_{j|i} + p_{i|j}}{2n}$。
+
+#### 2. 低維空間中的學生 $t$ 分佈（克服擁擠問題）：
+在低維映射點 $\boldsymbol{y}_i, \boldsymbol{y}_j \in \mathbb{R}^2$ 中，若依然使用高斯分佈，由於低維空間容積遠小於高維空間，中遠距離的點將被強行擠壓在一起（稱為**擁擠問題 Crowding Problem**）。
+t-SNE 巧妙地在低維空間採用**自由度為 1 的學生 $t$ 分佈（柯西分佈）**：
+$$
+q_{ij} = \frac{\left(1 + \|\boldsymbol{y}_i - \boldsymbol{y}_j\|_2^2\right)^{-1}}{\sum_{k} \sum_{l \neq k} \left(1 + \|\boldsymbol{y}_k - \boldsymbol{y}_l\|_2^2\right)^{-1}}, \quad q_{ii} = 0
+$$
+
+#### 3. 最小化 KL 散度（Kullback-Leibler Divergence）：
+透過梯度下降尋求低維座標 $\boldsymbol{y}_1, \dots, \boldsymbol{y}_n$ 最小化兩機率分佈的相對熵：
+$$
+\mathrm{KL}(P \parallel Q) = \sum_{i \neq j} p_{ij} \ln\left(\frac{p_{ij}}{q_{ij}}\right)
+$$
+因為學生 $t$ 分佈具有厚尾（Heavy-tail）特性，在低維空間中中等距離的點會被自然推開，從而在二維可視化平面上形成清晰分立的叢聚聚落。
+
+---
+
+## 11.5 雙軌實務實驗室：PCA 與 t-SNE 高維降維對比
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：stats::prcomp 主成分分析與 Rtsne 流形降維視覺化
+# 依賴套件：stats, Rtsne, ISLR2
+# ==============================================================================
+
+library(ISLR2)
+library(Rtsne)
+
+# 1. 載入 NCI60 癌症微陣列基因晶片資料 (64 個樣本，6830 個基因特徵!)
+data(NCI60)
+X_gene <- NCI60$data # 維度: 64 x 6830 (典型 p >> n 極端高維)
+cancer_labs <- NCI60$labs
+
+# 2. 執行主成分分析 (scale = TRUE 進行標準化)
+pca_out <- prcomp(X_gene, scale = TRUE)
+
+# 計算前 5 個主成分的解釋變異數比例 (PVE)
+pve <- pca_out$sdev^2 / sum(pca_out$sdev^2)
+cat("前 5 個主成分之個別解釋變異數比例 (PVE):\n")
+print(round(pve[1:5], 4))
+cat(sprintf("前 5 個主成分累積解釋變異數: %.2f%%\n", sum(pve[1:5]) * 100))
+
+# 3. 執行 t-SNE 非線性降維
+set.seed(42)
+# 去除重複列並執行 t-SNE
+tsne_out <- Rtsne(X_gene, dims = 2, perplexity = 15, verbose = FALSE, max_iter = 500)
+
+cat("\nt-SNE 降維計算完成。\n")
+cat(sprintf("低維嵌入矩陣維度: %d x %d\n", nrow(tsne_out$Y), ncol(tsne_out$Y)))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：scikit-learn PCA 與 TSNE 降維對比
+# 依賴套件：numpy, pandas, scikit-learn
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
+
+# 1. 模擬高維非線性流形資料 (瑞士捲 Swiss Roll)
+np.random.seed(42)
+n_samples = 600
+t = 1.5 * np.pi * (1 + 2 * np.random.uniform(0, 1, n_samples))
+height = 20 * np.random.uniform(0, 1, n_samples)
+x = t * np.cos(t)
+y = height
+z = t * np.sin(t)
+X_swiss = np.column_stack([x, y, z])
+
+# 2. 標準化資料
+X_scaled = StandardScaler().fit_transform(X_swiss)
+
+# 3. 線性 PCA 降維至 2 維
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+print("=== 線性 PCA 降維結果 ===")
+print(f"個別解釋變異數比例 (PVE): {np.round(pca.explained_variance_ratio_, 4)}")
+print(f"前 2 主成分累積解釋變異數: {np.sum(pca.explained_variance_ratio_)*100:.2f}%")
+
+# 4. 非線性 t-SNE 降維至 2 維
+tsne = TSNE(n_components=2, perplexity=30, random_state=42, n_iter_without_progress=150)
+X_tsne = tsne.fit_transform(X_scaled)
+
+print("\n=== 非線性 t-SNE 降維結果 ===")
+print(f"t-SNE 嵌入座標矩陣形狀: {X_tsne.shape}")
+print(f"t-SNE 最終 KL 散度 (Kullback-Leibler divergence): {tsne.kl_divergence_:.4f}")
+```
+:::
+
+---
+
+## 11.6 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **第二主成分的正交性證明**：
+   在式 ([-@eq-ch11-eigen-equation]) 基礎上，寫出第二主成分載荷向量 $\boldsymbol{\phi}_2$ 在約束 $\boldsymbol{\phi}_2^\top \boldsymbol{\phi}_2 = 1$ 與 $\boldsymbol{\phi}_2^\top \boldsymbol{\phi}_1 = 0$ 下的拉格朗日函數，證明其解對應共變異數矩陣的第二大特徵值，且兩主成分得分之間的樣本共變異數為零。
+2. **PCA 特徵值和等於總樣本變異數定理**：
+   設共變異數矩陣 $\boldsymbol{\Sigma} \in \mathbb{R}^{p \times p}$ 的特徵值為 $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_p \ge 0$。證明：$\sum_{j=1}^p \lambda_j = \mathrm{Tr}(\boldsymbol{\Sigma}) = \sum_{j=1}^p s_j^2$，即所有特徵值之和嚴格等於所有特徵之樣本變異數之和。
+3. **特徵標準化對 PCA 載荷之影響性證明**：
+   考慮二維數據，特徵 $X_1$ 的變異數為 100，特徵 $X_2$ 的變異數為 1，兩者相互獨立。計算未標準化時的 PCA 載荷向量，與標準化後（相關矩陣 PCA）的載荷向量，說明量綱縮放對幾何方向的決定性作用。
+4. **高維小樣本情境下 PCA 的 SVD 計算加速**：
+   當 $n \ll p$ 時（例如 $n = 50, p = 10,000$），直接計算 $\boldsymbol{X}^\top \boldsymbol{X}$ 需要求逆或特徵分解 $10,000 \times 10,000$ 矩陣。證明如何利用 $n \times n$ 的格拉姆矩陣（Gram Matrix）$\boldsymbol{X} \boldsymbol{X}^\top$ 的特徵向量，在 $\mathcal{O}(n^3)$ 內精確重構出前 $n$ 個主成分載荷。
+5. **t-SNE 梯度公式推導與引力/斥力分解**：
+   對 t-SNE 的損失函數 $C = \sum_{i \neq j} p_{ij} \ln \frac{p_{ij}}{q_{ij}}$ 關於低維座標 $\boldsymbol{y}_i$ 求導，證明梯度可分解為鄰近點之間的「吸引力（Attractive Force）」與全體點之間的「排斥力（Repulsive Force）」。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **主成分迴歸（Principal Component Regression, PCR）實作**：
+   使用 Python 或 R 實作 PCR：先對多重共線性的輸入特徵進行 PCA 降維，選取累積解釋變異數達 90% 的前 $k$ 個主成分，再擬合 OLS 線性迴歸，對比普通 OLS 的測試集 RMSE 與過度配適程度。
+7. **臉部影像特徵臉分解（Eigenfaces with PCA）**：
+   載入 Olivetti Faces 或 LFW 人臉資料集，使用 PCA 萃取前 50 個主成分特徵向量，將載荷向量反向重塑為二維影像矩陣並繪製「特徵臉（Eigenfaces）」視覺化圖譜。
+8. **雙標圖（Biplot）手刻可視化**：
+   使用 R 或 Python 手刻繪製 PCA 雙標圖（Biplot），在同一個二維平面上同時展示樣本點的投影得分（Scatter Plot）與各特徵的載荷向量箭頭（Vector Arrows），解讀變數間的相關性方向。
+9. **t-SNE 困惑度（Perplexity）敏感度分析**：
+   在包含多個高斯叢聚的合成資料集上，分別設定 `perplexity` $\in [2, 10, 30, 50, 100]$ 執行 t-SNE，繪製低維映射對比圖，分析困惑度對全域幾何拓撲與局部叢聚形態的影響。
+10. **UMAP 與 t-SNE 效能與全域結構保留度對比**：
+    利用較大規模數據（如 MNIST 包含 10,000 筆樣本），計時比較 UMAP 與 t-SNE 的計算時間開銷，並評估兩者在保留高維全域距離排序方面的等級相關係數（Spearman's Rank Correlation）。

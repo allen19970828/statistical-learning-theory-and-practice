@@ -1,0 +1,382 @@
+# 生成式分類模型：LDA、QDA 與單純貝氏 {#sec-ch07}
+
+## 本章導讀
+
+在上一章中，羅吉斯迴歸採取「**判別式途徑（Discriminative Approach）**」，直接透過線性函數與 Sigmoid 連結來對條件後驗機率 $P(Y \mid \boldsymbol{X})$ 建模。
+
+然而，當遇到以下情境時，羅吉斯迴歸會顯得力不從心：
+1. **各類別分離度極高**：此時羅吉斯迴歸的 MLE 係數會發散至無限大，數值極不穩定（Hauck-Donner 效應）。
+2. **樣本容量 $n$ 較小**，且特徵大致符合常態分佈：此時透過母體分佈假設估計參數更為精準。
+3. **類別數 $K > 2$**：多類別架構在生成式模型下極為自然直觀，無須透過一對多（OvR）之妥協拆解。
+
+本章將引介「**生成式分類途徑（Generative Approach）**」：透過先驗機率與特徵條件機率密度，利用貝氏定理反求後驗機率。我們將詳解**線性判別分析（LDA）**並給出 Fisher 投影極大化瑞利商的嚴格證明；提供一組 4 筆 2D 樣本的手把手數值推演；對比允許不同共變異數的**二次判別分析（QDA）**；最後推導在大數據與高維文字探勘中歷久彌新的**單純貝氏分類器（Naive Bayes）**，並在 R 與 Python 雙環境中進行決策邊界與模型評估實戰。
+
+---
+
+## 7.1 判別式 vs 生成式分類哲學
+
+```
+                ┌──────────────────────────────────────────────────────────┐
+                │                  分類問題的兩大流派                      │
+                ├────────────────────────────┬─────────────────────────────┤
+                │  判別式模型 (Discriminative)│  生成式模型 (Generative)    │
+                ├────────────────────────────┼─────────────────────────────┤
+                │ - 代表模型：羅吉斯迴歸, SVM│ - 代表模型：LDA, QDA, 單純貝氏│
+                │ - 核心思想：直接劃定分界線 │ - 核心思想：先學每一類的特徵│
+                │ - 建模目標：P(Y | X)        │ - 建模目標：P(X | Y) 與 P(Y) │
+                │ - 判定準則：直接輸出後驗   │ - 判定準則：藉由貝氏定理反推│
+                └────────────────────────────┴─────────────────────────────┘
+```
+
+生成式模型遵循**貝氏定理（Bayes' Theorem）**：
+設目標類別共有 $K$ 類，$Y \in \{1, 2, \dots, K\}$。
+* 類別先驗機率（Prior Probability）：$\pi_k = P(Y = k)$，且 $\sum_{k=1}^K \pi_k = 1$。
+* 類別條件密度（Class-Conditional Density）：$f_k(\boldsymbol{x}) \triangleq P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k)$。
+
+給定觀測值 $\boldsymbol{x}$，其屬於類別 $k$ 的**條件後驗機率（Posterior Probability）**為：
+$$
+p_k(\boldsymbol{x}) \triangleq P(Y = k \mid \boldsymbol{X} = \boldsymbol{x}) = \frac{\pi_k f_k(\boldsymbol{x})}{\sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}
+$$ {#eq-ch07-bayes-classifier}
+
+**貝氏最優分類器（Bayes Optimal Classifier）**的決策準則是：將 $\boldsymbol{x}$ 指派給後驗機率 $p_k(\boldsymbol{x})$ 最大的那個類別。
+
+---
+
+## 7.2 線性判別分析（LDA）
+
+### 7.2.1 多元常態分佈與同方差假設
+
+線性判別分析（Linear Discriminant Analysis, LDA）假設每一類別的特徵向量服從**多元高斯常態分佈**：
+$$
+f_k(\boldsymbol{x}) = \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)
+$$ {#eq-ch07-multivariate-normal}
+
+LDA 的核心關鍵假設：**所有 $K$ 個類別共享完全相同的共變異數矩陣 $\boldsymbol{\Sigma}$**（各類別僅平均值向量 $\boldsymbol{\mu}_k$ 相異）。
+
+---
+
+### 7.2.2 線性判別函數推導
+
+將多元常態密度式 ([-@eq-ch07-multivariate-normal]) 代入貝氏後驗機率式 ([-@eq-ch07-bayes-classifier])：
+$$
+p_k(\boldsymbol{x}) = \frac{\pi_k \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)}{\sum_{l=1}^K \pi_l \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_l)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_l) \right)}
+$$
+
+由於分母與常數係數 $\frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}}$ 對所有類別 $k$ 皆相同，最大化 $p_k(\boldsymbol{x})$ 等價於最大化分子項。取自然對數：
+
+$$
+\ln \left[ \pi_k f_k(\boldsymbol{x}) \right] = \ln \pi_k - \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) + \text{常數}
+$$
+
+展開二次型矩陣乘積：
+$$
+(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) = \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x} - 2\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k
+$$
+
+注意到 $\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x}$ 與類別標籤 $k$ 完全無關（因 $\boldsymbol{\Sigma}$ 被所有類別共享），在比較不同類別的大小關係時可以作為全體公共常數剔除！
+
+整理後，定義 **LDA 線性判別函數（Linear Discriminant Function）** $\delta_k(\boldsymbol{x})$：
+$$
+\delta_k(\boldsymbol{x}) \triangleq \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k - \frac{1}{2} \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \ln \pi_k
+$$ {#eq-ch07-lda-discriminant}
+
+#### 深刻結論：
+1. $\delta_k(\boldsymbol{x})$ 是關於輸入特徵 $\boldsymbol{x}$ 的**純線性函數（Linear in $\boldsymbol{x}$）**！
+2. 任意兩類別 $k$ 與 $l$ 之間的決策邊界為滿足 $\delta_k(\boldsymbol{x}) = \delta_l(\boldsymbol{x})$ 之點集：
+   $$
+   \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_k - \boldsymbol{\mu}_l) - \frac{1}{2}\boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_k + \frac{1}{2}\boldsymbol{\mu}_l^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_l + \ln\left(\frac{\pi_k}{\pi_l}\right) = 0
+   $$
+   這是一個嚴格的 $(p-1)$ 維**超平面（Hyperplane）**。這正是該方法被稱為「線性」判別分析的根本原因。
+
+---
+
+### 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明
+
+Ronald Fisher (1936) 從另一個純幾何投影維度推導了相同的結果，完全不依賴常態分佈假設。
+
+#### 最佳化目標：
+尋找一個投影方向向量 $\boldsymbol{w} \in \mathbb{R}^p$，將高維特徵投影至一維純量 $z = \boldsymbol{w}^\top \boldsymbol{x}$，要求投影後的**類別中心差距（Between-class scatter）盡可能大**，同時**類別內部的離散度（Within-class scatter）盡可能小**。
+
+以二元分類為例，定義：
+* 類別間散佈矩陣（Between-Class Scatter）：$\boldsymbol{S}_B = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top$
+* 類別內散佈矩陣（Within-Class Scatter）：$\boldsymbol{S}_W = \sum_{i \in \mathcal{C}_1}(\boldsymbol{x}_i - \boldsymbol{\mu}_1)(\boldsymbol{x}_i - \boldsymbol{\mu}_1)^\top + \sum_{i \in \mathcal{C}_2}(\boldsymbol{x}_i - \boldsymbol{\mu}_2)(\boldsymbol{x}_i - \boldsymbol{\mu}_2)^\top$
+
+投影後的**廣義瑞利商（Generalized Rayleigh Quotient）**為：
+$$
+J(\boldsymbol{w}) = \frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}
+$$
+
+對 $\boldsymbol{w}$ 求導並令其為零：
+$$
+\nabla_{\boldsymbol{w}} J(\boldsymbol{w}) = \frac{2\boldsymbol{S}_B\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}) - 2\boldsymbol{S}_W\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w})}{(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w})^2} = \boldsymbol{0}
+$$
+
+整理得：
+$$
+\boldsymbol{S}_B \boldsymbol{w} = J(\boldsymbol{w}) \boldsymbol{S}_W \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w} \implies \boldsymbol{S}_W^{-1} \boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{w}
+$$
+
+注意到 $\boldsymbol{S}_B \boldsymbol{w} = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\left[ (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \boldsymbol{w} \right]$，括號內為標量純量，故 $\boldsymbol{S}_B \boldsymbol{w}$ 的方向恆沿著向量 $(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$。
+因此最優投影向量的方向解為：
+$$
+\boldsymbol{w}^* \propto \boldsymbol{S}_W^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)
+$$ {#eq-ch07-fisher-solution}
+
+這與式 ([-@eq-ch07-lda-discriminant]) 中推導出的高斯機率視角下的超平面法向量 $\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$ 完全等價！
+
+---
+
+## 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算
+
+為了讓讀者掌握判別向量與共變異數矩陣的計算實質，我們構造一組 2 類別、4 筆樣本的二維玩具資料：
+
+| 樣本編號 | $x_1$ | $x_2$ | 類別標籤 |
+| :---: | :---: | :---: | :---: |
+| 1 | 1 | 2 | 類別 1 ($\mathcal{C}_1$) |
+| 2 | 2 | 3 | 類別 1 ($\mathcal{C}_1$) |
+| 3 | 3 | 5 | 類別 2 ($\mathcal{C}_2$) |
+| 4 | 5 | 6 | 類別 2 ($\mathcal{C}_2$) |
+
+設先驗機率相等：$\pi_1 = \pi_2 = 0.5$。
+
+### 步驟 1：計算各類別均值向量
+* 類別 1 均值：
+  $$
+  \boldsymbol{\mu}_1 = \frac{1}{2} \left( \begin{bmatrix} 1 \\ 2 \end{bmatrix} + \begin{bmatrix} 2 \\ 3 \end{bmatrix} \right) = \begin{bmatrix} 1.5 \\ 2.5 \end{bmatrix}
+  $$
+* 類別 2 均值：
+  $$
+  \boldsymbol{\mu}_2 = \frac{1}{2} \left( \begin{bmatrix} 3 \\ 5 \end{bmatrix} + \begin{bmatrix} 5 \\ 6 \end{bmatrix} \right) = \begin{bmatrix} 4.0 \\ 5.5 \end{bmatrix}
+  $$
+* 均值差向量：
+  $$
+  \boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = \begin{bmatrix} 1.5 - 4.0 \\ 2.5 - 5.5 \end{bmatrix} = \begin{bmatrix} -2.5 \\ -3.0 \end{bmatrix}
+  $$
+
+### 步驟 2：計算各類別內部離散度與合併共變異數矩陣
+* **類別 1 離散矩陣 $\boldsymbol{S}_1$**：
+  樣本偏差為 $[-0.5, -0.5]^\top$ 與 $[0.5, 0.5]^\top$。
+  $$
+  \boldsymbol{S}_1 = \begin{bmatrix} -0.5 \\ -0.5 \end{bmatrix} \begin{bmatrix} -0.5 & -0.5 \end{bmatrix} + \begin{bmatrix} 0.5 \\ 0.5 \end{bmatrix} \begin{bmatrix} 0.5 & 0.5 \end{bmatrix} = \begin{bmatrix} 0.25 & 0.25 \\ 0.25 & 0.25 \end{bmatrix} + \begin{bmatrix} 0.25 & 0.25 \\ 0.25 & 0.25 \end{bmatrix} = \begin{bmatrix} 0.5 & 0.5 \\ 0.5 & 0.5 \end{bmatrix}
+  $$
+* **類別 2 離散矩陣 $\boldsymbol{S}_2$**：
+  樣本偏差為 $[-1.0, -0.5]^\top$ 與 $[1.0, 0.5]^\top$。
+  $$
+  \boldsymbol{S}_2 = \begin{bmatrix} -1.0 \\ -0.5 \end{bmatrix} \begin{bmatrix} -1.0 & -0.5 \end{bmatrix} + \begin{bmatrix} 1.0 \\ 0.5 \end{bmatrix} \begin{bmatrix} 1.0 & 0.5 \end{bmatrix} = \begin{bmatrix} 1.0 & 0.5 \\ 0.5 & 0.25 \end{bmatrix} + \begin{bmatrix} 1.0 & 0.5 \\ 0.5 & 0.25 \end{bmatrix} = \begin{bmatrix} 2.0 & 1.0 \\ 1.0 & 0.5 \end{bmatrix}
+  $$
+* **類別內總散佈矩陣 $\boldsymbol{S}_W$**：
+  $$
+  \boldsymbol{S}_W = \boldsymbol{S}_1 + \boldsymbol{S}_2 = \begin{bmatrix} 0.5 & 0.5 \\ 0.5 & 0.5 \end{bmatrix} + \begin{bmatrix} 2.0 & 1.0 \\ 1.0 & 0.5 \end{bmatrix} = \begin{bmatrix} 2.5 & 1.5 \\ 1.5 & 1.0 \end{bmatrix}
+  $$
+* **合併共變異數矩陣（Pooled Covariance Matrix）$\hat{\boldsymbol{\Sigma}}$**：
+  自由度為 $n - K = 4 - 2 = 2$：
+  $$
+  \hat{\boldsymbol{\Sigma}} = \frac{1}{n - K} \boldsymbol{S}_W = \frac{1}{2} \begin{bmatrix} 2.5 & 1.5 \\ 1.5 & 1.0 \end{bmatrix} = \begin{bmatrix} 1.25 & 0.75 \\ 0.75 & 0.50 \end{bmatrix}
+  $$
+
+### 步驟 3：計算共變異數逆矩陣 $\hat{\boldsymbol{\Sigma}}^{-1}$
+行列式：
+$$
+\det(\hat{\boldsymbol{\Sigma}}) = (1.25)(0.50) - (0.75)^2 = 0.625 - 0.5625 = 0.0625 = \frac{1}{16}
+$$
+求逆：
+$$
+\hat{\boldsymbol{\Sigma}}^{-1} = \frac{1}{0.0625} \begin{bmatrix} 0.50 & -0.75 \\ -0.75 & 1.25 \end{bmatrix} = 16 \begin{bmatrix} 0.50 & -0.75 \\ -0.75 & 1.25 \end{bmatrix} = \begin{bmatrix} 8 & -12 \\ -12 & 20 \end{bmatrix}
+$$
+
+### 步驟 4：計算 Fisher 最優投影向量 $\boldsymbol{w}^*$
+$$
+\boldsymbol{w}^* = \hat{\boldsymbol{\Sigma}}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) = \begin{bmatrix} 8 & -12 \\ -12 & 20 \end{bmatrix} \begin{bmatrix} -2.5 \\ -3.0 \end{bmatrix} = \begin{bmatrix} 8(-2.5) - 12(-3.0) \\ -12(-2.5) + 20(-3.0) \end{bmatrix} = \begin{bmatrix} -20 + 36 \\ 30 - 60 \end{bmatrix} = \begin{bmatrix} 16 \\ -30 \end{bmatrix}
+$$
+除以公因數 2 簡化方向向量為：$\boldsymbol{w} = \begin{bmatrix} 8 \\ -15 \end{bmatrix}$。
+
+### 步驟 5：推導決策分界超平面方程式
+在先驗機率相等（$\pi_1 = \pi_2$）條件下，決策邊界恰好穿過兩類別均值的中點 $\boldsymbol{\mu}_0 = \frac{\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2}{2}$：
+$$
+\boldsymbol{\mu}_0 = \frac{1}{2} \left( \begin{bmatrix} 1.5 \\ 2.5 \end{bmatrix} + \begin{bmatrix} 4.0 \\ 5.5 \end{bmatrix} \right) = \begin{bmatrix} 2.75 \\ 4.00 \end{bmatrix}
+$$
+決策面方程式為 $\boldsymbol{w}^\top (\boldsymbol{x} - \boldsymbol{\mu}_0) = 0$：
+$$
+8(x_1 - 2.75) - 15(x_2 - 4.0) = 0 \implies 8x_1 - 22 - 15x_2 + 60 = 0 \implies 8x_1 - 15x_2 + 38 = 0
+$$
+
+### 步驟 6：代入樣本點檢驗
+* 樣本 1（$\mathcal{C}_1$）：$\boldsymbol{x}_1 = [1, 2]^\top \implies 8(1) - 15(2) + 38 = 8 - 30 + 38 = +16 > 0$（判定為 $\mathcal{C}_1$）。
+* 樣本 2（$\mathcal{C}_1$）：$\boldsymbol{x}_2 = [2, 3]^\top \implies 8(2) - 15(3) + 38 = 16 - 45 + 38 = +9 > 0$（判定為 $\mathcal{C}_1$）。
+* 樣本 3（$\mathcal{C}_2$）：$\boldsymbol{x}_3 = [3, 5]^\top \implies 8(3) - 15(5) + 38 = 24 - 75 + 38 = -13 < 0$（判定為 $\mathcal{C}_2$）。
+* 樣本 4（$\mathcal{C}_2$）：$\boldsymbol{x}_4 = [5, 6]^\top \implies 8(5) - 15(6) + 38 = 40 - 90 + 38 = -12 < 0$（判定為 $\mathcal{C}_2$）。
+
+所有訓練樣本皆被 100% 正確分離！
+
+---
+
+## 7.4 二次判別分析（QDA）
+
+若放寬「共享共變異數」的限制，允許**每一個類別擁有專屬的共變異數矩陣 $\boldsymbol{\Sigma}_k$**，即得**二次判別分析（Quadratic Discriminant Analysis, QDA）**。
+
+此時在推導中，二次項 $\boldsymbol{x}^\top \boldsymbol{\Sigma}_k^{-1} \boldsymbol{x}$ 無法被約去，判別函數為：
+$$
+\delta_k^{\text{qda}}(\boldsymbol{x}) \triangleq -\frac{1}{2}\ln |\boldsymbol{\Sigma}_k| - \frac{1}{2}(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}_k^{-1}(\boldsymbol{x} - \boldsymbol{\mu}_k) + \ln \pi_k
+$$ {#eq-ch07-qda-discriminant}
+
+* **幾何邊界**：$\delta_k^{\text{qda}}(\boldsymbol{x}) = \delta_l^{\text{qda}}(\boldsymbol{x})$ 形成二次曲面（拋物面、橢圓面、雙曲面）。
+* **參數規模與偏誤-變異數權衡**：
+  * LDA 僅需估計 1 個共享的 $\boldsymbol{\Sigma}$，需估計參數為 $p(p+1)/2$ 個，變異數小但偏誤較大。
+  * QDA 需獨立估計 $K$ 個相異的矩陣 $\boldsymbol{\Sigma}_k$，總參數為 $K \cdot [p(p+1)/2]$。當特徵數 $p$ 較大且樣本數較小時，QDA 極易因估計矩陣的不穩定性而過度配適。
+
+---
+
+## 7.5 單純貝氏分類器（Naive Bayes）
+
+當特徵數 $p$ 達到成千上萬（如文字分類、基因體學）時，即使是 LDA 亦無法反轉巨大的 $\boldsymbol{\Sigma}$。**單純貝氏（Naive Bayes）**提出了一個大膽且強力的假設：
+
+> **條件獨立假設（Conditional Independence Assumption）**：
+> 給定類別標籤 $Y=k$，所有特徵變數之間彼此條件獨立。
+
+基於此假設，高維聯合條件密度完全分解為各維度一維邊際機率密度的連乘積：
+$$
+f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1}^p f_{kj}(x_j)
+$$ {#eq-ch07-naive-bayes-density}
+
+### 7.5.1 三大常見單純貝氏模型
+1. **高斯單純貝氏（Gaussian Naive Bayes）**：用於連續型特徵，假設每一維度服從獨立一維高斯分佈 $\mathcal{N}(\mu_{kj}, \sigma_{kj}^2)$。
+2. **多項式單純貝氏（Multinomial Naive Bayes）**：用於文字詞頻統計向量。
+3. **伯努利單純貝氏（Bernoulli Naive Bayes）**：用於特徵為二元布林（是否出現某單詞）。
+
+### 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）
+在離散多項式分類中，若某個詞彙在訓練集某個類別中從未出現過，其估計條件機率 $\hat{P}(x_j \mid Y=k) = 0$。連乘積將導致整體後驗機率直接歸零（一票否決效應）。
+解決方案是引入**拉普拉斯平滑**：
+$$
+\hat{P}(X_j = v \mid Y = k) = \frac{N_{kj} + \alpha}{N_k + \alpha \cdot d}
+$$
+通常取平滑常數 $\alpha = 1$，$d$ 為該特徵可能的離散取值種類數。
+
+---
+
+## 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：MASS::lda, MASS::qda 與 e1071::naiveBayes 多類別分類
+# 依賴套件：MASS, e1071, ISLR2
+# ==============================================================================
+
+library(MASS)
+library(e1071)
+library(ISLR2)
+
+# 1. 使用股市 Smarket 資料集 (預測隔日大盤漲跌 Direction: Up / Down)
+data(Smarket)
+
+# 劃分 2005 年以前為訓練集，2005 年當年度為測試集
+train <- (Smarket$Year < 2005)
+Smarket_test <- Smarket[!train, ]
+Direction_test <- Smarket$Direction[!train]
+
+# 2. 擬合線性判別分析 (LDA)
+fit_lda <- lda(Direction ~ Lag1 + Lag2, data = Smarket, subset = train)
+pred_lda <- predict(fit_lda, Smarket_test)
+table_lda <- table(預測 = pred_lda$class, 真實 = Direction_test)
+cat("=== LDA 測試集混淆矩陣 ===\n")
+print(table_lda)
+cat(sprintf("LDA 準確率: %.4f\n\n", mean(pred_lda$class == Direction_test)))
+
+# 3. 擬合二次判別分析 (QDA)
+fit_qda <- qda(Direction ~ Lag1 + Lag2, data = Smarket, subset = train)
+pred_qda <- predict(fit_qda, Smarket_test)
+table_qda <- table(預測 = pred_qda$class, 真實 = Direction_test)
+cat("=== QDA 測試集混淆矩陣 ===\n")
+print(table_qda)
+cat(sprintf("QDA 準確率: %.4f\n\n", mean(pred_qda$class == Direction_test)))
+
+# 4. 擬合單純貝氏分類器 (Naive Bayes)
+fit_nb <- e1071::naiveBayes(Direction ~ Lag1 + Lag2, data = Smarket, subset = train)
+pred_nb <- predict(fit_nb, Smarket_test)
+cat("=== Naive Bayes 測試集混淆矩陣 ===\n")
+print(table(預測 = pred_nb, 真實 = Direction_test))
+cat(sprintf("Naive Bayes 準確率: %.4f\n", mean(pred_nb == Direction_test)))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：LDA, QDA 與 GaussianNB 模型評估
+# 依賴套件：numpy, pandas, scikit-learn
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. 模擬雙變數非線性多類別資料 (3 個類別)
+np.random.seed(42)
+n_per_class = 150
+
+# 類別 1: 常態分佈
+X1 = np.random.multivariate_normal([0, 0], [[1.0, 0.5], [0.5, 1.0]], n_per_class)
+# 類別 2: 共變異數不同的常態分佈
+X2 = np.random.multivariate_normal([3, 3], [[2.0, -0.8], [-0.8, 0.8]], n_per_class)
+# 類別 3
+X3 = np.random.multivariate_normal([-2, 3], [[0.5, 0.0], [0.0, 2.0]], n_per_class)
+
+X = np.vstack([X1, X2, X3])
+y = np.array([0]*n_per_class + [1]*n_per_class + [2]*n_per_class)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 2. 擬合三種生成式模型
+lda = LinearDiscriminantAnalysis().fit(X_train, y_train)
+qda = QuadraticDiscriminantAnalysis().fit(X_train, y_train)
+gnb = GaussianNB().fit(X_train, y_train)
+
+# 3. 輸出準確率比較
+acc_lda = accuracy_score(y_test, lda.predict(X_test))
+acc_qda = accuracy_score(y_test, qda.predict(X_test))
+acc_gnb = accuracy_score(y_test, gnb.predict(X_test))
+
+print(f"線性判別分析 (LDA) 測試準確率: {acc_lda:.4f}")
+print(f"二次判別分析 (QDA) 測試準確率: {acc_qda:.4f}")
+print(f"高斯單純貝氏 (GNB) 測試準確率: {acc_gnb:.4f}")
+
+# 4. 檢視 LDA 的 Fisher 特徵投影權重
+print("\nLDA 線性判別特徵係數 (投影法向量):")
+print(np.round(lda.coef_, 4))
+```
+:::
+
+---
+
+## 7.7 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **二元 LDA 後驗機率對羅吉斯函數之等價性證明**：
+   在二元 LDA 假設下，證明後驗機率 $P(Y=1 \mid \boldsymbol{x})$ 可嚴格表為 $\sigma(\beta_0 + \boldsymbol{\beta}^\top \boldsymbol{x})$，並求出 $\beta_0$ 與 $\boldsymbol{\beta}$ 以 $\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \boldsymbol{\Sigma}, \pi_1, \pi_2$ 表示的封閉表達式。
+2. **Fisher 廣義瑞利商的一階偏導證明**：
+   詳細展開式 ([-@eq-ch07-fisher-solution]) 的推導過程，證明使 $\frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}$ 極大化的向量 $\boldsymbol{w}$ 必然滿足廣義特徵值問題 $\boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w}$。
+3. **LDA 與 QDA 的參數自由度精確計算**：
+   設特徵維度為 $p$，類別數為 $K$。計算 LDA 與 QDA 各自需要估計的獨立純量參數總數（包含先驗、均值與共變異數矩陣），並分析當 $p=50, K=5$ 時兩者的參數估計負擔倍率。
+4. **單純貝氏的對數勝算線性形式**：
+   對於二元高斯單純貝氏分類器，若假設兩類在各特徵維度上的變異數相同（即 $\sigma_{1j}^2 = \sigma_{2j}^2 = \sigma_j^2$），證明對數後驗勝算 $\ln \frac{P(Y=1 \mid \boldsymbol{x})}{P(Y=2 \mid \boldsymbol{x})}$ 亦為特徵 $\boldsymbol{x}$ 的線性函數。
+5. **拉普拉斯平滑的貝氏共軛先驗詮釋**：
+   在多項式單純貝氏中，證明加入拉普拉斯平滑（$\alpha = 1$）等價於在多項分佈參數上施加了對稱狄利克雷分佈（Dirichlet Distribution, $\mathrm{Dir}(1, 1, \dots, 1)$）先驗的最大後驗估計（MAP）。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **正規化判別分析（Regularized Discriminant Analysis, RDA）實作**：
+   RDA 透過收縮參數 $\alpha \in [0, 1]$ 平滑 LDA 與 QDA 的共變異數矩陣：$\hat{\boldsymbol{\Sigma}}_k(\alpha) = \alpha \hat{\boldsymbol{\Sigma}}_k + (1 - \alpha) \hat{\boldsymbol{\Sigma}}$。撰寫程式在模擬高維數據上進行網格搜尋，繪製 CV 錯誤率隨 $\alpha$ 之變化曲線。
+7. **文字垃圾郵件過濾器（Spam Filtering）實戰**：
+   利用 SMS Spam Collection 資料集，實作文字前處理（Tokenization、去除停用詞）、TF-IDF 向量化，並使用多項式單純貝氏（MultinomialNB）進行二元分類，繪製混淆矩陣與 PR 曲線。
+8. **高維小樣本情境下 LDA 的奇異性修復（Shrinkage LDA）**：
+   當 $n < p$ 時，樣本共變異數矩陣 $\boldsymbol{S}_W$ 不可逆。使用 Ledoit-Wolf 收縮估計量或 Python `LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto')` 擬合基因微陣列數據（如 50 樣本，1,000 基因），評估其穩定性。
+9. **決策邊界等高線可視化（2D Decision Boundary Contour）**：
+   生成雙月形（Make Moons）或環形（Make Circles）二維數據，撰寫繪圖函數同時繪製 LDA、QDA 與高斯單純貝氏在同一座標平面上的二維決策分界線與測試點分佈。
+10. **不平衡類別先驗校正（Prior Correction）**：
+    設疾病罕見率為 $1\%$，但在訓練集進行過抽樣使正負樣本比達到 $1:1$。推導並程式驗證如何在推論階段利用貝氏公式重新調整先驗機率 $\pi_1 / \pi_2$，將模型輸出機率校正回母體真實分佈。

@@ -1,0 +1,65 @@
+# ==============================================================================
+# Git 忽略清單 (Git Ignore Rules)
+# ==============================================================================
+
+# 1. 參考文獻原始 PDF 檔案 (體積龐大且受著作權保護，嚴禁上傳至遠端倉庫)
+*.pdf
+*.PDF
+
+# 2. 作業系統暫存檔
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 3. 編輯器與 IDE 設定檔
+.vscode/
+.idea/
+*.swp
+*~
+.Rproj.user/
+*.Rproj
+
+# 4. Python 快取與虛擬環境
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
+
+# 5. R 執行階段暫存檔
+.Rhistory
+.RData
+.Ruserdata
+
+# 6. Quarto 編譯產出物
+.quarto/
+_site/
+_book/
+manuscript/.quarto/
+manuscript/_site/
+manuscript/_book/

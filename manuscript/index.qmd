@@ -1,0 +1,65 @@
+# 自序：走向嚴謹與實踐兼備的統計學習 {.unnumbered}
+
+## 寫作緣起與使命
+
+在當前人工智慧與資料科學蓬勃發展的浪潮中，「機器學習」已成為各學科競相修習的核心領域。然而，長期以來，大專院校師生與自學專業人士在中文教材的選擇上面臨著一個顯著的結構性斷層：
+
+1. **頂尖西方原著**（如 Gareth James 等人的 *An Introduction to Statistical Learning* [ISLR/ISLP] 及 Hastie 等人的 *The Elements of Statistical Learning* [ESL]）雖然深具啟發性，但對於非英語母語讀者而言，語言隔閡往往減緩了對深層統計思維的體悟；且 ISLR 為維持通俗性，經常略去關鍵的矩陣推導與演算法收斂證明。
+2. **海峽兩岸現有文獻**中，李航教授的《統計學習方法》與周志華教授的《機器學習》在數學推導與知識體系上登峰造極，但全書幾乎未提供可直接執行的程式碼，學生容易陷入「看得懂推導，卻寫不出程式；能解期末考題，卻無法分析真實數據」的困境；此外，兩岸在統計術語（如「過度配適」與「過擬合」、「支援向量機」與「支持向量機」）上的差異，亦常造成學習困擾。
+3. **市面上的商業技術書籍**則過度偏重於 Python 套件的 API 呼叫（如純粹調用 `model.fit()`），缺乏對統計推論、假設檢定條件、殘差診斷與泛化理論的探討，導致許多初學者淪為「盲目調參的黑盒子操作者」。
+
+本書的使命，正是要**消弭這個斷層**。我們立足於當代十部經典文獻與演算法原創奠基論文的肩膀上，為繁體中文讀者打造一部**「既有嚴格數學推導、又有深刻統計直觀、更能透過 R 與 Python 雙軌程式落地實戰」**的標準專書。
+
+---
+
+## 本書三大特色
+
+### 1. 理論推導不妥協，杜絕黑盒子
+本書各章拒絕「直接給出結論公式」。從多元線性迴歸的 Gauss-Markov 定理、Lasso 座標下降法求解公式、支援向量機的拉格朗日對偶與 KKT 條件，到 AdaBoost 權重更新公式的數學歸納證明，以及 EM 演算法之 Jensen 不等式下界推導，全書均提供嚴謹、清晰且逐步展開的數學推導。
+
+### 2. R 語言與 Python 雙軌實戰對照（Dual-Track）
+資料科學界長期存在「統計系慣用 R，資工與業界慣用 Python」的雙元現狀。本書打破語言藩籬，在所有演算法實作單元，均同步提供 **標準 R 語言**（基於現代 Tidyverse、`glmnet`、`e1071`、`randomForest`）與 **標準 Python**（基於 `numpy`、`pandas`、`scikit-learn`、`statsmodels`）的實作程式碼，並深入對比兩者在報表輸出、參數設定與效能上的細微差異。
+
+### 3. 台灣標準術語與在地化實例
+全書嚴格依據教育部審定規範，落實繁體中文統計與機器學習專業名詞。所有範例數據集除經典基準資料外，亦引進台灣在地開放資料（如內政部不動產交易實價登錄資料等），使理論學習與本土產業脈絡緊密結合。
+
+---
+
+## 雙軌程式環境建置指引
+
+為確保書中每一行程式碼皆能達到「100% 零錯誤交付與可重現性（Reproducibility）」，讀者應預先配置好以下運算環境：
+
+### R 語言環境需求
+* **R 版本**：建議 $\ge 4.2.0$。
+* **推薦 IDE**：RStudio 或 Positron。
+* **核心套件安裝**：
+```r
+install.packages(c(
+  "tidyverse", "ISLR2", "glmnet", "e1071", 
+  "randomForest", "xgboost", "rpart", "rpart.plot",
+  "splines", "mgcv", "MASS", "cluster", "factoextra",
+  "boot", "car"
+))
+```
+
+### Python 環境需求
+* **Python 版本**：建議 $\ge 3.10$。
+* **推薦環境**：JupyterLab、VS Code 或 Google Colab。
+* **核心套件安裝**：
+```bash
+pip install numpy scipy pandas scikit-learn statsmodels matplotlib seaborn patsy xgboost lightgbm shap
+```
+
+---
+
+## 致謝與閱讀地圖
+
+本書之架構深受 Trevor Hastie、Robert Tibshirani、Jerome Friedman、Gareth James、Daniela Witten、李航、周志華、Sanjeev Kulkarni、杉山將，以及台灣 R 語言推動先驅鄒慶士教授等前輩學者著作之啟發。
+
+* **大學本科生與入門者**：建議依循「直觀幾何 $\rightarrow$ 核心演算法流程 $\rightarrow$ R/Python 程式實作」的路徑閱讀，暫時略過高難度矩陣證明。
+* **碩博士研究生與演算法研發人員**：建議精讀各章的「數學原理與嚴謹推導」與「數值最佳化解法」，親自手推公式並與書中程式碼對照驗證。
+
+願本書成為您探索統計學習世界最扎實、最親切的指路明燈。
+
+**梁成瑜 與 Antigravity 創作團隊**  
+*於 2026 年 10 月*

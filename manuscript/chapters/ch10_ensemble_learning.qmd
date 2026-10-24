@@ -1,0 +1,394 @@
+# 集成學習：隨機森林與梯度提升 {#sec-ch10}
+
+## 本章導讀
+
+單一決策樹雖然具備直觀、非參數與不依賴特徵尺度的優勢，但其致命的「高變異數」（High Variance）使其在複雜資料集上的預測性能往往遜於支援向量機。然而，若我們將數百棵甚至數千棵決策樹組合在一起，是否能創造出奇蹟？
+
+答案催生了現代統計學習中最強大的家族——**集成學習（Ensemble Learning）**。
+Leo Breiman (1996, 2001) 與 Jerome Friedman (2001) 開創的兩大體系徹底改變了應用資料科學的面貌：
+1. **Bagging 與隨機森林（Random Forest）**：基於並行獨立隨機抽樣，核心在於**大幅消減方差（Variance Reduction）**。
+2. **Boosting 與 GBDT / XGBoost**：基於循序相加模型與梯度下降，核心在於**大幅消減偏誤（Bias Reduction）**。
+
+本章將給出 Bagging 方差分解公式的嚴格推導；解密隨機森林特徵子空間隨機性打破相關度的數學機理；提供 **AdaBoost 樣本權重動態更新的手工逐步演算範例**；給出 **XGBoost 二階泰勒展開式與葉權重封閉解**的現代推導；最後於 R 與 Python 雙環境中實戰並提供全套習題庫。
+
+---
+
+## 10.1 集成學習哲學與 Condorcet 陪審團定理
+
+集成學習的哲學是**「群體智慧（Wisdom of Crowds）」**：將多個個別表現僅略優於隨機猜測的**弱學習器（Weak Learners）**，組合成一個具備極高預測精度的**強學習器（Strong Learner）**。
+
+### 數學原理：Condorcet 陪審團定理
+假設有 $T$ 個二元分類器 $h_1, h_2, \dots, h_T$，其分類正確率皆為 $p > 0.5$。假設各分類器之間的錯誤**完全統計獨立**。
+若透過**多數決投票（Majority Voting）**決定最終預測，當 $T$ 為奇數時，集成模型犯錯的機率為超過半數分類器同時犯錯的機率：
+
+$$
+P(\text{集成模型錯誤}) = \sum_{k=\lfloor T/2 \rfloor + 1}^T \binom{T}{k} (1 - p)^k p^{T - k}
+$$
+
+由 Hoeffding 不等式，當 $T \to \infty$ 時：
+$$
+P(\text{集成模型錯誤}) \le \exp\left( -2 T \left(p - \frac{1}{2}\right)^2 \right) \xrightarrow{T \to \infty} 0
+$$
+
+集成系統的錯誤率隨基學習器數量 $T$ 呈**指數級衰減**！
+然而，該定理成立的關鍵核心前提是：**基學習器之間必須相互獨立**。在現實資料集中，所有模型都訓練自同一個總體，如何創造出「既準確、又彼此獨立不相關」的基學習器？這正是 Bagging 與隨機森林的精髓所在。
+
+---
+
+## 10.2 Bagging 與方差消減原理
+
+**Bagging（Bootstrap Aggregating, Breiman 1996）**利用自助法抽樣構建差異化模型。
+
+### 10.2.1 方差分解定理推導
+
+設我們自訓練集透過 Bootstrap 獨立抽取 $B$ 個樣本集，分別訓練出 $B$ 棵未剪枝的大決策樹 $\hat{f}_1(\boldsymbol{x}), \dots, \hat{f}_B(\boldsymbol{x})$。
+每棵樹的方差為 $\mathrm{Var}(\hat{f}_b(\boldsymbol{x})) = \sigma^2$。由於它們來自同一個原始資料集，任意兩棵樹之間存在非零的正相關係數 $\rho = \mathrm{Corr}(\hat{f}_b, \hat{f}_{b'})$。
+
+Bagging 的集成預測值為平均值：
+$$
+\hat{f}_{\text{bag}}(\boldsymbol{x}) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(\boldsymbol{x})
+$$
+
+其集成方差為：
+$$
+\begin{aligned}
+\mathrm{Var}\left( \hat{f}_{\text{bag}}(\boldsymbol{x}) \right) &= \mathrm{Var}\left( \frac{1}{B}\sum_{b=1}^B \hat{f}_b(\boldsymbol{x}) \right) \\
+&= \frac{1}{B^2} \left[ \sum_{b=1}^B \mathrm{Var}(\hat{f}_b) + \sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'}) \right] \\
+&= \frac{1}{B^2} \left[ B \sigma^2 + B(B - 1)\rho \sigma^2 \right] \\
+&= \rho \sigma^2 + \frac{1 - \rho}{B} \sigma^2
+\end{aligned}
+$$ {#eq-ch10-bagging-variance}
+
+#### 深刻結論：
+1. 當樹的數量 $B$ 足夠大（$B \to \infty$）時，第二項 $\frac{1 - \rho}{B}\sigma^2 \to 0$。
+2. 然而，**極限方差被第一項 $\rho \sigma^2$ 牢牢鎖死**！
+3. 若各樹之間的相關性 $\rho$ 很高（例如資料中存在少數幾個壓倒性的極強特徵，導致所有 Bootstrap 樹在頂層都選擇同一個特徵進行切分），則 Bagging 無法進一步消減方差。
+
+---
+
+## 10.3 隨機森林（Random Forest）
+
+Leo Breiman (2001) 提出了**隨機森林（Random Forest）**，其革命性的突破在於：**強行解偶，降低樹之間的相關係數 $\rho$！**
+
+### 10.3.1 特徵子空間隨機取樣（Feature Subsampling）
+
+在生長每一棵決策樹的**每一個內部節點分裂處**：
+* 不是從全體 $p$ 個特徵中尋求最優切分點。
+* 而是**隨機無放回挑選 $m$ 個特徵候選子集**（分類問題慣例取 $m \approx \sqrt{p}$；迴歸問題取 $m \approx p/3$）。
+* 僅在這 $m$ 個候選特徵中尋找最佳切分。
+
+#### 幾何機理：
+特徵子空間取樣剝奪了最強特徵在每個節點的壟斷權，迫使各棵樹去探索其他次強特徵。這使得成百上千棵樹的形態截然不同，**大幅壓低了樹之間的平均相關係數 $\rho$**！由式 ([-@eq-ch10-bagging-variance])，$\rho$ 的下降使全體集成方差達到斷崖式暴跌。
+
+### 10.3.2 袋外誤差（Out-of-Bag, OOB）估計
+由第 2 章證明的極限定理，每棵樹平均有約 $36.8\%$ 的樣本未參與訓練（OOB 樣本）。
+對於樣本點 $i$，我們僅收集那些**在訓練時未包含樣本 $i$ 的樹**（平均約 $B/3$ 棵樹）進行集成投票與預測。將所有樣本的 OOB 預測誤差平均，即可獲得**無偏的泛化誤差估計**，完全無須額外劃分獨立驗證集或耗時執行交叉驗證！
+
+---
+
+## 10.4 經典微型數據：AdaBoost 逐步手工演算範例
+
+為了完全透視 Boosting 的動態樣本加權過程，我們採用李航《統計學習方法》第 8 章的經典一維 10 樣本數值範例，純手工演算兩輪迭代。
+
+### 10.4.1 數據設定
+考慮一維輸入特徵 $x \in \{0, 1, 2, 3, 4, 5, 6, 7, 8, 9\}$ 與標籤 $y \in \{-1, +1\}$：
+
+| 樣本 $i$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| $x_i$ | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+| $y_i$ | 1 | 1 | 1 | -1 | -1 | -1 | 1 | 1 | 1 | -1 |
+
+初始樣本權重均勻分佈：
+$$
+D_1 = (w_{1,1}, \dots, w_{1,10}), \quad w_{1,i} = 0.1, \quad \forall i
+$$
+
+基分類器採用最簡單的**決策樹樁（Decision Stump）**：形如 $G(x) = \mathrm{sign}(x - v)$ 或 $\mathrm{sign}(v - x)$。
+
+---
+
+### 10.4.2 第 1 輪迭代（Iteration 1）
+
+1. **尋找最優切分點**：
+   在所有可能閾值 $v \in \{0.5, 1.5, \dots, 8.5\}$ 中，評估加權分類錯誤率：
+   若選取閾值 $v = 2.5$，分類器為：
+   $$
+   G_1(x) = \begin{cases} 1 & x < 2.5 \\ -1 & x > 2.5 \end{cases}
+   $$
+   * 在樣本點 7, 8, 9 處（$x=6, 7, 8$），真實標籤為 $y=1$，但 $G_1(x) = -1$，分類錯誤！
+   * 錯誤率為分錯樣本的權重和：
+     $$
+     \epsilon_1 = P(G_1(x_i) \neq y_i) = 0.1 + 0.1 + 0.1 = 0.30
+     $$
+2. **計算分類器權重係數 $\alpha_1$**：
+   $$
+   \alpha_1 = \frac{1}{2} \ln\left( \frac{1 - \epsilon_1}{\epsilon_1} \right) = \frac{1}{2} \ln\left( \frac{0.70}{0.30} \right) = \frac{1}{2} \ln(2.333) \approx 0.4236
+   $$
+3. **更新樣本權重分佈 $D_2$**：
+   公式為 $w_{2,i} = \frac{w_{1,i}}{Z_1} \exp(-\alpha_1 y_i G_1(x_i))$。
+   * 分類正確的樣本（1~6, 10）：$w_{1,i} e^{-0.4236} = 0.1 \times 0.6547 = 0.06547$。
+   * 分類錯誤的樣本（7, 8, 9）：$w_{1,i} e^{+0.4236} = 0.1 \times 1.5275 = 0.15275$。
+   * 計算規範化因子：
+     $$
+     Z_1 = 7 \times 0.06547 + 3 \times 0.15275 = 0.4583 + 0.4583 = 0.9166
+     $$
+   * 新權重向量為：
+     $$
+     w_{2,i} = \begin{cases} \frac{0.06547}{0.9166} \approx \mathbf{0.0714} & (i = 1, \dots, 6, 10) \\ \frac{0.15275}{0.9166} \approx \mathbf{0.1666} & (i = 7, 8, 9) \end{cases}
+     $$
+   * **觀察**：分錯樣本的權重從 $0.1$ 暴增至 $0.1666$（翻倍！），迫使下一輪分類器重點關注。
+
+---
+
+### 10.4.3 第 2 輪迭代（Iteration 2）
+
+在權重分佈 $D_2$ 下，若選取閾值 $v = 8.5$：
+$$
+G_2(x) = \begin{cases} 1 & x < 8.5 \\ -1 & x > 8.5 \end{cases}
+$$
+* 在樣本 4, 5, 6 處（真實為 -1），$G_2$ 預測為 1，分類錯誤。
+* 其加權錯誤率為：
+  $$
+  \epsilon_2 = 0.0714 + 0.0714 + 0.0714 = 0.2142
+  $$
+* 計算分類器權重 $\alpha_2$：
+  $$
+  \alpha_2 = \frac{1}{2} \ln\left( \frac{1 - 0.2142}{0.2142} \right) = \frac{1}{2} \ln(3.668) \approx 0.6496
+  $$
+
+當前集成模型為：
+$$
+f_2(x) = \mathrm{sign}\left( 0.4236 \, G_1(x) + 0.6496 \, G_2(x) \right)
+$$
+此時全體 10 個樣本上的誤分類數已經從 3 個迅速下降，展現了 Boosting 循序降低偏誤的強大威力！
+
+---
+
+## 10.5 梯度提升（GBDT）與極限梯度提升（XGBoost）
+
+Jerome Friedman (2001) 指出：Boosting 本質上是**在無限維函數空間中，沿著損失函數的負梯度方向進行梯度下降（Gradient Descent in Function Space）**！
+
+### 10.5.1 XGBoost 之二階泰勒展開推導（Chen & Guestrin 2016）
+
+陳天奇於 2016 年提出的 **XGBoost**，進一步將目標函數在當前預測值 $\hat{y}_i^{(t-1)}$ 處進行**二階泰勒展開（Second-Order Taylor Expansion）**，同時在目標函數中顯式引入樹的結構複雜度正則化。
+
+設目標損失函數為 $l(y_i, \hat{y}_i)$。在第 $t$ 輪迭代中，欲加入一棵新樹 $f_t(\boldsymbol{x})$：
+$$
+\mathcal{L}^{(t)} = \sum_{i=1}^n l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) + \Omega(f_t)
+$$
+
+二階展開：
+$$
+l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) \approx l\left(y_i, \, \hat{y}_i^{(t-1)}\right) + g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i)
+$$
+
+其中一階梯度（Gradient）與二階 Hessian 導數定義為：
+$$
+g_i \triangleq \left. \frac{\partial l(y_i, \hat{y})}{\partial \hat{y}} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}, \quad h_i \triangleq \left. \frac{\partial^2 l(y_i, \hat{y})}{\partial \hat{y}^2} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}
+$$
+
+樹的結構複雜度懲罰項定義為：
+$$
+\Omega(f_t) \triangleq \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2
+$$
+其中 $T$ 為終端葉節點總數，$w_j$ 為第 $j$ 個葉節點的預測權重值，$\gamma$ 與 $\lambda$ 為正則化超參數。
+
+移除常數項 $l(y_i, \hat{y}_i^{(t-1)})$，第 $t$ 步的目標泛函轉化為：
+$$
+\tilde{\mathcal{L}}^{(t)} = \sum_{i=1}^n \left[ g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i) \right] + \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2
+$$
+
+將所有樣本依據其最終落入的葉節點集合 $I_j = \{i \mid q(\boldsymbol{x}_i) = j\}$ 重新分組求和：
+$$
+\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left[ \left(\sum_{i \in I_j} g_i\right) w_j + \frac{1}{2}\left(\sum_{i \in I_j} h_i + \lambda\right) w_j^2 \right] + \gamma T
+$$
+
+定義葉節點樣本的一階梯度和與二階梯度和：
+$$
+G_j \triangleq \sum_{i \in I_j} g_i, \quad H_j \triangleq \sum_{i \in I_j} h_i
+$$
+
+目標函數化為關於葉權重 $w_j$ 的一元二次方程求和：
+$$
+\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left[ G_j w_j + \frac{1}{2}(H_j + \lambda) w_j^2 \right] + \gamma T
+$$
+
+對各葉權重 $w_j$ 求導並令其為零：
+$$
+G_j + (H_j + \lambda) w_j = 0 \implies w_j^* = -\frac{G_j}{H_j + \lambda}
+$$ {#eq-ch10-xgboost-weight}
+
+將最優權重 $w_j^*$ 代回目標函數，得到衡量該樹結構優劣的**評分函數（Scoring Function）**：
+$$
+\tilde{\mathcal{L}}^{(t)}(q) = -\frac{1}{2} \sum_{j=1}^T \frac{G_j^2}{H_j + \lambda} + \gamma T
+$$ {#eq-ch10-xgboost-score}
+
+#### 樹節點切分增益（Split Gain）：
+在考慮是否將一個葉節點切分為左子樹 $L$ 與右子樹 $R$ 時，分裂帶來的目標函數減少量（Gain）為：
+$$
+\mathrm{Gain} = \frac{1}{2} \left[ \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda} \right] - \gamma
+$$ {#eq-ch10-xgboost-gain}
+
+* 若 $\mathrm{Gain} \le 0$，說明切分帶來的純度提升不足以抵消增加一個葉節點的懲罰 $\gamma$，演算法自動停止分裂（前向自動剪枝）！
+
+---
+
+## 10.6 雙軌實務實驗室：隨機森林與 XGBoost 實戰
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：randomForest 隨機森林與 xgboost 極限梯度提升分類
+# 依賴套件：randomForest, xgboost, ISLR2
+# ==============================================================================
+
+library(randomForest)
+library(xgboost)
+library(ISLR2)
+
+# 1. 載入心臟病 Heart 資料集 (或 Boston 資料集迴歸實戰)
+data(Boston)
+
+set.seed(42)
+train_idx <- sample(1:nrow(Boston), size = 0.7 * nrow(Boston))
+boston_train <- Boston[train_idx, ]
+boston_test <- Boston[-train_idx, ]
+
+# 2. 擬合隨機森林迴歸模型 (預測房價中位數 medv)
+# mtry 設定為 p/3 = 12/3 = 4 (特徵子空間維度)
+rf_boston <- randomForest(medv ~ ., data = boston_train, 
+                          mtry = 4, ntree = 500, importance = TRUE)
+
+# 輸出隨機森林模型摘要與 OOB 誤差
+print(rf_boston)
+
+# 檢視特徵重要性 (Permutation %IncMSE 與 IncNodePurity)
+importance_df <- round(importance(rf_boston), 2)
+cat("\n各變數特徵重要性分析:\n")
+print(head(importance_df[order(importance_df[, 1], decreasing = TRUE), ]))
+
+# 3. 擬合 XGBoost 迴歸
+X_train_mat <- as.matrix(boston_train[, -which(names(boston_train) == "medv")])
+y_train_vec <- boston_train$medv
+X_test_mat <- as.matrix(boston_test[, -which(names(boston_test) == "medv")])
+y_test_vec <- boston_test$medv
+
+dtrain <- xgb.DMatrix(data = X_train_mat, label = y_train_vec)
+dtest <- xgb.DMatrix(data = X_test_mat, label = y_test_vec)
+
+xgb_params <- list(booster = "gbtree", objective = "reg:squarederror",
+                   eta = 0.05, max_depth = 4, subsample = 0.8)
+
+xgb_model <- xgb.train(params = xgb_params, data = dtrain, nrounds = 150, verbose = 0)
+
+# 4. 測試集 MSE 比較
+pred_rf <- predict(rf_boston, newdata = boston_test)
+pred_xgb <- predict(xgb_model, newdata = dtest)
+
+cat(sprintf("\n隨機森林測試集 MSE: %.4f\n", mean((pred_rf - y_test_vec)^2)))
+cat(sprintf("XGBoost 測試集 MSE: %.4f\n", mean((pred_xgb - y_test_vec)^2)))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：RandomForestClassifier 與 XGBClassifier 競賽級模型實戰
+# 依賴套件：numpy, pandas, scikit-learn, xgboost
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, roc_auc_score
+
+# 1. 模擬非線性複雜分類資料 (n=600, p=15)
+np.random.seed(42)
+n, p = 600, 15
+X = np.random.normal(0, 1, size=(n, p))
+# 非線性邊界且具備特徵交互作用
+logits = 1.5 * X[:, 0] - 2.0 * X[:, 1] + 1.2 * (X[:, 2] * X[:, 3]) - 1.0 * (X[:, 4]**2)
+prob = 1.0 / (1.0 + np.exp(-logits))
+y = np.random.binomial(1, prob, size=n)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 2. 隨機森林分類器 (開啟 oob_score)
+rf = RandomForestClassifier(n_estimators=300, max_features='sqrt', oob_score=True, random_state=42)
+rf.fit(X_train, y_train)
+
+# 3. XGBoost 分類器 (含正則化項)
+xgb = XGBClassifier(n_estimators=150, learning_rate=0.05, max_depth=4, reg_lambda=1.0, random_state=42, eval_metric='logloss')
+xgb.fit(X_train, y_train)
+
+# 4. 評估與指標比較
+y_pred_rf = rf.predict(X_test)
+y_prob_rf = rf.predict_proba(X_test)[:, 1]
+
+y_pred_xgb = xgb.predict(X_test)
+y_prob_xgb = xgb.predict_proba(X_test)[:, 1]
+
+print(f"隨機森林 OOB 準確率估計: {rf.oob_score_:.4f}")
+print(f"隨機森林 測試集準確率: {accuracy_score(y_test, y_pred_rf):.4f} | AUC: {roc_auc_score(y_test, y_prob_rf):.4f}")
+print(f"XGBoost 測試集準確率: {accuracy_score(y_test, y_pred_xgb):.4f} | AUC: {roc_auc_score(y_test, y_prob_xgb):.4f}")
+
+# 5. 前 4 項重要特徵比較
+print("\n隨機森林 特徵重要性 (前 4 名):")
+top4_rf = np.argsort(rf.feature_importances_)[::-1][:4]
+for idx in top4_rf:
+    print(f"特徵 X{idx}: {rf.feature_importances_[idx]:.4f}")
+```
+:::
+
+---
+
+## 10.7 本章全套習題庫（Exercises）
+
+### 第一部分：觀念與數學推導題（Conceptual Exercises）
+
+1. **Bagging 變異數消減極限的嚴格證明**：
+   請從式 ([-@eq-ch10-bagging-variance]) 出發，完整展開雙重求和 $\sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'})$，證明其項數為 $B(B-1)$。由此說明為什麼在極限情況下，單純增加樹的數量 $B$ 無法消除由於樹之間相關性 $\rho$ 所帶來的方差下界。
+2. **AdaBoost 訓練誤差指數界定理證明**：
+   Freund & Schapire (1997) 證明 AdaBoost 的訓練分類錯誤率滿足上界：
+   $$
+   \frac{1}{n} \sum_{i=1}^n \mathbb{I}(H(\boldsymbol{x}_i) \neq y_i) \le \prod_{m=1}^M Z_m = \prod_{m=1}^M 2 \sqrt{\epsilon_m (1 - \epsilon_m)}
+   $$
+   * 請利用不等式 $\mathbb{I}(H(\boldsymbol{x}) \neq y) \le \exp(-y f(\boldsymbol{x}))$ 證明此結論。
+   * 證明若每個基分類器的錯誤率均略優於隨機猜測（$\epsilon_m \le \frac{1}{2} - \gamma$，$\gamma > 0$），則訓練誤差隨迭代輪數 $M$ 呈指數級趨向於 0。
+3. **GBDT 偽殘差（Pseudo-residuals）的負梯度推導**：
+   在平方誤差損失 $L(y, f) = \frac{1}{2}(y - f)^2$ 下，負梯度 $-\frac{\partial L}{\partial f} = y - f$ 恰為標準殘差。
+   * 請推導二元分類羅吉斯損失函數（Logistic Loss / Cross-Entropy）下的負梯度表達式，證明其形式為真實標籤與預測機率之差 $y_i - p(\boldsymbol{x}_i)$。
+   * 請推導絕對值損失 $L(y, f) = |y - f|$ 下的負梯度，說明其為何能實現穩健迴歸（Robust Regression）。
+4. **XGBoost 最優切分增益公式推導**：
+   請從目標函數 ([-@eq-ch10-xgboost-score]) 出發，詳細推導式 ([-@eq-ch10-xgboost-gain]) 中葉節點分裂增益 $\mathrm{Gain}$ 的代數展開過程，並解釋正則化參數 $\gamma$ 如何起到類似 CART 剪枝的數學作用。
+5. **隨機森林之置換特徵重要性（Permutation Importance）原理**：
+   說明為什麼將袋外（OOB）樣本的某個特徵 $X_j$ 隨機重排（Permute）後計算的預測誤差增加量，能客觀反映該特徵的非線性重要性？這種方法相比基於 Gini 不純度減少量（MDI）的方法有何顯著優勢？
+
+---
+
+### 第二部分：程式與實戰上機題（Applied Exercises）
+
+6. **AdaBoost 手算數值範例程式碼驗證**：
+   將 10.4 節中的 10 個一維樣本點輸入 Python 或 R：
+   * 呼叫 `sklearn.ensemble.AdaBoostClassifier(n_estimators=3)` 或 R 套件，驗證前兩輪弱學習器的切分點、加權錯誤率 $\epsilon_m$ 與分類器權重 $\alpha_m$ 是否與手算數值一致。
+7. **隨機森林候選特徵數 $m$ 對測試誤差的敏感度分析**：
+   載入波士頓房價資料集 `Boston`，固定樹的總數為 $ntree = 500$：
+   * 分別設定 $mtry \in \{1, 2, 4, 8, 12\}$ 擬合隨機森林。
+   * 繪製測試集 MSE 隨樹的數量（1 到 500）變化的收斂曲線，觀察特徵子空間大小對模型收斂速度與最終泛化誤差的影響。
+8. **極限梯度提升（XGBoost）超參數微調網格搜尋**：
+   在 Python 中使用 `GridSearchCV` 或 `RandomizedSearchCV` 對 XGBoost 進行調優：
+   * 搜尋空間：`max_depth` $\in \{3, 4, 6\}$，`learning_rate` $\in \{0.01, 0.05, 0.1\}$，`subsample` $\in \{0.7, 0.9\}$，`reg_lambda` $\in \{0.1, 1.0, 10.0\}$。
+   * 輸出最優參數組合，並繪製特徵重要性橫條圖。
+9. **隨機森林與單一決策樹之方差消減對比模擬**：
+   生成一個高噪聲的非線性迴歸資料集：
+   * 在相同的 100 個 Bootstrap 重抽樣訓練集上，分別擬合單一未剪枝決策樹與隨機森林。
+   * 計算並比較兩者在固定測試點上的預測值方差，實證檢驗式 ([-@eq-ch10-bagging-variance]) 的方差消減效果。
+10. **台灣股市台指期或量化金融分類實戰**：
+    蒐集台灣加權指數歷史日 K 線資料，建構常用技術指標（如 RSI、KD、MACD、布林通道帶寬、5 日均線乖離率等共 15 個特徵）：
+    * 定義二元標籤：隔日收盤價相對於今日是否上漲（1 為上漲，0 為下跌）。
+    * 嚴格劃分時間序列訓練集與測試集（避免未來資訊洩漏）。
+    * 分別訓練隨機森林與 XGBoost 模型，計算測試集 ROC-AUC 與累計交易策略回測淨值曲線。

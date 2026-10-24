@@ -1,0 +1,405 @@
+# 決策樹演算法 {#sec-ch09}
+
+## 本章導讀
+
+在先前的章節中，我們討論的線性模型、羅吉斯迴歸或支援向量機，本質上都是在特徵空間中尋求某種光滑的代數超平面。然而，在醫療臨床診斷、金融信用審查以及許多人類決策情境中，專家的思維模式通常不是計算加權總和，而是依循一系列階層式的**「若-則」（If-Then）規則判斷**。
+
+**樹狀模型（Tree-Based Methods）**直接模擬了這種劃分思維。由 Leo Breiman、Jerome Friedman 等人於 1984 年奠定的 **CART（Classification and Regression Trees）** 演算法，將特徵空間劃分為一系列軸向對齊的超矩形區域，並在每個區域內給出簡潔常數預測。
+
+本章將剖析決策樹的幾何正交劃分原理；推導迴歸樹的貪婪二元分割；深入分析分類樹的三大不純度指標（**錯誤率、吉尼係數、交叉熵**）的數學凹性；提供一組 6 筆樣本手把手計算所有候選切分點吉尼增益與弱連接剪枝臨界成本；詳解利用動態規劃思想的**成本-複雜度剪枝（Cost-Complexity Pruning）**；最後探討決策樹「低偏誤、高變異數」的內在弱點，為下一章引進集成學習奠定基石。
+
+---
+
+## 9.1 決策樹的幾何本質與特徵空間劃分
+
+### 9.1.1 軸向對齊的超矩形分割
+
+決策樹的幾何核心是：**透過正交於座標軸的超平面，將 $p$ 維特徵空間 $\mathcal{X}$ 遞迴二元切割為 $J$ 個互不相交的超矩形區域（Hyper-rectangles）$\mathcal{R}_1, \mathcal{R}_2, \dots, \mathcal{R}_J$**。
+
+```
+              X2 ▲
+                 │                ┌───────────────────────┐
+                 │                │                       │
+                 │                │          R3           │
+             s2  ┼────────────────┼───────────────────────┤
+                 │                │           │           │
+                 │       R1       │    R2     │    R4     │
+                 │                │           │           │
+                 └────────────────┴───────────┴───────────► X1
+                                  s1          s3
+```
+
+對於任意輸入樣本 $\boldsymbol{x}$，若其落入區域 $\mathcal{R}_m$，模型即輸出該區域對應的模型參數：
+$$
+f(\boldsymbol{x}) = \sum_{m=1}^J c_m \mathbb{I}(\boldsymbol{x} \in \mathcal{R}_m)
+$$ {#eq-ch09-tree-partition}
+
+* **迴歸樹（Regression Tree）**：$c_m$ 為落入區域 $\mathcal{R}_m$ 內所有訓練樣本標籤的**平均值**：
+  $$
+  \hat{c}_m = \mathrm{ave}(y_i \mid \boldsymbol{x}_i \in \mathcal{R}_m)
+  $$
+* **分類樹（Classification Tree）**：$c_m$ 為區域 $\mathcal{R}_m$ 內出現頻率最高的**多數類別（Majority Vote）**。
+
+---
+
+## 9.2 迴歸樹與遞迴二元分割（Recursive Binary Splitting）
+
+理論上，尋求全域最優的矩形劃分以最小化全域 RSS 是一個 NP-hard 組合最佳化問題。因此，CART 採用**由上而下的貪婪啟發式演算法（Top-Down Greedy Algorithm）**，稱為**遞迴二元分割**。
+
+### 9.2.1 最優切分點搜尋
+
+在任何一個內部節點處，演算法遍歷所有特徵 $j \in \{1, 2, \dots, p\}$ 以及特徵 $X_j$ 的所有可能切分閥值 $s$，將當前節點劃分為兩個半空間：
+$$
+\mathcal{R}_1(j, s) = \{\boldsymbol{X} \mid X_j \le s\} \quad \text{與} \quad \mathcal{R}_2(j, s) = \{\boldsymbol{X} \mid X_j > s\}
+$$
+
+目標是尋找最優的特徵維度 $j^*$ 與切分點 $s^*$，使得分裂後的兩個子節點內部殘差平方和（RSS）之和最小化：
+$$
+\min_{j, s} \left\{ \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_1(j, s)} (y_i - \hat{y}_{\mathcal{R}_1})^2 + \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_2(j, s)} (y_i - \hat{y}_{\mathcal{R}_2})^2 \right\}
+$$ {#eq-ch09-regression-split}
+
+其中 $\hat{y}_{\mathcal{R}_1}$ 與 $\hat{y}_{\mathcal{R}_2}$ 分別為落在兩子區域內的樣本目標平均值。
+
+---
+
+## 9.3 分類樹與節點不純度指標（Impurity Measures）
+
+對於分類問題，我們不能使用 RSS。設節點 $m$ 共有 $N_m$ 筆訓練樣本，落入該節點且真實標籤為類別 $k$ 的樣本比例定義為：
+$$
+\hat{p}_{mk} \triangleq \frac{1}{N_m} \sum_{\boldsymbol{x}_i \in \mathcal{R}_m} \mathbb{I}(y_i = k), \quad k = 1, 2, \dots, K
+$$
+
+評估節點 $m$ 內部樣本混雜程度的指標稱為**不純度指標（Impurity Measure）$Q_m(T)$**。
+
+### 9.3.1 三大不純度指標對比
+
+1. **分類錯誤率（Classification Error Rate）**：
+   $$
+   E_m = 1 - \max_{k} \hat{p}_{mk}
+   $$
+2. **吉尼不純度（Gini Index / Gini Impurity）**：
+   $$
+   G_m \triangleq \sum_{k=1}^K \hat{p}_{mk} (1 - \hat{p}_{mk}) = 1 - \sum_{k=1}^K \hat{p}_{mk}^2
+   $$ {#eq-ch09-gini}
+   幾何意義：若依據節點內的機率分佈隨機挑選一個樣本並隨機指派一個類別標籤，該標籤指派錯誤的機率。
+3. **交叉熵（Cross-Entropy / Information Entropy）**：
+   $$
+   D_m \triangleq -\sum_{k=1}^K \hat{p}_{mk} \ln \hat{p}_{mk}
+   $$ {#eq-ch09-entropy}
+   （若 $\hat{p}_{mk} = 0$，約定 $0 \ln 0 \equiv 0$）。
+
+```
+        不純度 Q
+           ▲
+       0.5 ┼                        . ─── . (交叉熵除以 2ln2 歸一化)
+           │                      /         \
+           │                    /             \
+           │                  /                 \  (吉尼不純度 Gini)
+           │                /                     \
+           │               /                       \  (分類錯誤率 Error)
+           └──────────────┴─────────────────────────┴──────────► p (類別1比例)
+           0             0.5                       1.0
+```
+
+### 9.3.2 為什麼分類樹生長偏好吉尼係數與交叉熵？
+
+直覺上分類錯誤率最符合最終目標，但在樹的生長分割中，**錯誤率對節點機率的微小改變極度不敏感**！
+
+#### 經典反例：
+考慮二元分類（各 400 樣本，共 800 樣本），當前節點狀態為 $(400, 400)$，錯誤率為 $0.5$。
+* **切分方案 A**：分裂為 $(300, 100)$ 與 $(100, 300)$。
+  * 兩子節點的錯誤率均為 $100/400 = 0.25$，加權平均錯誤率為 $0.25$。
+* **切分方案 B**：分裂為 $(200, 400)$ 與 $(200, 0)$。
+  * 第二個子節點達到 100% 完全純淨！其錯誤率分別為 $200/600 = 0.333$ 與 $0/200 = 0$。加權平均錯誤率為 $\frac{600}{800}(0.333) + 0 = 0.25$。
+
+在分類錯誤率下，方案 A 與方案 B 的評分**完全相同**！然而方案 B 已經成功分離出一個 100% 純淨的葉節點，在實務上顯然優於方案 A。
+而 **Gini 係數與交叉熵為嚴格凹函數（Strictly Concave）**，能強烈獎勵產生「高純度節點」的分割，因此 CART 與 C4.5 一律採用 Gini 或交叉熵作為分裂增益的評判基準。
+
+---
+
+## 9.4 手把手數值推演：6 筆樣本之吉尼切分點窮舉與剪枝手算
+
+### 9.4.1 切分點搜尋全流程數值計算
+考慮以下 1D 單特徵二元分類資料集（$n=6$）：
+
+| 樣本編號 | 特徵 $x_i$ | 真實類別 $y_i$ |
+| :---: | :---: | :---: |
+| 1 | 1.0 | 0 |
+| 2 | 2.0 | 0 |
+| 3 | 3.0 | 1 |
+| 4 | 4.0 | 0 |
+| 5 | 6.0 | 1 |
+| 6 | 7.0 | 1 |
+
+* **母節點狀態**：總樣本數 $N = 6$。類別 0 有 3 筆，類別 1 有 3 筆。
+  $$
+  p_0 = \frac{3}{6} = 0.5, \quad p_1 = \frac{3}{6} = 0.5
+  $$
+  母節點吉尼不純度：
+  $$
+  G_{\text{parent}} = 1 - (0.5^2 + 0.5^2) = 1 - 0.50 = \mathbf{0.5000}
+  $$
+
+相鄰點中點構成 5 個潛在切分閥值候選點：$s \in \{1.5, 2.5, 3.5, 5.0, 6.5\}$。
+
+#### 1. 候選切分點 $s = 1.5$：
+* 左子節點（$x \le 1.5$）：樣本 $\{1\}$，標籤 $\{0\}$。
+  $N_L = 1, p_{L0} = 1, p_{L1} = 0 \implies G_L = 1 - (1^2 + 0^2) = 0$。
+* 右子節點（$x > 1.5$）：樣本 $\{2, 3, 4, 5, 6\}$，標籤 $\{0, 1, 0, 1, 1\}$（2 個 0, 3 個 1）。
+  $N_R = 5, p_{R0} = 2/5 = 0.4, p_{R1} = 3/5 = 0.6 \implies G_R = 1 - (0.4^2 + 0.6^2) = 1 - 0.52 = 0.48$。
+* 加權平均吉尼係數：
+  $$
+  G(s=1.5) = \frac{1}{6}(0) + \frac{5}{6}(0.48) = \frac{2.4}{6} = \mathbf{0.4000}
+  $$
+  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。
+
+#### 2. 候選切分點 $s = 2.5$：
+* 左子節點（$x \le 2.5$）：樣本 $\{1, 2\}$，標籤 $\{0, 0\}$。
+  $N_L = 2, p_{L0} = 1, p_{L1} = 0 \implies G_L = 0$（完全純淨！）。
+* 右子節點（$x > 2.5$）：樣本 $\{3, 4, 5, 6\}$，標籤 $\{1, 0, 1, 1\}$（1 個 0, 3 個 1）。
+  $N_R = 4, p_{R0} = 1/4 = 0.25, p_{R1} = 3/4 = 0.75 \implies G_R = 1 - (0.25^2 + 0.75^2) = 1 - 0.625 = 0.375$。
+* 加權平均吉尼係數：
+  $$
+  G(s=2.5) = \frac{2}{6}(0) + \frac{4}{6}(0.375) = \frac{1.5}{6} = \mathbf{0.2500}
+  $$
+  吉尼增益：$\Delta G = 0.5000 - 0.2500 = \mathbf{0.2500}$。
+
+#### 3. 候選切分點 $s = 3.5$：
+* 左子節點（$x \le 3.5$）：樣本 $\{1, 2, 3\}$，標籤 $\{0, 0, 1\}$。
+  $N_L = 3, p_{L0} = 2/3, p_{L1} = 1/3 \implies G_L = 1 - (4/9 + 1/9) = 4/9 \approx 0.4444$。
+* 右子節點（$x > 3.5$）：樣本 $\{4, 5, 6\}$，標籤 $\{0, 1, 1\}$。
+  $N_R = 3, p_{R0} = 1/3, p_{R1} = 2/3 \implies G_R = 1 - (1/9 + 4/9) = 4/9 \approx 0.4444$。
+* 加權平均吉尼係數：
+  $$
+  G(s=3.5) = \frac{3}{6}(4/9) + \frac{3}{6}(4/9) = \frac{4}{9} \approx \mathbf{0.4444}
+  $$
+  吉尼增益：$\Delta G = 0.5000 - 0.4444 = \mathbf{0.0556}$。
+
+#### 4. 候選切分點 $s = 5.0$：
+* 左子節點（$x \le 5.0$）：樣本 $\{1, 2, 3, 4\}$，標籤 $\{0, 0, 1, 0\}$（3 個 0, 1 個 1）。
+  $N_L = 4, p_{L0} = 3/4 = 0.75, p_{L1} = 0.25 \implies G_L = 1 - (0.5625 + 0.0625) = 0.375$。
+* 右子節點（$x > 5.0$）：樣本 $\{5, 6\}$，標籤 $\{1, 1\}$。
+  $N_R = 2, p_{R0} = 0, p_{R1} = 1 \implies G_R = 0$（完全純淨！）。
+* 加權平均吉尼係數：
+  $$
+  G(s=5.0) = \frac{4}{6}(0.375) + \frac{2}{6}(0) = \frac{1.5}{6} = \mathbf{0.2500}
+  $$
+  吉尼增益：$\Delta G = 0.5000 - 0.2500 = \mathbf{0.2500}$。
+
+#### 5. 候選切分點 $s = 6.5$：
+* 左子節點（$x \le 6.5$）：樣本 $\{1, 2, 3, 4, 5\}$，標籤 $\{0, 0, 1, 0, 1\}$（3 個 0, 2 個 1）。
+  $N_L = 5, p_{L0} = 3/5 = 0.6, p_{L1} = 0.4 \implies G_L = 1 - (0.36 + 0.16) = 0.48$。
+* 右子節點（$x > 6.5$）：樣本 $\{6\}$，標籤 $\{1\}$。
+  $N_R = 1, G_R = 0$。
+* 加權平均吉尼係數：
+  $$
+  G(s=6.5) = \frac{5}{6}(0.48) + 0 = \mathbf{0.4000}
+  $$
+  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。
+
+#### 切分點評比匯總表：
+
+| 切分閥值 $s$ | 左節點分佈 $(0, 1)$ | 右節點分佈 $(0, 1)$ | 加權 Gini 不純度 | 吉尼增益 $\Delta G$ | 決策 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| $1.5$ | $(1, 0)$ | $(2, 3)$ | $0.4000$ | $0.1000$ | 次優 |
+| **$2.5$** | **$(2, 0)$** | **$(1, 3)$** | **$0.2500$** | **$0.2500$** | **最優首選** |
+| $3.5$ | $(2, 1)$ | $(1, 2)$ | $0.4444$ | $0.0556$ | 最差 |
+| **$5.0$** | **$(3, 1)$** | **$(0, 2)$** | **$0.2500$** | **$0.2500$** | **最優候選** |
+| $6.5$ | $(3, 2)$ | $(0, 1)$ | $0.4000$ | $0.1000$ | 次優 |
+
+CART 演算法將挑選 $s^* = 2.5$（或 $5.0$）作為第一層分割！
+
+---
+
+## 9.5 樹的剪枝：成本-複雜度剪枝（Cost-Complexity Pruning）
+
+若任由決策樹自由生長直至每個葉節點純度達到 100%，將生成一棵包含大量節點的龐大樹 $T_0$。此時訓練誤差為 0，但在測試集上將發生災難性的過度配適。
+
+CART 採用**成本-複雜度剪枝（Cost-Complexity Pruning / 弱連接剪枝 Weakest Link Pruning）**：
+
+### 9.5.1 剪枝目標函數
+
+設 $T$ 為大樹 $T_0$ 的任意子樹（Subtree），$|T|$ 代表子樹 $T$ 的終端葉節點總數。定義正則化損失函數：
+
+$$
+R_\alpha(T) \triangleq R(T) + \alpha |T| = \sum_{m=1}^{|T|} N_m Q_m(T) + \alpha |T|
+$$ {#eq-ch09-cost-complexity}
+
+其中 $\alpha \ge 0$ 為**複雜度懲罰參數（Complexity Parameter, 在 R 中記為 `cp`）**：
+* $\alpha = 0$ 時：目標即為最小化訓練誤差，解為全生長大樹 $T_0$。
+* $\alpha \to \infty$ 時：懲罰項佔絕對主導，解為只有單一根節點的極簡樹。
+
+### 9.5.2 弱連接剪枝演算法定理
+
+> **Breiman 剪枝定理**：
+> 對於任意固定的 $\alpha \ge 0$，使得式 ([-@eq-ch09-cost-complexity]) 最小化的最優子樹 $T_\alpha$ 不僅存在，而且隨著 $\alpha$ 從 $0$ 連續增加至 $\infty$，$T_\alpha$ 構成一個**有限的、彼此嵌套的子樹序列**：
+> $$
+> T_0 \supset T_1 \supset T_2 \supset \cdots \supset T_K = \{\text{Root}\}
+> $$
+
+#### 演算法執行步驟：
+1. **內部節點有效收縮率計算**：
+   對內部任意非葉節點 $t$，若將以 $t$ 為根的子樹 $T_t$ 剪除，收縮為單一葉節點 $t$：
+   * 誤差增加量：$R(t) - R(T_t)$。
+   * 葉節點減少量：$|T_t| - 1$。
+   * 定義剪除該節點的**臨界成本係數**：
+     $$
+     g(t) \triangleq \frac{R(t) - R(T_t)}{|T_t| - 1}
+     $$
+2. 在當前樹中尋找使 $g(t)$ 最小的內部節點 $t^* = \arg\min_t g(t)$，將其子樹剪除，得到更小的子樹 $T_1$。
+3. 重複上述剪枝步驟，直至剩下根節點，得到子樹序列 $\{T_0, T_1, \dots, T_K\}$。
+4. 採用 **$K$-折交叉驗證**，在該序列中挑選驗證集誤差最小的最優子樹 $T^*$。
+
+---
+
+## 9.6 決策樹的優缺點與統計病態
+
+### 9.6.1 決策樹的核心優點
+1. **極致的可解釋性**：樹狀圖可被非專業人士直觀理解，決策流程完全透明。
+2. **對非線性與交互作用自然適配**：無需手動建構高階交互特徵項。
+3. **特徵單調變換不變性（Monotonic Invariance）**：僅依賴特徵的排序，**完全不受量綱尺度影響**（無須進行標準化或正規化）。
+4. **天然容忍缺失值**：可透過代理切分（Surrogate Splits）優雅處理。
+
+### 9.6.2 致命缺陷：高變異性（High Variance）
+決策樹最大的軟肋在於**極度不穩定（Instability）**：在訓練集中增加或刪除少數幾筆樣本，可能導致樹頂層的第一個切分點發生改變，進而引發整棵樹結構的完全重組。
+如何克服高變異性？答案正是將數百棵不穩定的樹進行投票與加權——即下一章的**隨機森林與梯度提升（Ensemble Learning）**。
+
+---
+
+## 9.7 雙軌實務實驗室：決策樹擬合與成本-複雜度剪枝
+
+::: {.panel-tabset}
+### 🟦 R 語言雙軌實作
+
+```r
+# ==============================================================================
+# R 實作：rpart 決策樹生長、複雜度參數 cp 剪枝與樹狀圖繪製
+# 依賴套件：rpart, rpart.plot, ISLR2
+# ==============================================================================
+
+library(rpart)
+library(rpart.plot)
+library(ISLR2)
+
+# 1. 使用 Carseats (兒童安全座椅銷量) 資料集
+data(Carseats)
+
+# 建立二元分類目標：銷量 High (Sales > 8 為 High)
+Carseats$High <- factor(ifelse(Carseats$Sales > 8, "Yes", "No"))
+
+# 劃分訓練集 (70%) 與測試集 (30%)
+set.seed(42)
+train_idx <- sample(1:nrow(Carseats), size = 0.7 * nrow(Carseats))
+carseats_train <- Carseats[train_idx, ]
+carseats_test <- Carseats[-train_idx, ]
+
+# 2. 生長全樹 (設定 cp = 0 允許完全生長)
+tree_full <- rpart(High ~ . - Sales, data = carseats_train, method = "class",
+                   control = rpart.control(cp = 0.0, minsplit = 10))
+
+cat(sprintf("全樹終端葉節點數量: %d\n", sum(tree_full$frame$var == "<leaf>")))
+
+# 3. 檢視交叉驗證 cp 表格
+cp_table <- tree_full$cptable
+print(head(cp_table, 8))
+
+# 自動尋找交叉驗證誤差 (xerror) 最小的 cp 閥值
+best_cp <- cp_table[which.min(cp_table[, "xerror"]), "CP"]
+cat(sprintf("\n10-Fold 交叉驗證最優 cp: %.5f\n", best_cp))
+
+# 4. 執行成本-複雜度剪枝 (Pruning)
+tree_pruned <- prune(tree_full, cp = best_cp)
+cat(sprintf("剪枝後最優樹葉節點數量: %d\n", sum(tree_pruned$frame$var == "<leaf>")))
+
+# 5. 測試集準確率評估
+pred_full <- predict(tree_full, carseats_test, type = "class")
+pred_pruned <- predict(tree_pruned, carseats_test, type = "class")
+
+cat(sprintf("全樹測試集準確率: %.4f\n", mean(pred_full == carseats_test$High)))
+cat(sprintf("剪枝最優樹測試集準確率: %.4f\n", mean(pred_pruned == carseats_test$High)))
+```
+
+### 🟨 Python 雙軌實作
+
+```python
+# ==============================================================================
+# Python 實作：DecisionTreeClassifier 與成本-複雜度剪枝路徑 (ccp_alpha)
+# 依賴套件：numpy, pandas, scikit-learn
+# ==============================================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import accuracy_score
+
+# 1. 模擬高維非線性分類資料
+np.random.seed(42)
+n, p = 400, 10
+X = np.random.normal(0, 1, size=(n, p))
+# 非線性分類規則：若 (X0 > 0 且 X1 > 0) 或 (X2 < -0.5) 則為 1
+y = ((X[:, 0] > 0) & (X[:, 1] > 0) | (X[:, 2] < -0.5)).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 2. 計算成本-複雜度剪枝路徑 (Cost Complexity Pruning Path)
+clf = DecisionTreeClassifier(random_state=42)
+path = clf.cost_complexity_pruning_path(X_train, y_train)
+ccp_alphas, impurities = path.ccp_alphas, path.impurities
+
+print(f"生成的剪枝候選 alpha 數量: {len(ccp_alphas)}")
+
+# 3. 透過 5-Fold 交叉驗證挑選最佳 ccp_alpha
+alpha_scores = []
+# 抽樣候選 alpha 進行評估
+sampled_alphas = ccp_alphas[::max(1, len(ccp_alphas)//15)]
+
+for alpha in sampled_alphas:
+    tree = DecisionTreeClassifier(random_state=42, ccp_alpha=alpha)
+    scores = cross_val_score(tree, X_train, y_train, cv=5, scoring='accuracy')
+    alpha_scores.append(scores.mean())
+
+best_alpha = sampled_alphas[np.argmax(alpha_scores)]
+print(f"交叉驗證最優 ccp_alpha: {best_alpha:.5f}")
+
+# 4. 擬合全樹與最優剪枝樹對比
+tree_full = DecisionTreeClassifier(random_state=42).fit(X_train, y_train)
+tree_pruned = DecisionTreeClassifier(random_state=42, ccp_alpha=best_alpha).fit(X_train, y_train)
+
+acc_full = accuracy_score(y_test, tree_full.predict(X_test))
+acc_pruned = accuracy_score(y_test, tree_pruned.predict(X_test))
+
+print(f"\n全樹葉節點數量: {tree_full.get_n_leaves()} | 測試集準確率: {acc_full:.4f}")
+print(f"剪枝後葉節點數量: {tree_pruned.get_n_leaves()} | 測試集準確率: {acc_pruned:.4f}")
+```
+:::
+
+---
+
+## 9.8 課後全方位習題庫（10 題）
+
+### 一、觀念理解與數學證明（5 題）
+
+1. **吉尼係數與交叉熵的凹性與資訊增益非負性**：
+   證明二元吉尼不純度函數 $G(p) = 2p(1-p)$ 在 $p \in [0, 1]$ 上為嚴格凹函數（$\frac{d^2 G}{dp^2} < 0$）。利用 Jensen 不等式證明：任何切分所產生的加權吉尼不純度必小於或等於切分前的母節點不純度（$\Delta G \ge 0$）。
+2. **多類別分類中吉尼指數的幾何含義**：
+   設類別向量以 one-hot 編碼表示，證明節點內所有樣本兩兩之間歐氏距離平方的均值，恰好等於該節點吉尼係數的 2 倍：$\frac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N \frac{1}{2}\|\boldsymbol{y}_i - \boldsymbol{y}_j\|^2 = G$。
+3. **連續特徵切分點數量的上限分析**：
+   若某連續特徵包含 $N$ 筆觀測值，證明最多只需檢驗 $N-1$ 個候選切分點。若特徵值全部相異，說明如何利用排序演算法在 $\mathcal{O}(N \log N)$ 時間複雜度內完成最佳切分點搜尋。
+4. **弱連接剪枝的嵌套性證明（Nested Subtrees）**：
+   證明在成本-複雜度剪枝式 ([-@eq-ch09-cost-complexity]) 中，若 $\alpha_1 < \alpha_2$，則對應的最優子樹必滿足 $T_{\alpha_2} \subseteq T_{\alpha_1}$。
+5. **對角線邊界逼近的階梯效應（Staircase Effect）**：
+   設二維特徵空間中的真實決策邊界為 $x_1 + x_2 = 1$。證明單一軸向對齊的決策樹若要達到 $\epsilon$ 的逼近誤差，所需的葉節點數量至少隨 $1/\epsilon$ 呈線性或多項式增長。
+
+### 二、程式實作與實務應用（5 題）
+
+6. **手刻簡易迴歸樹演算法（From-Scratch Regression Tree）**：
+   不依賴第三方機器學習庫，僅使用 NumPy 實作一個最大深度為 2 的單變量迴歸樹，完整包含最佳切分點搜尋與預測邏輯。
+7. **分類樹可視化與特徵重要性計算（MDI）**：
+   使用 R `rpart.plot` 或 Python `plot_tree` 視覺化對 Iris 或 Wine 資料集擬合的決策樹，並撰寫程式自底向上統計各特徵在所有內部節點所產生的吉尼不純度下降總和（Mean Decrease Impurity, MDI），輸出特徵重要性長條圖。
+8. **代理切分（Surrogate Splits）處理缺失值實證**：
+   在訓練集中隨機人工注入 20% 的特徵缺失值。比較支援代理切分的 R `rpart` 與直接填充均值的 Python `DecisionTreeClassifier` 在測試集上的預測穩定性。
+9. **樹深度（Max Depth）與葉節點最小樣本數（Min Samples Leaf）之網格搜尋**：
+   利用 10-Fold 交叉驗證對決策樹的 `max_depth` $\in [1, 10]$ 與 `min_samples_leaf` $\in [1, 20]$ 進行二維網格搜尋（Grid Search），繪製熱力圖（Heatmap）並分析超參數間的交互作用。
+10. **不穩定性展示（Tree Instability Demonstration）**：
+    撰寫程式對原始訓練集進行 5 次不同的 90% 隨機子抽樣（Subsampling），分別擬合 5 棵決策樹，視覺化輸出每一棵樹根節點與前兩層的切分特徵與閥值，量化展示單一決策樹的高變異性特質。
