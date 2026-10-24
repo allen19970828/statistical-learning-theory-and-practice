@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">13.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">13.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀百億參數大模型llm的泛化反常與醫療影像-ai-上線崩潰之謎" id="toc-開篇實務案例導讀百億參數大模型llm的泛化反常與醫療影像-ai-上線崩潰之謎" class="nav-link" data-scroll-target="#開篇實務案例導讀百億參數大模型llm的泛化反常與醫療影像-ai-上線崩潰之謎"><span class="header-section-number">13.1.1</span> 💡 開篇實務案例導讀：百億參數大模型（LLM）的泛化反常與「醫療影像 AI 上線崩潰」之謎</a></li>
+  <li><a href="#概念直覺與幾何啟發穿越插值海嘯的暴風眼與超高維零損失超平面" id="toc-概念直覺與幾何啟發穿越插值海嘯的暴風眼與超高維零損失超平面" class="nav-link" data-scroll-target="#概念直覺與幾何啟發穿越插值海嘯的暴風眼與超高維零損失超平面"><span class="header-section-number">13.1.2</span> 🎯 概念直覺與幾何啟發：穿越插值海嘯的暴風眼與超高維零損失超平面</a></li>
+  </ul></li>
   <li><a href="#深度學習的統計謎題雙重下降現象double-descent" id="toc-深度學習的統計謎題雙重下降現象double-descent" class="nav-link" data-scroll-target="#深度學習的統計謎題雙重下降現象double-descent"><span class="header-section-number">13.2</span> 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</a>
   <ul class="collapse">
   <li><a href="#傳統統計觀點-vs-現代深度學習實踐" id="toc-傳統統計觀點-vs-現代深度學習實踐" class="nav-link" data-scroll-target="#傳統統計觀點-vs-現代深度學習實踐"><span class="header-section-number">13.2.1</span> 13.1.1 傳統統計觀點 vs 現代深度學習實踐</a></li>
@@ -592,7 +596,25 @@ window.Quarto = {
 <p>在完成了從線性迴歸、正則化、支援向量機、集成學習到非監督降維與分群的完整巡禮後，我們來到了統計學習的最前沿。</p>
 <p>在二十一世紀第三個十年，資料科學與人工智慧正面臨三大革命性的範式轉移（Paradigm Shifts）： 1. <strong>「雙重下降（Double Descent）」現象</strong>：現代深層神經網路與過度參數化模型（參數量遠大於樣本數），顛覆了古典統計學百年來奉為圭臬的「U 型偏誤-變異數權衡」認知。 2. <strong>「分佈偏移（Distribution Shift）」的現實挑戰</strong>：真實世界並非恆定不變的閉合系統，訓練資料與線上真實環境往往違背獨立同分佈（I.I.D.）假設。 3. <strong>「高維多重檢定」與「可解釋性 AI（XAI）」</strong>：從萬維基因體與巨量特徵中，如何控制偽發現率（FDR）？面對複雜的黑盒子集成模型，如何利用賽局理論（Shapley Values）給出具備公理保證的歸因解釋？</p>
 <p>本章將帶領讀者透視這些前沿課題的底層數學本質，完成全書知識體系的終極昇華。</p>
+<section id="開篇實務案例導讀百億參數大模型llm的泛化反常與醫療影像-ai-上線崩潰之謎" class="level3" data-number="13.1.1">
+<h3 data-number="13.1.1" class="anchored" data-anchor-id="開篇實務案例導讀百億參數大模型llm的泛化反常與醫療影像-ai-上線崩潰之謎"><span class="header-section-number">13.1.1</span> 💡 開篇實務案例導讀：百億參數大模型（LLM）的泛化反常與「醫療影像 AI 上線崩潰」之謎</h3>
+<p>在當代人工智慧的最前沿，正在發生兩件徹底顛覆傳統認知的現實衝擊：</p>
+<ol type="1">
+<li><strong>超大規模語言模型（LLM）的泛化奇蹟</strong>： OpenAI GPT-4、Meta Llama 等模型擁有數百億甚至上兆個參數量（<span class="math inline">p</span>），其參數量級遠遠超過了特定高品質對話微調數據集的樣本數（<span class="math inline">n</span>）。依據古典統計學百年來的警告，如此龐大自由度的模型理應陷入災難性的過度配適暴死；然而現實卻完全相反——越過特定門檻後，模型的泛化測試誤差非但沒有暴增，反而呈現持續單調下降！這便是震動當代統計學界的「雙重下降（Double Descent）」現象。</li>
+<li><strong>頂尖醫療影像 AI 空運基層後的斷崖式崩潰</strong>： 某頂尖研究中心研發的「胸部 X 光深度學習診斷模型」，在知名教學醫院的內部驗證集上取得了超越專科醫師的 99% 超高準確率；然而當這套系統空運至基層偏鄉診所與歐洲醫院時，準確率直接暴跌至 52%（與隨機擲硬幣無異）。 事後嚴格的統計可解釋性稽核發現：模型根本沒有學會細微的肺部病理特徵，而是敏銳捕捉到了大醫院特定病床金屬標籤與 X 光掃描儀邊角浮水印的虛假相關（Spurious Correlation）。</li>
+</ol>
+<p>這兩大現實案例向我們宣告：進入現代前沿，統計學習者必須突破「固定樣本容量、封閉分佈」的古典象牙塔，直面過度參數化的現代幾何本質與真實世界的分佈偏移。</p>
+</section>
+<section id="概念直覺與幾何啟發穿越插值海嘯的暴風眼與超高維零損失超平面" class="level3" data-number="13.1.2">
+<h3 data-number="13.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發穿越插值海嘯的暴風眼與超高維零損失超平面"><span class="header-section-number">13.1.2</span> 🎯 概念直覺與幾何啟發：穿越插值海嘯的暴風眼與超高維零損失超平面</h3>
+<p>自修者在剖析現代「雙重下降曲線（Double Descent）」與過度參數化（Over-parameterization）時，請在心智中構想一趟「穿越峽谷暴風眼」的幾何旅程：</p>
+<ul>
+<li><strong>古典區間（<span class="math inline">p &lt; n</span> / 平緩的安全平原）</strong>： 模型參數少於樣本容量。多項式或線性模型如同在一群數據點之間小心翼翼穿行的鋼絲，古典的「U 型偏誤-變異數權衡」在此嚴格成立。</li>
+<li><strong>插值閾值（<span class="math inline">p = n</span> / 驚濤駭浪的死亡峽谷）</strong>： 當模型自由度剛好等於樣本數量時，系統必須「強行完美穿過每一個數據點（包含所有不可約化的隨機雜訊）」。 為了釘死最後幾個雜訊點，幾何曲線被迫在相鄰樣本點之間劇烈震盪甩盪，曲率發散至無限大（Gram 矩陣條件數爆炸，方差掀起滔天海嘯）。這是古典統計學最竭力避免的「插值災難」。</li>
+<li><strong>現代過度參數化區間（<span class="math inline">p \gg n</span> / 越過暴風眼後的高維自由度）</strong>： 當參數量擴展到數萬甚至數百萬時，奇蹟在高維幾何空間中發生了：能夠完美穿過所有訓練數據點的解，不再是「唯一那條狂暴扭曲的曲線」，而是在超高維度中擴展為一個寬廣平坦的「零訓練誤差解超平面」！ 在此超平面中，存在無窮多組不同的參數解。當我們使用隨機梯度下降（SGD）或最小範數估計時，演算法天生帶有「隱式正則化（Implicit Regularization）」的幾何偏好——它會自動在所有零誤差解中，挑選出<strong>「幾何範數最小、曲線變化最平緩、最舒展」的那一條平滑解</strong>！超高維度反而給了模型「從容穿過所有點而完全無須神經質扭曲」的幾何從容性。</li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="深度學習的統計謎題雙重下降現象double-descent" class="level2" data-number="13.2">
 <h2 data-number="13.2" class="anchored" data-anchor-id="深度學習的統計謎題雙重下降現象double-descent"><span class="header-section-number">13.2</span> 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</h2>
@@ -1415,310 +1437,335 @@ p_1 = 0.002, \, p_2 = 0.045, \, p_3 = 0.012, \, p_4 = 0.080, \, p_5 = 0.035, \, 
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>本章將帶領讀者透視這些前沿課題的底層數學本質，完成全書知識體系的終極昇華。</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：百億參數大模型（LLM）的泛化反常與「醫療影像 AI 上線崩潰」之謎</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>在當代人工智慧的最前沿，正在發生兩件徹底顛覆傳統認知的現實衝擊：</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.1 傳統統計觀點 vs 現代深度學習實踐</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>在第 2 章中，我們嚴格證明了古典的**偏誤-變異數權衡定理**：</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>隨著模型容量（Capacity / Parameters）的增長，偏誤單調下降，但估計變異數單調暴增，導致全域泛化誤差呈現一條先降後升的經典 **U 型曲線（U-shaped Curve）**。</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>然而，現代深層大型語言模型（如 GPT 系列）與巨型卷積網路（ResNet）的參數量往往是訓練樣本量的數十倍甚至數萬倍（$p \gg n$）。按照傳統統計理論，這些模型應當產生毀滅性的過度配適。但令人震驚的是：**在過度參數化（Overparameterization）且訓練誤差達到 0 的情況下，模型的測試誤差往往不升反降，甚至取得歷史最優的泛化表現！**</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.2 雙重下降曲線機制（Belkin et al. 2019）</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>Mikhail Belkin、Daniel Hsu 等學者於 2019 年在《PNAS》發表里程碑論文，將古典統計與現代機器學習調和在一張統一的曲線中——**雙重下降曲線（Double Descent Curve）**，如 @fig-ch13-double-descent 所示：</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="al">![雙重下降現象與過度參數化區間的良性過度配適幾何曲線](../figures/fig13_double_descent.png)</span>{#fig-ch13-double-descent width=85%}</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 數學機理剖析：</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**古典區間（Under-parameterized, $p &lt; n$）**：</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>   模型無法完美插值所有訓練點。隨著 $p$ 增加，偏誤減小，方差增大，在 $p$ 接近 $n$ 之前表現為標準的 U 型曲線。</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**插值臨界點（Interpolation Boundary, $p = n$）**：</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>   當模型的有效容量恰好能夠完全穿過（插值）所有訓練資料點時，設計矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 的最小奇異值趨近於零（$\lambda_{\min} \to 0$），估計量的方差達到極值發散，測試誤差暴增至頂峰。</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**過度參數化區間（Over-parameterized, $p &gt; n$）**：</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>   此時存在無窮多個能夠達到訓練誤差為 0 的插值解。現代梯度下降演算法（SGD）隱式地選擇了**具有最小範數（Minimum-norm solution）**的最光滑插值解：</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>   \hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} <span class="sc">\|</span>\boldsymbol{\beta}<span class="sc">\|</span>_2 \quad \text{s.t.} \quad \boldsymbol{X}\boldsymbol{\beta} = \boldsymbol{y}</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-double-descent}</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>   隨著參數空間維度 $p$ 繼續暴增，超平面的可行解空間急遽膨脹，隱式正則化作用愈發強大，模型的有效曲率反而變得更加平緩，驅使測試誤差展開**第二重單調下降**！這在統計學上被稱為**良性過度配適（Benign Overfitting）**。</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**超大規模語言模型（LLM）的泛化奇蹟**：</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>   OpenAI GPT-4、Meta Llama 等模型擁有數百億甚至上兆個參數量（$p$），其參數量級遠遠超過了特定高品質對話微調數據集的樣本數（$n$）。依據古典統計學百年來的警告，如此龐大自由度的模型理應陷入災難性的過度配適暴死；然而現實卻完全相反——越過特定門檻後，模型的泛化測試誤差非但沒有暴增，反而呈現持續單調下降！這便是震動當代統計學界的「雙重下降（Double Descent）」現象。</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**頂尖醫療影像 AI 空運基層後的斷崖式崩潰**：</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>   某頂尖研究中心研發的「胸部 X 光深度學習診斷模型」，在知名教學醫院的內部驗證集上取得了超越專科醫師的 99% 超高準確率；然而當這套系統空運至基層偏鄉診所與歐洲醫院時，準確率直接暴跌至 52%（與隨機擲硬幣無異）。</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>   事後嚴格的統計可解釋性稽核發現：模型根本沒有學會細微的肺部病理特徵，而是敏銳捕捉到了大醫院特定病床金屬標籤與 X 光掃描儀邊角浮水印的虛假相關（Spurious Correlation）。</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>這兩大現實案例向我們宣告：進入現代前沿，統計學習者必須突破「固定樣本容量、封閉分佈」的古典象牙塔，直面過度參數化的現代幾何本質與真實世界的分佈偏移。</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：穿越插值海嘯的暴風眼與超高維零損失超平面</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>自修者在剖析現代「雙重下降曲線（Double Descent）」與過度參數化（Over-parameterization）時，請在心智中構想一趟「穿越峽谷暴風眼」的幾何旅程：</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**古典區間（$p &lt; n$ / 平緩的安全平原）**：</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  模型參數少於樣本容量。多項式或線性模型如同在一群數據點之間小心翼翼穿行的鋼絲，古典的「U 型偏誤-變異數權衡」在此嚴格成立。</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**插值閾值（$p = n$ / 驚濤駭浪的死亡峽谷）**：</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  當模型自由度剛好等於樣本數量時，系統必須「強行完美穿過每一個數據點（包含所有不可約化的隨機雜訊）」。</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  為了釘死最後幾個雜訊點，幾何曲線被迫在相鄰樣本點之間劇烈震盪甩盪，曲率發散至無限大（Gram 矩陣條件數爆炸，方差掀起滔天海嘯）。這是古典統計學最竭力避免的「插值災難」。</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**現代過度參數化區間（$p \gg n$ / 越過暴風眼後的高維自由度）**：</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  當參數量擴展到數萬甚至數百萬時，奇蹟在高維幾何空間中發生了：能夠完美穿過所有訓練數據點的解，不再是「唯一那條狂暴扭曲的曲線」，而是在超高維度中擴展為一個寬廣平坦的「零訓練誤差解超平面」！</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  在此超平面中，存在無窮多組不同的參數解。當我們使用隨機梯度下降（SGD）或最小範數估計時，演算法天生帶有「隱式正則化（Implicit Regularization）」的幾何偏好——它會自動在所有零誤差解中，挑選出**「幾何範數最小、曲線變化最平緩、最舒展」的那一條平滑解**！超高維度反而給了模型「從容穿過所有點而完全無須神經質扭曲」的幾何從容性。</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.1 深度學習的統計謎題：雙重下降現象（Double Descent）</span></span>
 <span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.1 傳統統計觀點 vs 現代深度學習實踐</span></span>
 <span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.2 非平穩學習與共變量偏移（Covariate Shift）</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>經典機器學習的基石是 **I.I.D. 假設**（訓練集與測試集獨立同分佈於同一個聯合分佈 $\mathcal{P}(\boldsymbol{X}, Y)$）。</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>但在現實世界中，分佈發生動態漂移。</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>在第 2 章中，我們嚴格證明了古典的**偏誤-變異數權衡定理**：</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>隨著模型容量（Capacity / Parameters）的增長，偏誤單調下降，但估計變異數單調暴增，導致全域泛化誤差呈現一條先降後升的經典 **U 型曲線（U-shaped Curve）**。</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>然而，現代深層大型語言模型（如 GPT 系列）與巨型卷積網路（ResNet）的參數量往往是訓練樣本量的數十倍甚至數萬倍（$p \gg n$）。按照傳統統計理論，這些模型應當產生毀滅性的過度配適。但令人震驚的是：**在過度參數化（Overparameterization）且訓練誤差達到 0 的情況下，模型的測試誤差往往不升反降，甚至取得歷史最優的泛化表現！**</span>
 <span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.1 共變量偏移定義（Sugiyama 2015）</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.1.2 雙重下降曲線機制（Belkin et al. 2019）</span></span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>**共變量偏移（Covariate Shift）**是指：</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>輸入特徵的邊際機率分佈發生改變：</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(\boldsymbol{X}) \neq P_{\text{test}}(\boldsymbol{X})</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定特徵下目標變數的條件機率分佈保持不變：</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(Y \mid \boldsymbol{X}) = P_{\text{test}}(Y \mid \boldsymbol{X})</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.2 重要性加權（Importance Weighting）推導</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>我們期望最小化測試集上的真實風險：</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{test}}}[L(Y, f(\boldsymbol{X}))] = \int L(y, f(\boldsymbol{x})) P_{\text{test}}(\boldsymbol{x}, y) d\boldsymbol{x} dy</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>由條件機率公式 $P(\boldsymbol{x}, y) = P(y \mid \boldsymbol{x})P(\boldsymbol{x})$，並利用共變量偏移假設 $P_{\text{test}}(y \mid \boldsymbol{x}) = P_{\text{train}}(y \mid \boldsymbol{x})$：</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) &amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{test}}(\boldsymbol{x}) d\boldsymbol{x} dy <span class="sc">\\</span></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>&amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{train}}(\boldsymbol{x}) \cdot \underbrace{\left( \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})} \right)}_{w(\boldsymbol{x})} d\boldsymbol{x} dy <span class="sc">\\</span></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{train}}}\left<span class="co">[</span><span class="ot"> w(\boldsymbol{X}) L(Y, f(\boldsymbol{X})) \right</span><span class="co">]</span></span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-importance-weighting}</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>其中 $w(\boldsymbol{x}) \triangleq \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})}$ 稱為**重要性權重（Importance Weight）**或**密度比（Density Ratio）**。只需在訓練時對每個訓練樣本點乘以其重要性權重 $w(\boldsymbol{x}_i)$ 進行加權經驗風險最小化即可消除偏移影響。</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.3 大數據時代的多重假設檢定與 FDR 控制</span></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>在現代大數據環境中，我們經常面對數萬個特徵的同步假設檢定。</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.1 多重檢定的「偽陽性爆炸」與 Bonferroni 缺陷</span></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>若對 $m = 1000$ 個檢定均採用標準顯著水準 $\alpha = 0.05$：</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>當所有假設皆為真時，至少犯下一次型一誤差的家族累積錯誤率為：</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>\mathrm{FWER} = 1 - (1 - \alpha)^m \approx 1 - (0.95)^{1000} \approx 100\%</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>傳統 **Bonferroni 修正** 強制將單個顯著水準降為 $\alpha / m = 0.05 / 1000 = 0.00005$，極度保守，將大幅扼殺真實微弱的統計信號。</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>Mikhail Belkin、Daniel Hsu 等學者於 2019 年在《PNAS》發表里程碑論文，將古典統計與現代機器學習調和在一張統一的曲線中——**雙重下降曲線（Double Descent Curve）**，如 @fig-ch13-double-descent 所示：</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="al">![雙重下降現象與過度參數化區間的良性過度配適幾何曲線](../figures/fig13_double_descent.png)</span>{#fig-ch13-double-descent width=85%}</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 數學機理剖析：</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**古典區間（Under-parameterized, $p &lt; n$）**：</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>   模型無法完美插值所有訓練點。隨著 $p$ 增加，偏誤減小，方差增大，在 $p$ 接近 $n$ 之前表現為標準的 U 型曲線。</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**插值臨界點（Interpolation Boundary, $p = n$）**：</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>   當模型的有效容量恰好能夠完全穿過（插值）所有訓練資料點時，設計矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 的最小奇異值趨近於零（$\lambda_{\min} \to 0$），估計量的方差達到極值發散，測試誤差暴增至頂峰。</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**過度參數化區間（Over-parameterized, $p &gt; n$）**：</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>   此時存在無窮多個能夠達到訓練誤差為 0 的插值解。現代梯度下降演算法（SGD）隱式地選擇了**具有最小範數（Minimum-norm solution）**的最光滑插值解：</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>   \hat{\boldsymbol{\beta}} = \arg\min_{\boldsymbol{\beta}} <span class="sc">\|</span>\boldsymbol{\beta}<span class="sc">\|</span>_2 \quad \text{s.t.} \quad \boldsymbol{X}\boldsymbol{\beta} = \boldsymbol{y}</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-double-descent}</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>   隨著參數空間維度 $p$ 繼續暴增，超平面的可行解空間急遽膨脹，隱式正則化作用愈發強大，模型的有效曲率反而變得更加平緩，驅使測試誤差展開**第二重單調下降**！這在統計學上被稱為**良性過度配適（Benign Overfitting）**。</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.2 非平穩學習與共變量偏移（Covariate Shift）</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>經典機器學習的基石是 **I.I.D. 假設**（訓練集與測試集獨立同分佈於同一個聯合分佈 $\mathcal{P}(\boldsymbol{X}, Y)$）。</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>但在現實世界中，分佈發生動態漂移。</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.1 共變量偏移定義（Sugiyama 2015）</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>**共變量偏移（Covariate Shift）**是指：</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>輸入特徵的邊際機率分佈發生改變：</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(\boldsymbol{X}) \neq P_{\text{test}}(\boldsymbol{X})</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定特徵下目標變數的條件機率分佈保持不變：</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>   P_{\text{train}}(Y \mid \boldsymbol{X}) = P_{\text{test}}(Y \mid \boldsymbol{X})</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.2.2 重要性加權（Importance Weighting）推導</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>我們期望最小化測試集上的真實風險：</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{test}}}[L(Y, f(\boldsymbol{X}))] = \int L(y, f(\boldsymbol{x})) P_{\text{test}}(\boldsymbol{x}, y) d\boldsymbol{x} dy</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.2 偽發現率（FDR）與 Benjamini-Hochberg (BH) 程序</span></span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>Yoav Benjamini 與 Yosef Hochberg (1995) 提出了**偽發現率（False Discovery Rate, FDR）**：</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>\mathrm{FDR} \triangleq \mathbb{E}\left<span class="co">[</span><span class="ot"> \frac{V}{R} \;\middle|\; R &gt; 0 \right</span><span class="co">]</span> P(R &gt; 0)</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>其中 $R$ 為宣稱顯著的總發現數，$V$ 為其中誤判的偽陽性數。</span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="fu">#### BH 逐步檢定程序：</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>將所有 $m$ 個檢定的 $p$-值由小到大升冪排序：$p_{(1)} \le p_{(2)} \le \dots \le p_{(m)}$。</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定目標 FDR 控制水準 $q^*$（如 $q^* = 0.05$）。</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>尋找滿足以下條件的**最大排序索引值 $k$**：</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>   k = \max \left<span class="sc">\{</span> i \;\middle|\; p_{(i)} \le \frac{i}{m} q^* \right<span class="sc">\}</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-bh-step}</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**拒絕所有對應於最小 $k$ 個 $p$-值的虛無假設**（判定 $H_{(1)}, \dots, H_{(k)}$ 顯著）。</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.4 手把手數值推演：BH 程序與 Shapley 值手算</span></span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.1 BH 程序 6 假設手算示範</span></span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>設有 $m=6$ 個特徵檢定，其未校正之原始 $p$-值分別為：</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>由條件機率公式 $P(\boldsymbol{x}, y) = P(y \mid \boldsymbol{x})P(\boldsymbol{x})$，並利用共變量偏移假設 $P_{\text{test}}(y \mid \boldsymbol{x}) = P_{\text{train}}(y \mid \boldsymbol{x})$：</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>R_{\text{test}}(f) &amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{test}}(\boldsymbol{x}) d\boldsymbol{x} dy <span class="sc">\\</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>&amp;= \int L(y, f(\boldsymbol{x})) P_{\text{train}}(y \mid \boldsymbol{x}) P_{\text{train}}(\boldsymbol{x}) \cdot \underbrace{\left( \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})} \right)}_{w(\boldsymbol{x})} d\boldsymbol{x} dy <span class="sc">\\</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}_{(\boldsymbol{X}, Y) \sim P_{\text{train}}}\left<span class="co">[</span><span class="ot"> w(\boldsymbol{X}) L(Y, f(\boldsymbol{X})) \right</span><span class="co">]</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-importance-weighting}</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>其中 $w(\boldsymbol{x}) \triangleq \frac{P_{\text{test}}(\boldsymbol{x})}{P_{\text{train}}(\boldsymbol{x})}$ 稱為**重要性權重（Importance Weight）**或**密度比（Density Ratio）**。只需在訓練時對每個訓練樣本點乘以其重要性權重 $w(\boldsymbol{x}_i)$ 進行加權經驗風險最小化即可消除偏移影響。</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.3 大數據時代的多重假設檢定與 FDR 控制</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>在現代大數據環境中，我們經常面對數萬個特徵的同步假設檢定。</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.1 多重檢定的「偽陽性爆炸」與 Bonferroni 缺陷</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>若對 $m = 1000$ 個檢定均採用標準顯著水準 $\alpha = 0.05$：</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>當所有假設皆為真時，至少犯下一次型一誤差的家族累積錯誤率為：</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>\mathrm{FWER} = 1 - (1 - \alpha)^m \approx 1 - (0.95)^{1000} \approx 100\%</span>
 <span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>p_1 = 0.002, \, p_2 = 0.045, \, p_3 = 0.012, \, p_4 = 0.080, \, p_5 = 0.035, \, p_6 = 0.001</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>設定目標 FDR 水準 $q^* = 0.05$。</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 1：升冪排序 $p$-值並計算臨界閾值 $\frac{i}{m} q^*$</span></span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 排序 $i$ <span class="pp">|</span> 原假設 <span class="pp">|</span> 排序後 $p_{(i)}$ <span class="pp">|</span> 臨界閾值 $\frac{i}{6} \times 0.05$ <span class="pp">|</span> 檢驗不等式 $p_{(i)} \le \frac{i}{m} q^*$ <span class="pp">|</span> 判定 <span class="pp">|</span></span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> $H_6$ <span class="pp">|</span> $0.0010$ <span class="pp">|</span> $0.00833$ <span class="pp">|</span> $0.0010 \le 0.00833$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> $H_1$ <span class="pp">|</span> $0.0020$ <span class="pp">|</span> $0.01667$ <span class="pp">|</span> $0.0020 \le 0.01667$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **3** | **$H_3$** | **$0.0120$** | **$0.02500$** | **$0.0120 \le 0.02500$ (成立)** | **滿足 (最大點 $k=3$)** <span class="pp">|</span></span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> $H_5$ <span class="pp">|</span> $0.0350$ <span class="pp">|</span> $0.03333$ <span class="pp">|</span> $0.0350 &gt; 0.03333$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> $H_2$ <span class="pp">|</span> $0.0450$ <span class="pp">|</span> $0.04167$ <span class="pp">|</span> $0.0450 &gt; 0.04167$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 6 <span class="pp">|</span> $H_4$ <span class="pp">|</span> $0.0800$ <span class="pp">|</span> $0.05000$ <span class="pp">|</span> $0.0800 &gt; 0.05000$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 2：確定決策臨界點</span></span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>滿足條件的最大排序索引為 $k = 3$！</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>因此，**拒絕 $H_{(1)}, H_{(2)}, H_{(3)}$（即 $H_6, H_1, H_3$）**，判定這三個特徵為統計顯著；其餘 $H_5, H_2, H_4$ 視為不顯著。</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **方法對比洞見**：</span></span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 1. **未校正標準（$\alpha = 0.05$）**：會誤將 $H_5 (0.035)$ 與 $H_2 (0.045)$ 判定為顯著，引入大量偽發現。</span></span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 2. **Bonferroni 修正（$\alpha/6 = 0.00833$）**：僅能拒絕 $H_6$ 與 $H_1$，導致真實有效信號 $H_3 (0.012)$ 被錯誤扼殺。</span></span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 3. **BH 程序**：成功保留了 $H_3$，同時精準剔除了 $H_5$ 與 $H_2$，在靈敏度與特異度間取得最優平衡！</span></span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.2 雙特徵 Shapley 值手算示範</span></span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>設模型包含 2 個特徵 $\mathcal{F} = <span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>$。</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>基準無特徵預測輸出（Base Rate）：$v(\emptyset) = 20$。</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>各特徵子集預測值如下：</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 1：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 35$</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 2：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 25$</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>包含兩者特徵：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) = 50$</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>求各特徵之 Shapley 貢獻值 $\phi_1, \phi_2$：</span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>特徵可能進入聯盟的排列順序共有 $2! = 2$ 種：</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**順序一：先加入 $x_1$，後加入 $x_2$**（機率各為 $1/2$）：</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) - v(\emptyset) = 35 - 20 = +15$。</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 50 - 35 = +15$。</span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**順序二：先加入 $x_2$，後加入 $x_1$**（機率各為 $1/2$）：</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) - v(\emptyset) = 25 - 20 = +5$。</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 50 - 25 = +25$。</span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>加權計算特徵 Shapley 值：</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>\phi_1 = \frac{1}{2}(15) + \frac{1}{2}(25) = \mathbf{20}</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>\phi_2 = \frac{1}{2}(15) + \frac{1}{2}(5) = \mathbf{10}</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>傳統 **Bonferroni 修正** 強制將單個顯著水準降為 $\alpha / m = 0.05 / 1000 = 0.00005$，極度保守，將大幅扼殺真實微弱的統計信號。</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.3.2 偽發現率（FDR）與 Benjamini-Hochberg (BH) 程序</span></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>Yoav Benjamini 與 Yosef Hochberg (1995) 提出了**偽發現率（False Discovery Rate, FDR）**：</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>\mathrm{FDR} \triangleq \mathbb{E}\left<span class="co">[</span><span class="ot"> \frac{V}{R} \;\middle|\; R &gt; 0 \right</span><span class="co">]</span> P(R &gt; 0)</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>其中 $R$ 為宣稱顯著的總發現數，$V$ 為其中誤判的偽陽性數。</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="fu">#### BH 逐步檢定程序：</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>將所有 $m$ 個檢定的 $p$-值由小到大升冪排序：$p_{(1)} \le p_{(2)} \le \dots \le p_{(m)}$。</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>給定目標 FDR 控制水準 $q^*$（如 $q^* = 0.05$）。</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>尋找滿足以下條件的**最大排序索引值 $k$**：</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>   k = \max \left<span class="sc">\{</span> i \;\middle|\; p_{(i)} \le \frac{i}{m} q^* \right<span class="sc">\}</span></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch13-bh-step}</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**拒絕所有對應於最小 $k$ 個 $p$-值的虛無假設**（判定 $H_{(1)}, \dots, H_{(k)}$ 顯著）。</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.4 手把手數值推演：BH 程序與 Shapley 值手算</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.1 BH 程序 6 假設手算示範</span></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>設有 $m=6$ 個特徵檢定，其未校正之原始 $p$-值分別為：</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>p_1 = 0.002, \, p_2 = 0.045, \, p_3 = 0.012, \, p_4 = 0.080, \, p_5 = 0.035, \, p_6 = 0.001</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>設定目標 FDR 水準 $q^* = 0.05$。</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 1：升冪排序 $p$-值並計算臨界閾值 $\frac{i}{m} q^*$</span></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 排序 $i$ <span class="pp">|</span> 原假設 <span class="pp">|</span> 排序後 $p_{(i)}$ <span class="pp">|</span> 臨界閾值 $\frac{i}{6} \times 0.05$ <span class="pp">|</span> 檢驗不等式 $p_{(i)} \le \frac{i}{m} q^*$ <span class="pp">|</span> 判定 <span class="pp">|</span></span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> $H_6$ <span class="pp">|</span> $0.0010$ <span class="pp">|</span> $0.00833$ <span class="pp">|</span> $0.0010 \le 0.00833$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> $H_1$ <span class="pp">|</span> $0.0020$ <span class="pp">|</span> $0.01667$ <span class="pp">|</span> $0.0020 \le 0.01667$ (成立) <span class="pp">|</span> 滿足 <span class="pp">|</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **3** | **$H_3$** | **$0.0120$** | **$0.02500$** | **$0.0120 \le 0.02500$ (成立)** | **滿足 (最大點 $k=3$)** <span class="pp">|</span></span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> $H_5$ <span class="pp">|</span> $0.0350$ <span class="pp">|</span> $0.03333$ <span class="pp">|</span> $0.0350 &gt; 0.03333$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> $H_2$ <span class="pp">|</span> $0.0450$ <span class="pp">|</span> $0.04167$ <span class="pp">|</span> $0.0450 &gt; 0.04167$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 6 <span class="pp">|</span> $H_4$ <span class="pp">|</span> $0.0800$ <span class="pp">|</span> $0.05000$ <span class="pp">|</span> $0.0800 &gt; 0.05000$ (不成立) <span class="pp">|</span> 不滿足 <span class="pp">|</span></span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 步驟 2：確定決策臨界點</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>滿足條件的最大排序索引為 $k = 3$！</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>因此，**拒絕 $H_{(1)}, H_{(2)}, H_{(3)}$（即 $H_6, H_1, H_3$）**，判定這三個特徵為統計顯著；其餘 $H_5, H_2, H_4$ 視為不顯著。</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **方法對比洞見**：</span></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 1. **未校正標準（$\alpha = 0.05$）**：會誤將 $H_5 (0.035)$ 與 $H_2 (0.045)$ 判定為顯著，引入大量偽發現。</span></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 2. **Bonferroni 修正（$\alpha/6 = 0.00833$）**：僅能拒絕 $H_6$ 與 $H_1$，導致真實有效信號 $H_3 (0.012)$ 被錯誤扼殺。</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 3. **BH 程序**：成功保留了 $H_3$，同時精準剔除了 $H_5$ 與 $H_2$，在靈敏度與特異度間取得最優平衡！</span></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證效率性公理（Efficiency Axiom）**：</span></span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; \phi_1 + \phi_2 = 20 + 10 = 30 = 50 - 20 = v(</span><span class="sc">\{</span><span class="at">x_1, x_2</span><span class="sc">\}</span><span class="at">) - v(\emptyset) \quad \blacksquare</span></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 兩特徵的邊際歸因值之和精準等於整體預測值與基準值的差額！</span></span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="fu">### 13.4.2 雙特徵 Shapley 值手算示範</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>設模型包含 2 個特徵 $\mathcal{F} = <span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>$。</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>基準無特徵預測輸出（Base Rate）：$v(\emptyset) = 20$。</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>各特徵子集預測值如下：</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 1：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 35$</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅包含特徵 2：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 25$</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>包含兩者特徵：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) = 50$</span>
 <span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.5 可解釋性人工智慧（Explainable AI, XAI）與 SHAP</span></span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>Scott Lundberg 提出的 **SHAP（SHapley Additive exPlanations）** 是基於式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的現代可解釋性標準：</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>\phi_i(v) \triangleq \sum_{S \subseteq \mathcal{F} \setminus <span class="sc">\{</span>i<span class="sc">\}</span>} \frac{|S|! \, (|\mathcal{F}| - |S| - 1)!}{|\mathcal{F}|!} \Big<span class="co">[</span><span class="ot"> v(S \cup \{i\}) - v(S) \Big</span><span class="co">]</span></span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-shapley-value}</span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>其具備四大唯一公理保證：**效率性（Efficiency）**、**對稱性（Symmetry）**、**虛擬性（Dummy Player）** 與 **可加性（Additivity）**。</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>求各特徵之 Shapley 貢獻值 $\phi_1, \phi_2$：</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>特徵可能進入聯盟的排列順序共有 $2! = 2$ 種：</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**順序一：先加入 $x_1$，後加入 $x_2$**（機率各為 $1/2$）：</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) - v(\emptyset) = 35 - 20 = +15$。</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_1<span class="sc">\}</span>) = 50 - 35 = +15$。</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**順序二：先加入 $x_2$，後加入 $x_1$**（機率各為 $1/2$）：</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_2$ 的邊際貢獻：$v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) - v(\emptyset) = 25 - 20 = +5$。</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$x_1$ 的邊際貢獻：$v(<span class="sc">\{</span>x_1, x_2<span class="sc">\}</span>) - v(<span class="sc">\{</span>x_2<span class="sc">\}</span>) = 50 - 25 = +25$。</span>
 <span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.6 雙軌實務實驗室：FDR 多重校正與 SHAP 解釋實戰</span></span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::p.adjust (BH 程序控制 FDR) 與大規模假設檢定</span></span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, ISLR2</span></span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬包含 2000 個特徵的大規模檢定情境 (其中前 50 個特徵為真實有顯著差異)</span></span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>m_true <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>加權計算特徵 Shapley 值：</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>\phi_1 = \frac{1}{2}(15) + \frac{1}{2}(25) = \mathbf{20}</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>\phi_2 = \frac{1}{2}(15) + \frac{1}{2}(5) = \mathbf{10}</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證效率性公理（Efficiency Axiom）**：</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; \phi_1 + \phi_2 = 20 + 10 = 30 = 50 - 20 = v(</span><span class="sc">\{</span><span class="at">x_1, x_2</span><span class="sc">\}</span><span class="at">) - v(\emptyset) \quad \blacksquare</span></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 兩特徵的邊際歸因值之和精準等於整體預測值與基準值的差額！</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.5 可解釋性人工智慧（Explainable AI, XAI）與 SHAP</span></span>
 <span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="co"># 前 50 個檢定具有真實效應 (均值不為 0)</span></span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>true_pvalues <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(m_true, <span class="at">shape1 =</span> <span class="fl">0.5</span>, <span class="at">shape2 =</span> <span class="dv">10</span>)</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="co"># 後 1950 個檢定為純隨機噪聲 (服從 [0, 1] 均勻分佈)</span></span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>null_pvalues <span class="ot">&lt;-</span> <span class="fu">runif</span>(m <span class="sc">-</span> m_true, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>Scott Lundberg 提出的 **SHAP（SHapley Additive exPlanations）** 是基於式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的現代可解釋性標準：</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>\phi_i(v) \triangleq \sum_{S \subseteq \mathcal{F} \setminus <span class="sc">\{</span>i<span class="sc">\}</span>} \frac{|S|! \, (|\mathcal{F}| - |S| - 1)!}{|\mathcal{F}|!} \Big<span class="co">[</span><span class="ot"> v(S \cup \{i\}) - v(S) \Big</span><span class="co">]</span></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch13-shapley-value}</span>
 <span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>all_pvalues <span class="ot">&lt;-</span> <span class="fu">c</span>(true_pvalues, null_pvalues)</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>其具備四大唯一公理保證：**效率性（Efficiency）**、**對稱性（Symmetry）**、**虛擬性（Dummy Player）** 與 **可加性（Additivity）**。</span>
 <span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 未校正之原始 p-值顯著數量 (alpha = 0.05)</span></span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>raw_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(all_pvalues <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"未校正 p &lt; 0.05 檢定出的特徵數: %d (包含大量假陽性噪聲)</span><span class="sc">\n</span><span class="st">"</span>, raw_significant))</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.6 雙軌實務實驗室：FDR 多重校正與 SHAP 解釋實戰</span></span>
 <span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 極度保守的 Bonferroni 修正 (控制 FWER &lt;= 0.05)</span></span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>bonf_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>bonf_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(bonf_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Bonferroni 修正 (過度保守) 檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, bonf_significant))</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Benjamini-Hochberg (BH) 程序控制 FDR &lt;= 0.05</span></span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>fdr_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"BH"</span>)</span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>fdr_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Benjamini-Hochberg (BH) 程序檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, fdr_significant))</span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 檢驗 BH 程序在真實信號上的檢出表現 (真陽性 vs 偽陽性)</span></span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>detected_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>true_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&lt;=</span> m_true)</span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>false_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&gt;</span> m_true)</span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中真陽性數量 (True Discoveries): %d / %d</span><span class="sc">\n</span><span class="st">"</span>, true_positives, m_true))</span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中偽陽性數量 (False Discoveries): %d</span><span class="sc">\n</span><span class="st">"</span>, false_positives))</span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"實證偽發現率 (Empirical FDR): %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (false_positives <span class="sc">/</span> fdr_significant) <span class="sc">*</span> <span class="dv">100</span>))</span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：SHAP (Shapley Additive exPlanations) 解釋黑盒子集成模型</span></span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost, shap</span></span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備清晰物理規律的非線性房價資料 (n=400, p=5)</span></span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">400</span></span>
-<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>income <span class="op">=</span> np.random.uniform(<span class="dv">20</span>, <span class="dv">100</span>, n)</span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>rooms <span class="op">=</span> np.random.uniform(<span class="dv">1</span>, <span class="dv">8</span>, n)</span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">50</span>, n)</span>
-<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>tax <span class="op">=</span> np.random.uniform(<span class="dv">10</span>, <span class="dv">50</span>, n)</span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="co"># 真實非線性房價方程</span></span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>price <span class="op">=</span> <span class="dv">50</span> <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> income <span class="op">+</span> <span class="fl">8.0</span> <span class="op">*</span> rooms <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> age <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> (income <span class="op">*</span> rooms) <span class="op">+</span> noise</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：stats::p.adjust (BH 程序控制 FDR) 與大規模假設檢定</span></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, ISLR2</span></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬包含 2000 個特徵的大規模檢定情境 (其中前 50 個特徵為真實有顯著差異)</span></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">2000</span></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>m_true <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="co"># 前 50 個檢定具有真實效應 (均值不為 0)</span></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>true_pvalues <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(m_true, <span class="at">shape1 =</span> <span class="fl">0.5</span>, <span class="at">shape2 =</span> <span class="dv">10</span>)</span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="co"># 後 1950 個檢定為純隨機噪聲 (服從 [0, 1] 均勻分佈)</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>null_pvalues <span class="ot">&lt;-</span> <span class="fu">runif</span>(m <span class="sc">-</span> m_true, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>all_pvalues <span class="ot">&lt;-</span> <span class="fu">c</span>(true_pvalues, null_pvalues)</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 未校正之原始 p-值顯著數量 (alpha = 0.05)</span></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>raw_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(all_pvalues <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"未校正 p &lt; 0.05 檢定出的特徵數: %d (包含大量假陽性噪聲)</span><span class="sc">\n</span><span class="st">"</span>, raw_significant))</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 極度保守的 Bonferroni 修正 (控制 FWER &lt;= 0.05)</span></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>bonf_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>bonf_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(bonf_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Bonferroni 修正 (過度保守) 檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, bonf_significant))</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Benjamini-Hochberg (BH) 程序控制 FDR &lt;= 0.05</span></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>fdr_p <span class="ot">&lt;-</span> <span class="fu">p.adjust</span>(all_pvalues, <span class="at">method =</span> <span class="st">"BH"</span>)</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>fdr_significant <span class="ot">&lt;-</span> <span class="fu">sum</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Benjamini-Hochberg (BH) 程序檢定出的特徵數: %d</span><span class="sc">\n</span><span class="st">"</span>, fdr_significant))</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 檢驗 BH 程序在真實信號上的檢出表現 (真陽性 vs 偽陽性)</span></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>detected_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(fdr_p <span class="sc">&lt;</span> <span class="fl">0.05</span>)</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>true_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&lt;=</span> m_true)</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>false_positives <span class="ot">&lt;-</span> <span class="fu">sum</span>(detected_idx <span class="sc">&gt;</span> m_true)</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中真陽性數量 (True Discoveries): %d / %d</span><span class="sc">\n</span><span class="st">"</span>, true_positives, m_true))</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"BH 程序中偽陽性數量 (False Discoveries): %d</span><span class="sc">\n</span><span class="st">"</span>, false_positives))</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"實證偽發現率 (Empirical FDR): %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, (false_positives <span class="sc">/</span> fdr_significant) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.DataFrame({<span class="st">'Income'</span>: income, <span class="st">'Rooms'</span>: rooms, <span class="st">'HouseAge'</span>: age, <span class="st">'TaxRate'</span>: tax})</span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> price</span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合強大的 XGBoost 黑盒子迴歸模型</span></span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.08</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 建構 TreeExplainer 並計算全體樣本之精確 Shapley 值</span></span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.TreeExplainer(model)</span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer(X)</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 驗證 Efficiency 效率性公理</span></span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>sample_pred <span class="op">=</span> model.predict(X.iloc[[sample_idx]])[<span class="dv">0</span>]</span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>base_value <span class="op">=</span> explainer.expected_value</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>sum_shap <span class="op">=</span> np.<span class="bu">sum</span>(shap_values.values[sample_idx])</span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SHAP 效率性公理 (Efficiency Axiom) 數學驗證 ==="</span>)</span>
-<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"基準期望預測值 (Base E[f(x)]): </span><span class="sc">{</span>base_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之實際模型輸出 f(x): </span><span class="sc">{</span>sample_pred<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之各特徵 Shapley 值總和: </span><span class="sc">{</span>sum_shap<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"驗證差值 (Base + Sum(SHAP) - f(x)): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>((base_value <span class="op">+</span> sum_shap) <span class="op">-</span> sample_pred)<span class="sc">:.8f}</span><span class="ss">"</span>)</span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 全域特徵平均絕對 Shapley 值</span></span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>mean_abs_shap <span class="op">=</span> np.mean(np.<span class="bu">abs</span>(shap_values.values), axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> feat_name, imp <span class="kw">in</span> <span class="bu">zip</span>(X.columns, mean_abs_shap):</span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 [</span><span class="sc">{</span>feat_name<span class="sc">}</span><span class="ss">] 之平均邊際貢獻度: </span><span class="sc">{</span>imp<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：SHAP (Shapley Additive exPlanations) 解釋黑盒子集成模型</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost, shap</span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備清晰物理規律的非線性房價資料 (n=400, p=5)</span></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">400</span></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>income <span class="op">=</span> np.random.uniform(<span class="dv">20</span>, <span class="dv">100</span>, n)</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>rooms <span class="op">=</span> np.random.uniform(<span class="dv">1</span>, <span class="dv">8</span>, n)</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">50</span>, n)</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>tax <span class="op">=</span> np.random.uniform(<span class="dv">10</span>, <span class="dv">50</span>, n)</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="co"># 真實非線性房價方程</span></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>price <span class="op">=</span> <span class="dv">50</span> <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> income <span class="op">+</span> <span class="fl">8.0</span> <span class="op">*</span> rooms <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> age <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> (income <span class="op">*</span> rooms) <span class="op">+</span> noise</span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.DataFrame({<span class="st">'Income'</span>: income, <span class="st">'Rooms'</span>: rooms, <span class="st">'HouseAge'</span>: age, <span class="st">'TaxRate'</span>: tax})</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> price</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合強大的 XGBoost 黑盒子迴歸模型</span></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.08</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
 <span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.7 課後全方位習題庫（10 題）</span></span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 建構 TreeExplainer 並計算全體樣本之精確 Shapley 值</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>explainer <span class="op">=</span> shap.TreeExplainer(model)</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a>shap_values <span class="op">=</span> explainer(X)</span>
 <span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**最小範數插值解之 Moore-Penrose 虛擬反矩陣證明**：</span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>   在過度參數化迴歸中（$p &gt; n$ 且 $\mathrm{rank}(\boldsymbol{X}) = n$），證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-double-descent</span><span class="co">]</span>) 的最小 $L_2$ 範數插值解具有封閉形式：$\hat{\boldsymbol{\beta}} = \boldsymbol{X}^\top (\boldsymbol{X} \boldsymbol{X}^\top)^{-1} \boldsymbol{y}$，並說明為何梯度下降（從零初始化開始）必收斂至此解。</span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**BH 程序 FDR 上界定理嚴格證明**：</span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>   在所有檢定統計量相互獨立的前提下，利用全期望公式證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-bh-step</span><span class="co">]</span>) 的 BH 程序滿足：$\mathbb{E}\left<span class="co">[</span><span class="ot">\frac{V}{R} \;\middle|\; R &gt; 0\right</span><span class="co">]</span> P(R &gt; 0) = \frac{m_0}{m} q^* \le q^*$。</span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**密度比重要性加權估計量的方差分析**：</span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch13-importance-weighting</span><span class="co">]</span>) 中，雖然重要性加權估計量在期望上是無偏的，但證明當測試分佈與訓練分佈相差懸殊時，$w(\boldsymbol{X}) = P_{\text{test}}(\boldsymbol{X}) / P_{\text{train}}(\boldsymbol{X})$ 的變異數會爆炸，導致經驗風險估計量高度不穩定。</span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Shapley 值的唯一性定理證明**：</span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>   證明符合「效率性、對稱性、虛擬性、可加性」四條公理的特徵貢獻分配方式是唯一的，且必為式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的加權形式。</span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**良性過度配適的特徵值衰減條件（Bartlett et al. 2020）**：</span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>   簡述彼得·巴特利特教授在過度參數化線性迴歸中提出的「良性過度配適」充要條件：說明為什麼共變異數矩陣的特徵值必須具備「重尾（Heavy Tail）」結構才能使插值噪聲被大量有效維度分散吸收。</span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**過度參數化多項式雙重下降現象重現**：</span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>   撰寫程式，固定樣本量 $n=40$，將多項式特徵維度 $p$ 由 1 逐步增加至 120。使用最小範數偽逆求解，繪製測試 MSE 隨 $p$ 變化的完整曲線，重現 $p=40$ 處的插值峰值與 $p &gt; 40$ 的第二重下降。</span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**核均值匹配（Kernel Mean Matching, KMM）修正共變量偏移**：</span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>   產生一組訓練分佈 $P_{\text{train}}(X) \sim \mathcal{N}(0, 1)$ 與測試分佈 $P_{\text{test}}(X) \sim \mathcal{N}(1.5, 1)$。實作核均值匹配（KMM）演算法透過二次規劃求解樣本權重 $\hat{w}_i$，並驗證加權迴歸在測試集上的 RMSE 改進。</span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**基因微陣列多重檢定與火山圖（Volcano Plot）繪製**：</span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a>   利用包含數千個基因的微陣列數據，對比患病組與對照組。計算每個基因的兩組獨立樣本 $t$-檢定 $p$-值與 Fold Change，使用 BH 程序校正，並繪製標準火山圖標註顯著差異表現基因。</span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**TreeSHAP 交互作用值（SHAP Interaction Values）可視化**：</span>
-<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>   使用 Python <span class="in">`shap`</span> 套件訓練包含特徵非線性交互的 XGBoost 模型，計算二階特徵交互 Shapley 矩陣，並繪製 SHAP 依賴圖（Dependence Plot）解析特徵間的調節效應。</span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**LIME vs SHAP 局部歸因一致性比較**：</span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>    在分類模型上，挑選 5 筆邊界測試樣本，分別使用 LIME（局部可解釋模型無關解釋器）與 KernelSHAP 估計各特徵的局部重要性權重，量化評估兩者在特徵重要性符號與排序上的一致性指標。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 驗證 Efficiency 效率性公理</span></span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>sample_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>sample_pred <span class="op">=</span> model.predict(X.iloc[[sample_idx]])[<span class="dv">0</span>]</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>base_value <span class="op">=</span> explainer.expected_value</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a>sum_shap <span class="op">=</span> np.<span class="bu">sum</span>(shap_values.values[sample_idx])</span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== SHAP 效率性公理 (Efficiency Axiom) 數學驗證 ==="</span>)</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"基準期望預測值 (Base E[f(x)]): </span><span class="sc">{</span>base_value<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之實際模型輸出 f(x): </span><span class="sc">{</span>sample_pred<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"樣本 0 之各特徵 Shapley 值總和: </span><span class="sc">{</span>sum_shap<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"驗證差值 (Base + Sum(SHAP) - f(x)): </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>((base_value <span class="op">+</span> sum_shap) <span class="op">-</span> sample_pred)<span class="sc">:.8f}</span><span class="ss">"</span>)</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 全域特徵平均絕對 Shapley 值</span></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>mean_abs_shap <span class="op">=</span> np.mean(np.<span class="bu">abs</span>(shap_values.values), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> feat_name, imp <span class="kw">in</span> <span class="bu">zip</span>(X.columns, mean_abs_shap):</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 [</span><span class="sc">{</span>feat_name<span class="sc">}</span><span class="ss">] 之平均邊際貢獻度: </span><span class="sc">{</span>imp<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="fu">## 13.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**最小範數插值解之 Moore-Penrose 虛擬反矩陣證明**：</span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>   在過度參數化迴歸中（$p &gt; n$ 且 $\mathrm{rank}(\boldsymbol{X}) = n$），證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-double-descent</span><span class="co">]</span>) 的最小 $L_2$ 範數插值解具有封閉形式：$\hat{\boldsymbol{\beta}} = \boldsymbol{X}^\top (\boldsymbol{X} \boldsymbol{X}^\top)^{-1} \boldsymbol{y}$，並說明為何梯度下降（從零初始化開始）必收斂至此解。</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**BH 程序 FDR 上界定理嚴格證明**：</span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>   在所有檢定統計量相互獨立的前提下，利用全期望公式證明式 (<span class="co">[</span><span class="ot">-@eq-ch13-bh-step</span><span class="co">]</span>) 的 BH 程序滿足：$\mathbb{E}\left<span class="co">[</span><span class="ot">\frac{V}{R} \;\middle|\; R &gt; 0\right</span><span class="co">]</span> P(R &gt; 0) = \frac{m_0}{m} q^* \le q^*$。</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**密度比重要性加權估計量的方差分析**：</span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch13-importance-weighting</span><span class="co">]</span>) 中，雖然重要性加權估計量在期望上是無偏的，但證明當測試分佈與訓練分佈相差懸殊時，$w(\boldsymbol{X}) = P_{\text{test}}(\boldsymbol{X}) / P_{\text{train}}(\boldsymbol{X})$ 的變異數會爆炸，導致經驗風險估計量高度不穩定。</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Shapley 值的唯一性定理證明**：</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>   證明符合「效率性、對稱性、虛擬性、可加性」四條公理的特徵貢獻分配方式是唯一的，且必為式 (<span class="co">[</span><span class="ot">-@eq-ch13-shapley-value</span><span class="co">]</span>) 的加權形式。</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**良性過度配適的特徵值衰減條件（Bartlett et al. 2020）**：</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>   簡述彼得·巴特利特教授在過度參數化線性迴歸中提出的「良性過度配適」充要條件：說明為什麼共變異數矩陣的特徵值必須具備「重尾（Heavy Tail）」結構才能使插值噪聲被大量有效維度分散吸收。</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**過度參數化多項式雙重下降現象重現**：</span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a>   撰寫程式，固定樣本量 $n=40$，將多項式特徵維度 $p$ 由 1 逐步增加至 120。使用最小範數偽逆求解，繪製測試 MSE 隨 $p$ 變化的完整曲線，重現 $p=40$ 處的插值峰值與 $p &gt; 40$ 的第二重下降。</span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**核均值匹配（Kernel Mean Matching, KMM）修正共變量偏移**：</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a>   產生一組訓練分佈 $P_{\text{train}}(X) \sim \mathcal{N}(0, 1)$ 與測試分佈 $P_{\text{test}}(X) \sim \mathcal{N}(1.5, 1)$。實作核均值匹配（KMM）演算法透過二次規劃求解樣本權重 $\hat{w}_i$，並驗證加權迴歸在測試集上的 RMSE 改進。</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**基因微陣列多重檢定與火山圖（Volcano Plot）繪製**：</span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>   利用包含數千個基因的微陣列數據，對比患病組與對照組。計算每個基因的兩組獨立樣本 $t$-檢定 $p$-值與 Fold Change，使用 BH 程序校正，並繪製標準火山圖標註顯著差異表現基因。</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**TreeSHAP 交互作用值（SHAP Interaction Values）可視化**：</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>   使用 Python <span class="in">`shap`</span> 套件訓練包含特徵非線性交互的 XGBoost 模型，計算二階特徵交互 Shapley 矩陣，並繪製 SHAP 依賴圖（Dependence Plot）解析特徵間的調節效應。</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**LIME vs SHAP 局部歸因一致性比較**：</span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a>    在分類模型上，挑選 5 筆邊界測試樣本，分別使用 LIME（局部可解釋模型無關解釋器）與 KernelSHAP 估計各特徵的局部重要性權重，量化評估兩者在特徵重要性符號與排序上的一致性指標。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

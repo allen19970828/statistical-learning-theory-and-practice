@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">7.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">7.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀多重神經退化性疾病生物標記精準分型" id="toc-開篇實務案例導讀多重神經退化性疾病生物標記精準分型" class="nav-link" data-scroll-target="#開篇實務案例導讀多重神經退化性疾病生物標記精準分型"><span class="header-section-number">7.1.1</span> 💡 開篇實務案例導讀：多重神經退化性疾病生物標記精準分型</a></li>
+  <li><a href="#概念直覺與幾何啟發費雪投影聚光燈與彩色高斯橢球切削" id="toc-概念直覺與幾何啟發費雪投影聚光燈與彩色高斯橢球切削" class="nav-link" data-scroll-target="#概念直覺與幾何啟發費雪投影聚光燈與彩色高斯橢球切削"><span class="header-section-number">7.1.2</span> 🎯 概念直覺與幾何啟發：費雪投影聚光燈與彩色高斯橢球切削</a></li>
+  </ul></li>
   <li><a href="#判別式-vs-生成式分類哲學" id="toc-判別式-vs-生成式分類哲學" class="nav-link" data-scroll-target="#判別式-vs-生成式分類哲學"><span class="header-section-number">7.2</span> 7.1 判別式 vs 生成式分類哲學</a></li>
   <li><a href="#線性判別分析lda" id="toc-線性判別分析lda" class="nav-link" data-scroll-target="#線性判別分析lda"><span class="header-section-number">7.3</span> 7.2 線性判別分析（LDA）</a>
   <ul class="collapse">
@@ -593,7 +597,29 @@ window.Quarto = {
 <p>在上一章中，羅吉斯迴歸採取「<strong>判別式途徑（Discriminative Approach）</strong>」，直接透過線性函數與 Sigmoid 連結來對條件後驗機率 <span class="math inline">P(Y \mid \boldsymbol{X})</span> 建模。</p>
 <p>然而，當遇到以下情境時，羅吉斯迴歸會顯得力不從心： 1. <strong>各類別分離度極高</strong>：此時羅吉斯迴歸的 MLE 係數會發散至無限大，數值極不穩定（Hauck-Donner 效應）。 2. <strong>樣本容量 <span class="math inline">n</span> 較小</strong>，且特徵大致符合常態分佈：此時透過母體分佈假設估計參數更為精準。 3. <strong>類別數 <span class="math inline">K &gt; 2</span></strong>：多類別架構在生成式模型下極為自然直觀，無須透過一對多（OvR）之妥協拆解。</p>
 <p>本章將引介「<strong>生成式分類途徑（Generative Approach）</strong>」：透過先驗機率與特徵條件機率密度，利用貝氏定理反求後驗機率。我們將詳解<strong>線性判別分析（LDA）</strong>並給出 Fisher 投影極大化瑞利商的嚴格證明；提供一組 4 筆 2D 樣本的手把手數值推演；對比允許不同共變異數的<strong>二次判別分析（QDA）</strong>；最後推導在大數據與高維文字探勘中歷久彌新的<strong>單純貝氏分類器（Naive Bayes）</strong>，並在 R 與 Python 雙環境中進行決策邊界與模型評估實戰。</p>
+<section id="開篇實務案例導讀多重神經退化性疾病生物標記精準分型" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="開篇實務案例導讀多重神經退化性疾病生物標記精準分型"><span class="header-section-number">7.1.1</span> 💡 開篇實務案例導讀：多重神經退化性疾病生物標記精準分型</h3>
+<p>在神經內科臨床早期篩檢中，醫療團隊透過抽取腦脊髓液檢測多項關鍵生物標記（<span class="math inline">A\beta_{42}</span> 類澱粉蛋白、總 Tau 蛋白、磷酸化 Tau 蛋白），試圖在症狀惡化前將長者精準分類為「阿茲海默症」、「巴金森氏症失智」或「年齡相符健康對照組」（<span class="math inline">K=3</span> 類別）。</p>
+<p>若直接套用多項邏輯迴歸（Multinomial Logit），在實際醫療場景中常遭遇兩大阻礙： 1. <strong>數值分離發散</strong>：生物標記在某些確診亞型間分離度極高，邏輯迴歸的極大似然估計容易觸發 Hauck-Donner 數值病態，係數估計值趨向無窮大，統計檢定完全失真。 2. <strong>先驗盛行率失衡</strong>：在社區自然人口中，罕見神經病變的母體盛行率（Prior Probability <span class="math inline">\pi_k</span>）極低（可能低於 <span class="math inline">1.5\%</span>）。單純判別式模型只管盲目擬合樣本標籤比例，極易給出脫離流行病學母體現實的後驗判斷。</p>
+<p>生成式模型（Generative Approach）在此展現了極致的優雅：它先單獨刻畫「若病患為阿茲海默症，其生物標記在三維空間中呈現何種多元高斯雲團分佈 <span class="math inline">f_k(\boldsymbol{x})</span>」，接著直接利用貝氏定理乘上真實母體盛行率 <span class="math inline">\pi_k</span>。這種「逆向追溯自然生成機制」的架構，使生成式模型成為多類別臨床鑑別診斷的經典首選。</p>
+</section>
+<section id="概念直覺與幾何啟發費雪投影聚光燈與彩色高斯橢球切削" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發費雪投影聚光燈與彩色高斯橢球切削"><span class="header-section-number">7.1.2</span> 🎯 概念直覺與幾何啟發：費雪投影聚光燈與彩色高斯橢球切削</h3>
+<p>自修者在理解 LDA 與 QDA 的代數分離界限時，可調用光學投影與幾何切削的雙重心智模型：</p>
+<ul>
+<li><strong>Fisher 投影聚光燈（LDA 幾何直覺）</strong>： 想像高維空間中懸浮著多團不同顏色的星雲數據群。我們拿一盞平行光束聚光燈從某個特定角度將星雲投影到牆壁上（投影方向 <span class="math inline">\boldsymbol{w}</span>）：
+<ul>
+<li>Fisher 判別準則所追求的，就是不斷調整旋轉聚光燈的角度，使得投影在牆上的不同顏色星雲中心距離「拉到最開（類間離散度極大化）」；</li>
+<li>與此同時，要求同一團顏色的星雲影子在牆上「緊緊聚集成小光斑，絕不四處發散（類內離散度極小化）」。這個物理投影直覺，正是廣義瑞利商（Rayleigh Quotient）與廣義特徵值問題的幾何本質！</li>
+</ul></li>
+<li><strong>共變異數橢球的對撞切面（LDA vs QDA）</strong>：
+<ul>
+<li><strong>LDA（等協方差假設）</strong>：假設所有類別的高斯分佈共享同一個共變異數矩陣 <span class="math inline">\boldsymbol{\Sigma}</span>。這在幾何上意味著各類別的資料橢球「形狀大小、旋轉傾角完全相同，僅在空間中平移了中心」。兩個幾何形狀完全一樣的凸橢球面在等密度處相撞，其相交的介面<strong>必然是一張毫無彎曲的平坦超平面</strong>（即線性決策邊界）；</li>
+<li><strong>QDA（異協方差假設）</strong>：允許各類別擁有獨立的共變異數矩陣 <span class="math inline">\boldsymbol{\Sigma}_k</span>。此時一個類別可能是細長的針狀橢球，另一個類別是膨脹的圓扁盤。兩個不同旋轉傾角與長短軸的橢球面相交，其相切的介面必然彎折出拋物面、雙曲面等<strong>豐富的二次曲面（Quadratic Boundary）</strong>。</li>
+</ul></li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="判別式-vs-生成式分類哲學" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="判別式-vs-生成式分類哲學"><span class="header-section-number">7.2</span> 7.1 判別式 vs 生成式分類哲學</h2>
@@ -1436,375 +1462,397 @@ f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>本章將引介「**生成式分類途徑（Generative Approach）**」：透過先驗機率與特徵條件機率密度，利用貝氏定理反求後驗機率。我們將詳解**線性判別分析（LDA）**並給出 Fisher 投影極大化瑞利商的嚴格證明；提供一組 4 筆 2D 樣本的手把手數值推演；對比允許不同共變異數的**二次判別分析（QDA）**；最後推導在大數據與高維文字探勘中歷久彌新的**單純貝氏分類器（Naive Bayes）**，並在 R 與 Python 雙環境中進行決策邊界與模型評估實戰。</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：多重神經退化性疾病生物標記精準分型</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.1 判別式 vs 生成式分類哲學</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>在神經內科臨床早期篩檢中，醫療團隊透過抽取腦脊髓液檢測多項關鍵生物標記（$A\beta_{42}$ 類澱粉蛋白、總 Tau 蛋白、磷酸化 Tau 蛋白），試圖在症狀惡化前將長者精準分類為「阿茲海默症」、「巴金森氏症失智」或「年齡相符健康對照組」（$K=3$ 類別）。</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="in">                ┌──────────────────────────────────────────────────────────┐</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="in">                │                  分類問題的兩大流派                      │</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┬─────────────────────────────┤</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="in">                │  判別式模型 (Discriminative)│  生成式模型 (Generative)    │</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┼─────────────────────────────┤</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 代表模型：羅吉斯迴歸, SVM│ - 代表模型：LDA, QDA, 單純貝氏│</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 核心思想：直接劃定分界線 │ - 核心思想：先學每一類的特徵│</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 建模目標：P(Y | X)        │ - 建模目標：P(X | Y) 與 P(Y) │</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 判定準則：直接輸出後驗   │ - 判定準則：藉由貝氏定理反推│</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="in">                └────────────────────────────┴─────────────────────────────┘</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>生成式模型遵循**貝氏定理（Bayes' Theorem）**：</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>設目標類別共有 $K$ 類，$Y \in <span class="sc">\{</span>1, 2, \dots, K<span class="sc">\}</span>$。</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別先驗機率（Prior Probability）：$\pi_k = P(Y = k)$，且 $\sum_{k=1}^K \pi_k = 1$。</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別條件密度（Class-Conditional Density）：$f_k(\boldsymbol{x}) \triangleq P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k)$。</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>若直接套用多項邏輯迴歸（Multinomial Logit），在實際醫療場景中常遭遇兩大阻礙：</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**數值分離發散**：生物標記在某些確診亞型間分離度極高，邏輯迴歸的極大似然估計容易觸發 Hauck-Donner 數值病態，係數估計值趨向無窮大，統計檢定完全失真。</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**先驗盛行率失衡**：在社區自然人口中，罕見神經病變的母體盛行率（Prior Probability $\pi_k$）極低（可能低於 $1.5\%$）。單純判別式模型只管盲目擬合樣本標籤比例，極易給出脫離流行病學母體現實的後驗判斷。</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>生成式模型（Generative Approach）在此展現了極致的優雅：它先單獨刻畫「若病患為阿茲海默症，其生物標記在三維空間中呈現何種多元高斯雲團分佈 $f_k(\boldsymbol{x})$」，接著直接利用貝氏定理乘上真實母體盛行率 $\pi_k$。這種「逆向追溯自然生成機制」的架構，使生成式模型成為多類別臨床鑑別診斷的經典首選。</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：費雪投影聚光燈與彩色高斯橢球切削</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>自修者在理解 LDA 與 QDA 的代數分離界限時，可調用光學投影與幾何切削的雙重心智模型：</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Fisher 投影聚光燈（LDA 幾何直覺）**：</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  想像高維空間中懸浮著多團不同顏色的星雲數據群。我們拿一盞平行光束聚光燈從某個特定角度將星雲投影到牆壁上（投影方向 $\boldsymbol{w}$）：</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Fisher 判別準則所追求的，就是不斷調整旋轉聚光燈的角度，使得投影在牆上的不同顏色星雲中心距離「拉到最開（類間離散度極大化）」；</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>與此同時，要求同一團顏色的星雲影子在牆上「緊緊聚集成小光斑，絕不四處發散（類內離散度極小化）」。這個物理投影直覺，正是廣義瑞利商（Rayleigh Quotient）與廣義特徵值問題的幾何本質！</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**共變異數橢球的對撞切面（LDA vs QDA）**：</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**LDA（等協方差假設）**：假設所有類別的高斯分佈共享同一個共變異數矩陣 $\boldsymbol{\Sigma}$。這在幾何上意味著各類別的資料橢球「形狀大小、旋轉傾角完全相同，僅在空間中平移了中心」。兩個幾何形狀完全一樣的凸橢球面在等密度處相撞，其相交的介面**必然是一張毫無彎曲的平坦超平面**（即線性決策邊界）；</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**QDA（異協方差假設）**：允許各類別擁有獨立的共變異數矩陣 $\boldsymbol{\Sigma}_k$。此時一個類別可能是細長的針狀橢球，另一個類別是膨脹的圓扁盤。兩個不同旋轉傾角與長短軸的橢球面相交，其相切的介面必然彎折出拋物面、雙曲面等**豐富的二次曲面（Quadratic Boundary）**。</span>
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>給定觀測值 $\boldsymbol{x}$，其屬於類別 $k$ 的**條件後驗機率（Posterior Probability）**為：</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) \triangleq P(Y = k \mid \boldsymbol{X} = \boldsymbol{x}) = \frac{\pi_k f_k(\boldsymbol{x})}{\sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-bayes-classifier}</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>**貝氏最優分類器（Bayes Optimal Classifier）**的決策準則是：將 $\boldsymbol{x}$ 指派給後驗機率 $p_k(\boldsymbol{x})$ 最大的那個類別。</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.2 線性判別分析（LDA）</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.1 多元常態分佈與同方差假設</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>線性判別分析（Linear Discriminant Analysis, LDA）假設每一類別的特徵向量服從**多元高斯常態分佈**：</span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-multivariate-normal}</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>LDA 的核心關鍵假設：**所有 $K$ 個類別共享完全相同的共變異數矩陣 $\boldsymbol{\Sigma}$**（各類別僅平均值向量 $\boldsymbol{\mu}_k$ 相異）。</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.1 判別式 vs 生成式分類哲學</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="in">                ┌──────────────────────────────────────────────────────────┐</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="in">                │                  分類問題的兩大流派                      │</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┬─────────────────────────────┤</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="in">                │  判別式模型 (Discriminative)│  生成式模型 (Generative)    │</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="in">                ├────────────────────────────┼─────────────────────────────┤</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 代表模型：羅吉斯迴歸, SVM│ - 代表模型：LDA, QDA, 單純貝氏│</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 核心思想：直接劃定分界線 │ - 核心思想：先學每一類的特徵│</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 建模目標：P(Y | X)        │ - 建模目標：P(X | Y) 與 P(Y) │</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="in">                │ - 判定準則：直接輸出後驗   │ - 判定準則：藉由貝氏定理反推│</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="in">                └────────────────────────────┴─────────────────────────────┘</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>生成式模型遵循**貝氏定理（Bayes' Theorem）**：</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>設目標類別共有 $K$ 類，$Y \in <span class="sc">\{</span>1, 2, \dots, K<span class="sc">\}</span>$。</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別先驗機率（Prior Probability）：$\pi_k = P(Y = k)$，且 $\sum_{k=1}^K \pi_k = 1$。</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別條件密度（Class-Conditional Density）：$f_k(\boldsymbol{x}) \triangleq P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k)$。</span>
 <span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.2 線性判別函數推導</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>將多元常態密度式 (<span class="co">[</span><span class="ot">-@eq-ch07-multivariate-normal</span><span class="co">]</span>) 代入貝氏後驗機率式 (<span class="co">[</span><span class="ot">-@eq-ch07-bayes-classifier</span><span class="co">]</span>)：</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) = \frac{\pi_k \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)}{\sum_{l=1}^K \pi_l \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_l)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_l) \right)}</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>給定觀測值 $\boldsymbol{x}$，其屬於類別 $k$ 的**條件後驗機率（Posterior Probability）**為：</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) \triangleq P(Y = k \mid \boldsymbol{X} = \boldsymbol{x}) = \frac{\pi_k f_k(\boldsymbol{x})}{\sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-bayes-classifier}</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>**貝氏最優分類器（Bayes Optimal Classifier）**的決策準則是：將 $\boldsymbol{x}$ 指派給後驗機率 $p_k(\boldsymbol{x})$ 最大的那個類別。</span>
 <span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>由於分母與常數係數 $\frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}}$ 對所有類別 $k$ 皆相同，最大化 $p_k(\boldsymbol{x})$ 等價於最大化分子項。取自然對數：</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>\ln \left<span class="co">[</span><span class="ot"> \pi_k f_k(\boldsymbol{x}) \right</span><span class="co">]</span> = \ln \pi_k - \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) + \text{常數}</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.2 線性判別分析（LDA）</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.1 多元常態分佈與同方差假設</span></span>
 <span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>展開二次型矩陣乘積：</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>線性判別分析（Linear Discriminant Analysis, LDA）假設每一類別的特徵向量服從**多元高斯常態分佈**：</span>
 <span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) = \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x} - 2\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-multivariate-normal}</span>
 <span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x}$ 與類別標籤 $k$ 完全無關（因 $\boldsymbol{\Sigma}$ 被所有類別共享），在比較不同類別的大小關係時可以作為全體公共常數剔除！</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>LDA 的核心關鍵假設：**所有 $K$ 個類別共享完全相同的共變異數矩陣 $\boldsymbol{\Sigma}$**（各類別僅平均值向量 $\boldsymbol{\mu}_k$ 相異）。</span>
 <span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>整理後，定義 **LDA 線性判別函數（Linear Discriminant Function）** $\delta_k(\boldsymbol{x})$：</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>\delta_k(\boldsymbol{x}) \triangleq \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k - \frac{1}{2} \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \ln \pi_k</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-lda-discriminant}</span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\delta_k(\boldsymbol{x})$ 是關於輸入特徵 $\boldsymbol{x}$ 的**純線性函數（Linear in $\boldsymbol{x}$）**！</span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>任意兩類別 $k$ 與 $l$ 之間的決策邊界為滿足 $\delta_k(\boldsymbol{x}) = \delta_l(\boldsymbol{x})$ 之點集：</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>   \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_k - \boldsymbol{\mu}_l) - \frac{1}{2}\boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_k + \frac{1}{2}\boldsymbol{\mu}_l^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_l + \ln\left(\frac{\pi_k}{\pi_l}\right) = 0</span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>   這是一個嚴格的 $(p-1)$ 維**超平面（Hyperplane）**。這正是該方法被稱為「線性」判別分析的根本原因。</span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.2 線性判別函數推導</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>將多元常態密度式 (<span class="co">[</span><span class="ot">-@eq-ch07-multivariate-normal</span><span class="co">]</span>) 代入貝氏後驗機率式 (<span class="co">[</span><span class="ot">-@eq-ch07-bayes-classifier</span><span class="co">]</span>)：</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>p_k(\boldsymbol{x}) = \frac{\pi_k \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) \right)}{\sum_{l=1}^K \pi_l \frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left( -\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_l)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_l) \right)}</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>由於分母與常數係數 $\frac{1}{(2\pi)^{p/2} |\boldsymbol{\Sigma}|^{1/2}}$ 對所有類別 $k$ 皆相同，最大化 $p_k(\boldsymbol{x})$ 等價於最大化分子項。取自然對數：</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>\ln \left<span class="co">[</span><span class="ot"> \pi_k f_k(\boldsymbol{x}) \right</span><span class="co">]</span> = \ln \pi_k - \frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) + \text{常數}</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明</span></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>Ronald Fisher (1936) 從另一個純幾何投影維度推導了相同的結果，完全不依賴常態分佈假設。</span>
-<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 最佳化目標：</span></span>
-<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>尋找一個投影方向向量 $\boldsymbol{w} \in \mathbb{R}^p$，將高維特徵投影至一維純量 $z = \boldsymbol{w}^\top \boldsymbol{x}$，要求投影後的**類別中心差距（Between-class scatter）盡可能大**，同時**類別內部的離散度（Within-class scatter）盡可能小**。</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>展開二次型矩陣乘積：</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu}_k) = \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x} - 2\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{x}$ 與類別標籤 $k$ 完全無關（因 $\boldsymbol{\Sigma}$ 被所有類別共享），在比較不同類別的大小關係時可以作為全體公共常數剔除！</span>
 <span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>以二元分類為例，定義：</span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別間散佈矩陣（Between-Class Scatter）：$\boldsymbol{S}_B = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top$</span>
-<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別內散佈矩陣（Within-Class Scatter）：$\boldsymbol{S}_W = \sum_{i \in \mathcal{C}_1}(\boldsymbol{x}_i - \boldsymbol{\mu}_1)(\boldsymbol{x}_i - \boldsymbol{\mu}_1)^\top + \sum_{i \in \mathcal{C}_2}(\boldsymbol{x}_i - \boldsymbol{\mu}_2)(\boldsymbol{x}_i - \boldsymbol{\mu}_2)^\top$</span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>投影後的**廣義瑞利商（Generalized Rayleigh Quotient）**為：</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>J(\boldsymbol{w}) = \frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}</span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>對 $\boldsymbol{w}$ 求導並令其為零：</span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>\nabla_{\boldsymbol{w}} J(\boldsymbol{w}) = \frac{2\boldsymbol{S}_B\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}) - 2\boldsymbol{S}_W\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w})}{(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w})^2} = \boldsymbol{0}</span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>整理得：</span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>\boldsymbol{S}_B \boldsymbol{w} = J(\boldsymbol{w}) \boldsymbol{S}_W \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w} \implies \boldsymbol{S}_W^{-1} \boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{w}</span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>整理後，定義 **LDA 線性判別函數（Linear Discriminant Function）** $\delta_k(\boldsymbol{x})$：</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>\delta_k(\boldsymbol{x}) \triangleq \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k - \frac{1}{2} \boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1} \boldsymbol{\mu}_k + \ln \pi_k</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-lda-discriminant}</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\delta_k(\boldsymbol{x})$ 是關於輸入特徵 $\boldsymbol{x}$ 的**純線性函數（Linear in $\boldsymbol{x}$）**！</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>任意兩類別 $k$ 與 $l$ 之間的決策邊界為滿足 $\delta_k(\boldsymbol{x}) = \delta_l(\boldsymbol{x})$ 之點集：</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>   \boldsymbol{x}^\top \boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_k - \boldsymbol{\mu}_l) - \frac{1}{2}\boldsymbol{\mu}_k^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_k + \frac{1}{2}\boldsymbol{\mu}_l^\top \boldsymbol{\Sigma}^{-1}\boldsymbol{\mu}_l + \ln\left(\frac{\pi_k}{\pi_l}\right) = 0</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>   這是一個嚴格的 $(p-1)$ 維**超平面（Hyperplane）**。這正是該方法被稱為「線性」判別分析的根本原因。</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.2.3 Fisher 線性判別與瑞利商（Rayleigh Quotient）證明</span></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>Ronald Fisher (1936) 從另一個純幾何投影維度推導了相同的結果，完全不依賴常態分佈假設。</span>
 <span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{S}_B \boldsymbol{w} = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\left<span class="co">[</span><span class="ot"> (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \boldsymbol{w} \right</span><span class="co">]</span>$，括號內為標量純量，故 $\boldsymbol{S}_B \boldsymbol{w}$ 的方向恆沿著向量 $(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$。</span>
-<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>因此最優投影向量的方向解為：</span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* \propto \boldsymbol{S}_W^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)</span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-fisher-solution}</span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>這與式 (<span class="co">[</span><span class="ot">-@eq-ch07-lda-discriminant</span><span class="co">]</span>) 中推導出的高斯機率視角下的超平面法向量 $\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$ 完全等價！</span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 最佳化目標：</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>尋找一個投影方向向量 $\boldsymbol{w} \in \mathbb{R}^p$，將高維特徵投影至一維純量 $z = \boldsymbol{w}^\top \boldsymbol{x}$，要求投影後的**類別中心差距（Between-class scatter）盡可能大**，同時**類別內部的離散度（Within-class scatter）盡可能小**。</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>以二元分類為例，定義：</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別間散佈矩陣（Between-Class Scatter）：$\boldsymbol{S}_B = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top$</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別內散佈矩陣（Within-Class Scatter）：$\boldsymbol{S}_W = \sum_{i \in \mathcal{C}_1}(\boldsymbol{x}_i - \boldsymbol{\mu}_1)(\boldsymbol{x}_i - \boldsymbol{\mu}_1)^\top + \sum_{i \in \mathcal{C}_2}(\boldsymbol{x}_i - \boldsymbol{\mu}_2)(\boldsymbol{x}_i - \boldsymbol{\mu}_2)^\top$</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>投影後的**廣義瑞利商（Generalized Rayleigh Quotient）**為：</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>J(\boldsymbol{w}) = \frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>為了讓讀者掌握判別向量與共變異數矩陣的計算實質，我們構造一組 2 類別、4 筆樣本的二維玩具資料：</span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 <span class="pp">|</span> $x_1$ <span class="pp">|</span> $x_2$ <span class="pp">|</span> 類別標籤 <span class="pp">|</span></span>
-<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 5 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
-<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>設先驗機率相等：$\pi_1 = \pi_2 = 0.5$。</span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：計算各類別均值向量</span></span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 1 均值：</span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 = \frac{1}{2} \left( \begin{bmatrix} 1 <span class="sc">\\</span> 2 \end{bmatrix} + \begin{bmatrix} 2 <span class="sc">\\</span> 3 \end{bmatrix} \right) = \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix}</span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 2 均值：</span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_2 = \frac{1}{2} \left( \begin{bmatrix} 3 <span class="sc">\\</span> 5 \end{bmatrix} + \begin{bmatrix} 5 <span class="sc">\\</span> 6 \end{bmatrix} \right) = \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix}</span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>均值差向量：</span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = \begin{bmatrix} 1.5 - 4.0 <span class="sc">\\</span> 2.5 - 5.5 \end{bmatrix} = \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix}</span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各類別內部離散度與合併共變異數矩陣</span></span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 1 離散矩陣 $\boldsymbol{S}_1$**：</span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-0.5, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">0.5, 0.5</span><span class="co">]</span>^\top$。</span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_1 = \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -0.5 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 0.5 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 0.5 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix}</span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 2 離散矩陣 $\boldsymbol{S}_2$**：</span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-1.0, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">1.0, 0.5</span><span class="co">]</span>^\top$。</span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_2 = \begin{bmatrix} -1.0 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -1.0 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 1.0 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix}</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>對 $\boldsymbol{w}$ 求導並令其為零：</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>\nabla_{\boldsymbol{w}} J(\boldsymbol{w}) = \frac{2\boldsymbol{S}_B\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}) - 2\boldsymbol{S}_W\boldsymbol{w}(\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w})}{(\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w})^2} = \boldsymbol{0}</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>整理得：</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>\boldsymbol{S}_B \boldsymbol{w} = J(\boldsymbol{w}) \boldsymbol{S}_W \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w} \implies \boldsymbol{S}_W^{-1} \boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{w}</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>注意到 $\boldsymbol{S}_B \boldsymbol{w} = (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)\left<span class="co">[</span><span class="ot"> (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)^\top \boldsymbol{w} \right</span><span class="co">]</span>$，括號內為標量純量，故 $\boldsymbol{S}_B \boldsymbol{w}$ 的方向恆沿著向量 $(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$。</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>因此最優投影向量的方向解為：</span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* \propto \boldsymbol{S}_W^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-fisher-solution}</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>這與式 (<span class="co">[</span><span class="ot">-@eq-ch07-lda-discriminant</span><span class="co">]</span>) 中推導出的高斯機率視角下的超平面法向量 $\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2)$ 完全等價！</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.3 手把手數值推演：4 筆 2D 樣本之 LDA 判別面全手算</span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>為了讓讀者掌握判別向量與共變異數矩陣的計算實質，我們構造一組 2 類別、4 筆樣本的二維玩具資料：</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 <span class="pp">|</span> $x_1$ <span class="pp">|</span> $x_2$ <span class="pp">|</span> 類別標籤 <span class="pp">|</span></span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 類別 1 ($\mathcal{C}_1$) <span class="pp">|</span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 5 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 類別 2 ($\mathcal{C}_2$) <span class="pp">|</span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>設先驗機率相等：$\pi_1 = \pi_2 = 0.5$。</span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：計算各類別均值向量</span></span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 1 均值：</span>
 <span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別內總散佈矩陣 $\boldsymbol{S}_W$**：</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 = \frac{1}{2} \left( \begin{bmatrix} 1 <span class="sc">\\</span> 2 \end{bmatrix} + \begin{bmatrix} 2 <span class="sc">\\</span> 3 \end{bmatrix} \right) = \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix}</span>
 <span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_W = \boldsymbol{S}_1 + \boldsymbol{S}_2 = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix} + \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix}</span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>類別 2 均值：</span>
 <span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**合併共變異數矩陣（Pooled Covariance Matrix）$\hat{\boldsymbol{\Sigma}}$**：</span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>  自由度為 $n - K = 4 - 2 = 2$：</span>
-<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>  \hat{\boldsymbol{\Sigma}} = \frac{1}{n - K} \boldsymbol{S}_W = \frac{1}{2} \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 1.25 &amp; 0.75 <span class="sc">\\</span> 0.75 &amp; 0.50 \end{bmatrix}</span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：計算共變異數逆矩陣 $\hat{\boldsymbol{\Sigma}}^{-1}$</span></span>
-<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>行列式：</span>
-<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>\det(\hat{\boldsymbol{\Sigma}}) = (1.25)(0.50) - (0.75)^2 = 0.625 - 0.5625 = 0.0625 = \frac{1}{16}</span>
-<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>求逆：</span>
-<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a>\hat{\boldsymbol{\Sigma}}^{-1} = \frac{1}{0.0625} \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = 16 \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix}</span>
-<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：計算 Fisher 最優投影向量 $\boldsymbol{w}^*$</span></span>
-<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* = \hat{\boldsymbol{\Sigma}}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix} \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix} = \begin{bmatrix} 8(-2.5) - 12(-3.0) <span class="sc">\\</span> -12(-2.5) + 20(-3.0) \end{bmatrix} = \begin{bmatrix} -20 + 36 <span class="sc">\\</span> 30 - 60 \end{bmatrix} = \begin{bmatrix} 16 <span class="sc">\\</span> -30 \end{bmatrix}</span>
-<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>除以公因數 2 簡化方向向量為：$\boldsymbol{w} = \begin{bmatrix} 8 <span class="sc">\\</span> -15 \end{bmatrix}$。</span>
-<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：推導決策分界超平面方程式</span></span>
-<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>在先驗機率相等（$\pi_1 = \pi_2$）條件下，決策邊界恰好穿過兩類別均值的中點 $\boldsymbol{\mu}_0 = \frac{\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2}{2}$：</span>
-<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\mu}_0 = \frac{1}{2} \left( \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix} + \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix} \right) = \begin{bmatrix} 2.75 <span class="sc">\\</span> 4.00 \end{bmatrix}</span>
-<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>決策面方程式為 $\boldsymbol{w}^\top (\boldsymbol{x} - \boldsymbol{\mu}_0) = 0$：</span>
-<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>8(x_1 - 2.75) - 15(x_2 - 4.0) = 0 \implies 8x_1 - 22 - 15x_2 + 60 = 0 \implies 8x_1 - 15x_2 + 38 = 0</span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_2 = \frac{1}{2} \left( \begin{bmatrix} 3 <span class="sc">\\</span> 5 \end{bmatrix} + \begin{bmatrix} 5 <span class="sc">\\</span> 6 \end{bmatrix} \right) = \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix}</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>均值差向量：</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{\mu}_1 - \boldsymbol{\mu}_2 = \begin{bmatrix} 1.5 - 4.0 <span class="sc">\\</span> 2.5 - 5.5 \end{bmatrix} = \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix}</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各類別內部離散度與合併共變異數矩陣</span></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 1 離散矩陣 $\boldsymbol{S}_1$**：</span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-0.5, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">0.5, 0.5</span><span class="co">]</span>^\top$。</span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_1 = \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -0.5 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 0.5 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 0.5 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 0.25 &amp; 0.25 <span class="sc">\\</span> 0.25 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix}</span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別 2 離散矩陣 $\boldsymbol{S}_2$**：</span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>  樣本偏差為 $<span class="co">[</span><span class="ot">-1.0, -0.5</span><span class="co">]</span>^\top$ 與 $<span class="co">[</span><span class="ot">1.0, 0.5</span><span class="co">]</span>^\top$。</span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_2 = \begin{bmatrix} -1.0 <span class="sc">\\</span> -0.5 \end{bmatrix} \begin{bmatrix} -1.0 &amp; -0.5 \end{bmatrix} + \begin{bmatrix} 1.0 <span class="sc">\\</span> 0.5 \end{bmatrix} \begin{bmatrix} 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} + \begin{bmatrix} 1.0 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.25 \end{bmatrix} = \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix}</span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**類別內總散佈矩陣 $\boldsymbol{S}_W$**：</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{S}_W = \boldsymbol{S}_1 + \boldsymbol{S}_2 = \begin{bmatrix} 0.5 &amp; 0.5 <span class="sc">\\</span> 0.5 &amp; 0.5 \end{bmatrix} + \begin{bmatrix} 2.0 &amp; 1.0 <span class="sc">\\</span> 1.0 &amp; 0.5 \end{bmatrix} = \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix}</span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**合併共變異數矩陣（Pooled Covariance Matrix）$\hat{\boldsymbol{\Sigma}}$**：</span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>  自由度為 $n - K = 4 - 2 = 2$：</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>  \hat{\boldsymbol{\Sigma}} = \frac{1}{n - K} \boldsymbol{S}_W = \frac{1}{2} \begin{bmatrix} 2.5 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 1.25 &amp; 0.75 <span class="sc">\\</span> 0.75 &amp; 0.50 \end{bmatrix}</span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：計算共變異數逆矩陣 $\hat{\boldsymbol{\Sigma}}^{-1}$</span></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>行列式：</span>
 <span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 6：代入樣本點檢驗</span></span>
-<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 1（$\mathcal{C}_1$）：$\boldsymbol{x}_1 = <span class="co">[</span><span class="ot">1, 2</span><span class="co">]</span>^\top \implies 8(1) - 15(2) + 38 = 8 - 30 + 38 = +16 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
-<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 2（$\mathcal{C}_1$）：$\boldsymbol{x}_2 = <span class="co">[</span><span class="ot">2, 3</span><span class="co">]</span>^\top \implies 8(2) - 15(3) + 38 = 16 - 45 + 38 = +9 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
-<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 3（$\mathcal{C}_2$）：$\boldsymbol{x}_3 = <span class="co">[</span><span class="ot">3, 5</span><span class="co">]</span>^\top \implies 8(3) - 15(5) + 38 = 24 - 75 + 38 = -13 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
-<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 4（$\mathcal{C}_2$）：$\boldsymbol{x}_4 = <span class="co">[</span><span class="ot">5, 6</span><span class="co">]</span>^\top \implies 8(5) - 15(6) + 38 = 40 - 90 + 38 = -12 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a>\det(\hat{\boldsymbol{\Sigma}}) = (1.25)(0.50) - (0.75)^2 = 0.625 - 0.5625 = 0.0625 = \frac{1}{16}</span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a>求逆：</span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a>\hat{\boldsymbol{\Sigma}}^{-1} = \frac{1}{0.0625} \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = 16 \begin{bmatrix} 0.50 &amp; -0.75 <span class="sc">\\</span> -0.75 &amp; 1.25 \end{bmatrix} = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix}</span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>所有訓練樣本皆被 100% 正確分離！</span>
-<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.4 二次判別分析（QDA）</span></span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：計算 Fisher 最優投影向量 $\boldsymbol{w}^*$</span></span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^* = \hat{\boldsymbol{\Sigma}}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_2) = \begin{bmatrix} 8 &amp; -12 <span class="sc">\\</span> -12 &amp; 20 \end{bmatrix} \begin{bmatrix} -2.5 <span class="sc">\\</span> -3.0 \end{bmatrix} = \begin{bmatrix} 8(-2.5) - 12(-3.0) <span class="sc">\\</span> -12(-2.5) + 20(-3.0) \end{bmatrix} = \begin{bmatrix} -20 + 36 <span class="sc">\\</span> 30 - 60 \end{bmatrix} = \begin{bmatrix} 16 <span class="sc">\\</span> -30 \end{bmatrix}</span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>除以公因數 2 簡化方向向量為：$\boldsymbol{w} = \begin{bmatrix} 8 <span class="sc">\\</span> -15 \end{bmatrix}$。</span>
 <span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>若放寬「共享共變異數」的限制，允許**每一個類別擁有專屬的共變異數矩陣 $\boldsymbol{\Sigma}_k$**，即得**二次判別分析（Quadratic Discriminant Analysis, QDA）**。</span>
-<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>此時在推導中，二次項 $\boldsymbol{x}^\top \boldsymbol{\Sigma}_k^{-1} \boldsymbol{x}$ 無法被約去，判別函數為：</span>
-<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>\delta_k^{\text{qda}}(\boldsymbol{x}) \triangleq -\frac{1}{2}\ln |\boldsymbol{\Sigma}_k| - \frac{1}{2}(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}_k^{-1}(\boldsymbol{x} - \boldsymbol{\mu}_k) + \ln \pi_k</span>
-<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-qda-discriminant}</span>
-<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**幾何邊界**：$\delta_k^{\text{qda}}(\boldsymbol{x}) = \delta_l^{\text{qda}}(\boldsymbol{x})$ 形成二次曲面（拋物面、橢圓面、雙曲面）。</span>
-<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**參數規模與偏誤-變異數權衡**：</span>
-<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>LDA 僅需估計 1 個共享的 $\boldsymbol{\Sigma}$，需估計參數為 $p(p+1)/2$ 個，變異數小但偏誤較大。</span>
-<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>QDA 需獨立估計 $K$ 個相異的矩陣 $\boldsymbol{\Sigma}_k$，總參數為 $K \cdot <span class="co">[</span><span class="ot">p(p+1)/2</span><span class="co">]</span>$。當特徵數 $p$ 較大且樣本數較小時，QDA 極易因估計矩陣的不穩定性而過度配適。</span>
-<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.5 單純貝氏分類器（Naive Bayes）</span></span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：推導決策分界超平面方程式</span></span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a>在先驗機率相等（$\pi_1 = \pi_2$）條件下，決策邊界恰好穿過兩類別均值的中點 $\boldsymbol{\mu}_0 = \frac{\boldsymbol{\mu}_1 + \boldsymbol{\mu}_2}{2}$：</span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\mu}_0 = \frac{1}{2} \left( \begin{bmatrix} 1.5 <span class="sc">\\</span> 2.5 \end{bmatrix} + \begin{bmatrix} 4.0 <span class="sc">\\</span> 5.5 \end{bmatrix} \right) = \begin{bmatrix} 2.75 <span class="sc">\\</span> 4.00 \end{bmatrix}</span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>決策面方程式為 $\boldsymbol{w}^\top (\boldsymbol{x} - \boldsymbol{\mu}_0) = 0$：</span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a>8(x_1 - 2.75) - 15(x_2 - 4.0) = 0 \implies 8x_1 - 22 - 15x_2 + 60 = 0 \implies 8x_1 - 15x_2 + 38 = 0</span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 6：代入樣本點檢驗</span></span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 1（$\mathcal{C}_1$）：$\boldsymbol{x}_1 = <span class="co">[</span><span class="ot">1, 2</span><span class="co">]</span>^\top \implies 8(1) - 15(2) + 38 = 8 - 30 + 38 = +16 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 2（$\mathcal{C}_1$）：$\boldsymbol{x}_2 = <span class="co">[</span><span class="ot">2, 3</span><span class="co">]</span>^\top \implies 8(2) - 15(3) + 38 = 16 - 45 + 38 = +9 &gt; 0$（判定為 $\mathcal{C}_1$）。</span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 3（$\mathcal{C}_2$）：$\boldsymbol{x}_3 = <span class="co">[</span><span class="ot">3, 5</span><span class="co">]</span>^\top \implies 8(3) - 15(5) + 38 = 24 - 75 + 38 = -13 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 4（$\mathcal{C}_2$）：$\boldsymbol{x}_4 = <span class="co">[</span><span class="ot">5, 6</span><span class="co">]</span>^\top \implies 8(5) - 15(6) + 38 = 40 - 90 + 38 = -12 &lt; 0$（判定為 $\mathcal{C}_2$）。</span>
 <span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>當特徵數 $p$ 達到成千上萬（如文字分類、基因體學）時，即使是 LDA 亦無法反轉巨大的 $\boldsymbol{\Sigma}$。**單純貝氏（Naive Bayes）**提出了一個大膽且強力的假設：</span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>所有訓練樣本皆被 100% 正確分離！</span>
 <span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **條件獨立假設（Conditional Independence Assumption）**：</span></span>
-<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 給定類別標籤 $Y=k$，所有特徵變數之間彼此條件獨立。</span></span>
-<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a>基於此假設，高維聯合條件密度完全分解為各維度一維邊際機率密度的連乘積：</span>
-<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1}^p f_{kj}(x_j)</span>
-<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-naive-bayes-density}</span>
-<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.1 三大常見單純貝氏模型</span></span>
-<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高斯單純貝氏（Gaussian Naive Bayes）**：用於連續型特徵，假設每一維度服從獨立一維高斯分佈 $\mathcal{N}(\mu_{kj}, \sigma_{kj}^2)$。</span>
-<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**多項式單純貝氏（Multinomial Naive Bayes）**：用於文字詞頻統計向量。</span>
-<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**伯努利單純貝氏（Bernoulli Naive Bayes）**：用於特徵為二元布林（是否出現某單詞）。</span>
-<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）</span></span>
-<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a>在離散多項式分類中，若某個詞彙在訓練集某個類別中從未出現過，其估計條件機率 $\hat{P}(x_j \mid Y=k) = 0$。連乘積將導致整體後驗機率直接歸零（一票否決效應）。</span>
-<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a>解決方案是引入**拉普拉斯平滑**：</span>
-<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a>\hat{P}(X_j = v \mid Y = k) = \frac{N_{kj} + \alpha}{N_k + \alpha \cdot d}</span>
-<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a>通常取平滑常數 $\alpha = 1$，$d$ 為該特徵可能的離散取值種類數。</span>
-<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比</span></span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.4 二次判別分析（QDA）</span></span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>若放寬「共享共變異數」的限制，允許**每一個類別擁有專屬的共變異數矩陣 $\boldsymbol{\Sigma}_k$**，即得**二次判別分析（Quadratic Discriminant Analysis, QDA）**。</span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a>此時在推導中，二次項 $\boldsymbol{x}^\top \boldsymbol{\Sigma}_k^{-1} \boldsymbol{x}$ 無法被約去，判別函數為：</span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a>\delta_k^{\text{qda}}(\boldsymbol{x}) \triangleq -\frac{1}{2}\ln |\boldsymbol{\Sigma}_k| - \frac{1}{2}(\boldsymbol{x} - \boldsymbol{\mu}_k)^\top \boldsymbol{\Sigma}_k^{-1}(\boldsymbol{x} - \boldsymbol{\mu}_k) + \ln \pi_k</span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-qda-discriminant}</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**幾何邊界**：$\delta_k^{\text{qda}}(\boldsymbol{x}) = \delta_l^{\text{qda}}(\boldsymbol{x})$ 形成二次曲面（拋物面、橢圓面、雙曲面）。</span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**參數規模與偏誤-變異數權衡**：</span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>LDA 僅需估計 1 個共享的 $\boldsymbol{\Sigma}$，需估計參數為 $p(p+1)/2$ 個，變異數小但偏誤較大。</span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>QDA 需獨立估計 $K$ 個相異的矩陣 $\boldsymbol{\Sigma}_k$，總參數為 $K \cdot <span class="co">[</span><span class="ot">p(p+1)/2</span><span class="co">]</span>$。當特徵數 $p$ 較大且樣本數較小時，QDA 極易因估計矩陣的不穩定性而過度配適。</span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.5 單純貝氏分類器（Naive Bayes）</span></span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a>當特徵數 $p$ 達到成千上萬（如文字分類、基因體學）時，即使是 LDA 亦無法反轉巨大的 $\boldsymbol{\Sigma}$。**單純貝氏（Naive Bayes）**提出了一個大膽且強力的假設：</span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **條件獨立假設（Conditional Independence Assumption）**：</span></span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 給定類別標籤 $Y=k$，所有特徵變數之間彼此條件獨立。</span></span>
 <span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：MASS::lda, MASS::qda 與 e1071::naiveBayes 多類別分類</span></span>
-<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：MASS, e1071, ISLR2</span></span>
-<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
-<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
-<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用股市 Smarket 資料集 (預測隔日大盤漲跌 Direction: Up / Down)</span></span>
-<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Smarket)</span>
-<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分 2005 年以前為訓練集，2005 年當年度為測試集</span></span>
-<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
-<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a>Smarket_test <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
-<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a>Direction_test <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
-<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性判別分析 (LDA)</span></span>
-<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>fit_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
-<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a>pred_lda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_lda, Smarket_test)</span>
-<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a>table_lda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_lda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
-<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== LDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_lda)</span>
-<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_lda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
-<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合二次判別分析 (QDA)</span></span>
-<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a>fit_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
-<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a>pred_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_qda, Smarket_test)</span>
-<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a>table_qda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_qda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
-<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== QDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_qda)</span>
-<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"QDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_qda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
-<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合單純貝氏分類器 (Naive Bayes)</span></span>
-<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a>fit_nb <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
-<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a>pred_nb <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_nb, Smarket_test)</span>
-<span id="cb4-298"><a href="#cb4-298" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== Naive Bayes 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb4-299"><a href="#cb4-299" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(預測 <span class="ot">=</span> pred_nb, 真實 <span class="ot">=</span> Direction_test))</span>
-<span id="cb4-300"><a href="#cb4-300" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Naive Bayes 準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_nb <span class="sc">==</span> Direction_test)))</span>
-<span id="cb4-301"><a href="#cb4-301" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-302"><a href="#cb4-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-303"><a href="#cb4-303" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
-<span id="cb4-304"><a href="#cb4-304" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-305"><a href="#cb4-305" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb4-306"><a href="#cb4-306" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-307"><a href="#cb4-307" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：LDA, QDA 與 GaussianNB 模型評估</span></span>
-<span id="cb4-308"><a href="#cb4-308" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
-<span id="cb4-309"><a href="#cb4-309" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-310"><a href="#cb4-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-311"><a href="#cb4-311" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-312"><a href="#cb4-312" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb4-313"><a href="#cb4-313" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.discriminant_analysis <span class="im">import</span> LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis</span>
-<span id="cb4-314"><a href="#cb4-314" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
-<span id="cb4-315"><a href="#cb4-315" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb4-316"><a href="#cb4-316" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, classification_report</span>
-<span id="cb4-317"><a href="#cb4-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-318"><a href="#cb4-318" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬雙變數非線性多類別資料 (3 個類別)</span></span>
-<span id="cb4-319"><a href="#cb4-319" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb4-320"><a href="#cb4-320" aria-hidden="true" tabindex="-1"></a>n_per_class <span class="op">=</span> <span class="dv">150</span></span>
-<span id="cb4-321"><a href="#cb4-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-322"><a href="#cb4-322" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 1: 常態分佈</span></span>
-<span id="cb4-323"><a href="#cb4-323" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">1.0</span>, <span class="fl">0.5</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>]], n_per_class)</span>
-<span id="cb4-324"><a href="#cb4-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 2: 共變異數不同的常態分佈</span></span>
-<span id="cb4-325"><a href="#cb4-325" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">3</span>, <span class="dv">3</span>], [[<span class="fl">2.0</span>, <span class="op">-</span><span class="fl">0.8</span>], [<span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.8</span>]], n_per_class)</span>
-<span id="cb4-326"><a href="#cb4-326" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 3</span></span>
-<span id="cb4-327"><a href="#cb4-327" aria-hidden="true" tabindex="-1"></a>X3 <span class="op">=</span> np.random.multivariate_normal([<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>], [[<span class="fl">0.5</span>, <span class="fl">0.0</span>], [<span class="fl">0.0</span>, <span class="fl">2.0</span>]], n_per_class)</span>
-<span id="cb4-328"><a href="#cb4-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-329"><a href="#cb4-329" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2, X3])</span>
-<span id="cb4-330"><a href="#cb4-330" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">0</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">1</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">2</span>]<span class="op">*</span>n_per_class)</span>
-<span id="cb4-331"><a href="#cb4-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-332"><a href="#cb4-332" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb4-333"><a href="#cb4-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-334"><a href="#cb4-334" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合三種生成式模型</span></span>
-<span id="cb4-335"><a href="#cb4-335" aria-hidden="true" tabindex="-1"></a>lda <span class="op">=</span> LinearDiscriminantAnalysis().fit(X_train, y_train)</span>
-<span id="cb4-336"><a href="#cb4-336" aria-hidden="true" tabindex="-1"></a>qda <span class="op">=</span> QuadraticDiscriminantAnalysis().fit(X_train, y_train)</span>
-<span id="cb4-337"><a href="#cb4-337" aria-hidden="true" tabindex="-1"></a>gnb <span class="op">=</span> GaussianNB().fit(X_train, y_train)</span>
-<span id="cb4-338"><a href="#cb4-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-339"><a href="#cb4-339" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出準確率比較</span></span>
-<span id="cb4-340"><a href="#cb4-340" aria-hidden="true" tabindex="-1"></a>acc_lda <span class="op">=</span> accuracy_score(y_test, lda.predict(X_test))</span>
-<span id="cb4-341"><a href="#cb4-341" aria-hidden="true" tabindex="-1"></a>acc_qda <span class="op">=</span> accuracy_score(y_test, qda.predict(X_test))</span>
-<span id="cb4-342"><a href="#cb4-342" aria-hidden="true" tabindex="-1"></a>acc_gnb <span class="op">=</span> accuracy_score(y_test, gnb.predict(X_test))</span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a>基於此假設，高維聯合條件密度完全分解為各維度一維邊際機率密度的連乘積：</span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a>f_k(\boldsymbol{x}) = P(\boldsymbol{X} = \boldsymbol{x} \mid Y = k) = \prod_{j=1}^p f_{kj}(x_j)</span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch07-naive-bayes-density}</span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.1 三大常見單純貝氏模型</span></span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高斯單純貝氏（Gaussian Naive Bayes）**：用於連續型特徵，假設每一維度服從獨立一維高斯分佈 $\mathcal{N}(\mu_{kj}, \sigma_{kj}^2)$。</span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**多項式單純貝氏（Multinomial Naive Bayes）**：用於文字詞頻統計向量。</span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**伯努利單純貝氏（Bernoulli Naive Bayes）**：用於特徵為二元布林（是否出現某單詞）。</span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a><span class="fu">### 7.5.2 零機率問題與拉普拉斯平滑（Laplace Smoothing）</span></span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>在離散多項式分類中，若某個詞彙在訓練集某個類別中從未出現過，其估計條件機率 $\hat{P}(x_j \mid Y=k) = 0$。連乘積將導致整體後驗機率直接歸零（一票否決效應）。</span>
+<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a>解決方案是引入**拉普拉斯平滑**：</span>
+<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a>\hat{P}(X_j = v \mid Y = k) = \frac{N_{kj} + \alpha}{N_k + \alpha \cdot d}</span>
+<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a>通常取平滑常數 $\alpha = 1$，$d$ 為該特徵可能的離散取值種類數。</span>
+<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.6 雙軌實務實驗室：LDA、QDA 與單純貝氏決策邊界對比</span></span>
+<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：MASS::lda, MASS::qda 與 e1071::naiveBayes 多類別分類</span></span>
+<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：MASS, e1071, ISLR2</span></span>
+<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用股市 Smarket 資料集 (預測隔日大盤漲跌 Direction: Up / Down)</span></span>
+<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Smarket)</span>
+<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分 2005 年以前為訓練集，2005 年當年度為測試集</span></span>
+<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> (Smarket<span class="sc">$</span>Year <span class="sc">&lt;</span> <span class="dv">2005</span>)</span>
+<span id="cb4-298"><a href="#cb4-298" aria-hidden="true" tabindex="-1"></a>Smarket_test <span class="ot">&lt;-</span> Smarket[<span class="sc">!</span>train, ]</span>
+<span id="cb4-299"><a href="#cb4-299" aria-hidden="true" tabindex="-1"></a>Direction_test <span class="ot">&lt;-</span> Smarket<span class="sc">$</span>Direction[<span class="sc">!</span>train]</span>
+<span id="cb4-300"><a href="#cb4-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-301"><a href="#cb4-301" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性判別分析 (LDA)</span></span>
+<span id="cb4-302"><a href="#cb4-302" aria-hidden="true" tabindex="-1"></a>fit_lda <span class="ot">&lt;-</span> <span class="fu">lda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-303"><a href="#cb4-303" aria-hidden="true" tabindex="-1"></a>pred_lda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_lda, Smarket_test)</span>
+<span id="cb4-304"><a href="#cb4-304" aria-hidden="true" tabindex="-1"></a>table_lda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_lda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb4-305"><a href="#cb4-305" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== LDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-306"><a href="#cb4-306" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_lda)</span>
+<span id="cb4-307"><a href="#cb4-307" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"LDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_lda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-308"><a href="#cb4-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-309"><a href="#cb4-309" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合二次判別分析 (QDA)</span></span>
+<span id="cb4-310"><a href="#cb4-310" aria-hidden="true" tabindex="-1"></a>fit_qda <span class="ot">&lt;-</span> <span class="fu">qda</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-311"><a href="#cb4-311" aria-hidden="true" tabindex="-1"></a>pred_qda <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_qda, Smarket_test)</span>
+<span id="cb4-312"><a href="#cb4-312" aria-hidden="true" tabindex="-1"></a>table_qda <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> pred_qda<span class="sc">$</span>class, 真實 <span class="ot">=</span> Direction_test)</span>
+<span id="cb4-313"><a href="#cb4-313" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== QDA 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-314"><a href="#cb4-314" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(table_qda)</span>
+<span id="cb4-315"><a href="#cb4-315" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"QDA 準確率: %.4f</span><span class="sc">\n\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_qda<span class="sc">$</span>class <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-316"><a href="#cb4-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-317"><a href="#cb4-317" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合單純貝氏分類器 (Naive Bayes)</span></span>
+<span id="cb4-318"><a href="#cb4-318" aria-hidden="true" tabindex="-1"></a>fit_nb <span class="ot">&lt;-</span> e1071<span class="sc">::</span><span class="fu">naiveBayes</span>(Direction <span class="sc">~</span> Lag1 <span class="sc">+</span> Lag2, <span class="at">data =</span> Smarket, <span class="at">subset =</span> train)</span>
+<span id="cb4-319"><a href="#cb4-319" aria-hidden="true" tabindex="-1"></a>pred_nb <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_nb, Smarket_test)</span>
+<span id="cb4-320"><a href="#cb4-320" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== Naive Bayes 測試集混淆矩陣 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb4-321"><a href="#cb4-321" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">table</span>(預測 <span class="ot">=</span> pred_nb, 真實 <span class="ot">=</span> Direction_test))</span>
+<span id="cb4-322"><a href="#cb4-322" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"Naive Bayes 準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_nb <span class="sc">==</span> Direction_test)))</span>
+<span id="cb4-323"><a href="#cb4-323" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-324"><a href="#cb4-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-325"><a href="#cb4-325" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb4-326"><a href="#cb4-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-327"><a href="#cb4-327" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb4-328"><a href="#cb4-328" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-329"><a href="#cb4-329" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：LDA, QDA 與 GaussianNB 模型評估</span></span>
+<span id="cb4-330"><a href="#cb4-330" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb4-331"><a href="#cb4-331" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-332"><a href="#cb4-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-333"><a href="#cb4-333" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-334"><a href="#cb4-334" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-335"><a href="#cb4-335" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.discriminant_analysis <span class="im">import</span> LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis</span>
+<span id="cb4-336"><a href="#cb4-336" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> GaussianNB</span>
+<span id="cb4-337"><a href="#cb4-337" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb4-338"><a href="#cb4-338" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, classification_report</span>
+<span id="cb4-339"><a href="#cb4-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-340"><a href="#cb4-340" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬雙變數非線性多類別資料 (3 個類別)</span></span>
+<span id="cb4-341"><a href="#cb4-341" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb4-342"><a href="#cb4-342" aria-hidden="true" tabindex="-1"></a>n_per_class <span class="op">=</span> <span class="dv">150</span></span>
 <span id="cb4-343"><a href="#cb4-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-344"><a href="#cb4-344" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性判別分析 (LDA) 測試準確率: </span><span class="sc">{</span>acc_lda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-345"><a href="#cb4-345" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"二次判別分析 (QDA) 測試準確率: </span><span class="sc">{</span>acc_qda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-346"><a href="#cb4-346" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"高斯單純貝氏 (GNB) 測試準確率: </span><span class="sc">{</span>acc_gnb<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-347"><a href="#cb4-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-348"><a href="#cb4-348" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 檢視 LDA 的 Fisher 特徵投影權重</span></span>
-<span id="cb4-349"><a href="#cb4-349" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">LDA 線性判別特徵係數 (投影法向量):"</span>)</span>
-<span id="cb4-350"><a href="#cb4-350" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(lda.coef_, <span class="dv">4</span>))</span>
-<span id="cb4-351"><a href="#cb4-351" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-352"><a href="#cb4-352" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-344"><a href="#cb4-344" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 1: 常態分佈</span></span>
+<span id="cb4-345"><a href="#cb4-345" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">0</span>, <span class="dv">0</span>], [[<span class="fl">1.0</span>, <span class="fl">0.5</span>], [<span class="fl">0.5</span>, <span class="fl">1.0</span>]], n_per_class)</span>
+<span id="cb4-346"><a href="#cb4-346" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 2: 共變異數不同的常態分佈</span></span>
+<span id="cb4-347"><a href="#cb4-347" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.multivariate_normal([<span class="dv">3</span>, <span class="dv">3</span>], [[<span class="fl">2.0</span>, <span class="op">-</span><span class="fl">0.8</span>], [<span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.8</span>]], n_per_class)</span>
+<span id="cb4-348"><a href="#cb4-348" aria-hidden="true" tabindex="-1"></a><span class="co"># 類別 3</span></span>
+<span id="cb4-349"><a href="#cb4-349" aria-hidden="true" tabindex="-1"></a>X3 <span class="op">=</span> np.random.multivariate_normal([<span class="op">-</span><span class="dv">2</span>, <span class="dv">3</span>], [[<span class="fl">0.5</span>, <span class="fl">0.0</span>], [<span class="fl">0.0</span>, <span class="fl">2.0</span>]], n_per_class)</span>
+<span id="cb4-350"><a href="#cb4-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-351"><a href="#cb4-351" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.vstack([X1, X2, X3])</span>
+<span id="cb4-352"><a href="#cb4-352" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">0</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">1</span>]<span class="op">*</span>n_per_class <span class="op">+</span> [<span class="dv">2</span>]<span class="op">*</span>n_per_class)</span>
 <span id="cb4-353"><a href="#cb4-353" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-354"><a href="#cb4-354" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-354"><a href="#cb4-354" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb4-355"><a href="#cb4-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-356"><a href="#cb4-356" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.7 課後全方位習題庫（10 題）</span></span>
-<span id="cb4-357"><a href="#cb4-357" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-358"><a href="#cb4-358" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb4-359"><a href="#cb4-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-360"><a href="#cb4-360" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**二元 LDA 後驗機率對羅吉斯函數之等價性證明**：</span>
-<span id="cb4-361"><a href="#cb4-361" aria-hidden="true" tabindex="-1"></a>   在二元 LDA 假設下，證明後驗機率 $P(Y=1 \mid \boldsymbol{x})$ 可嚴格表為 $\sigma(\beta_0 + \boldsymbol{\beta}^\top \boldsymbol{x})$，並求出 $\beta_0$ 與 $\boldsymbol{\beta}$ 以 $\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \boldsymbol{\Sigma}, \pi_1, \pi_2$ 表示的封閉表達式。</span>
-<span id="cb4-362"><a href="#cb4-362" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fisher 廣義瑞利商的一階偏導證明**：</span>
-<span id="cb4-363"><a href="#cb4-363" aria-hidden="true" tabindex="-1"></a>   詳細展開式 (<span class="co">[</span><span class="ot">-@eq-ch07-fisher-solution</span><span class="co">]</span>) 的推導過程，證明使 $\frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}$ 極大化的向量 $\boldsymbol{w}$ 必然滿足廣義特徵值問題 $\boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w}$。</span>
-<span id="cb4-364"><a href="#cb4-364" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**LDA 與 QDA 的參數自由度精確計算**：</span>
-<span id="cb4-365"><a href="#cb4-365" aria-hidden="true" tabindex="-1"></a>   設特徵維度為 $p$，類別數為 $K$。計算 LDA 與 QDA 各自需要估計的獨立純量參數總數（包含先驗、均值與共變異數矩陣），並分析當 $p=50, K=5$ 時兩者的參數估計負擔倍率。</span>
-<span id="cb4-366"><a href="#cb4-366" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**單純貝氏的對數勝算線性形式**：</span>
-<span id="cb4-367"><a href="#cb4-367" aria-hidden="true" tabindex="-1"></a>   對於二元高斯單純貝氏分類器，若假設兩類在各特徵維度上的變異數相同（即 $\sigma_{1j}^2 = \sigma_{2j}^2 = \sigma_j^2$），證明對數後驗勝算 $\ln \frac{P(Y=1 \mid \boldsymbol{x})}{P(Y=2 \mid \boldsymbol{x})}$ 亦為特徵 $\boldsymbol{x}$ 的線性函數。</span>
-<span id="cb4-368"><a href="#cb4-368" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**拉普拉斯平滑的貝氏共軛先驗詮釋**：</span>
-<span id="cb4-369"><a href="#cb4-369" aria-hidden="true" tabindex="-1"></a>   在多項式單純貝氏中，證明加入拉普拉斯平滑（$\alpha = 1$）等價於在多項分佈參數上施加了對稱狄利克雷分佈（Dirichlet Distribution, $\mathrm{Dir}(1, 1, \dots, 1)$）先驗的最大後驗估計（MAP）。</span>
-<span id="cb4-370"><a href="#cb4-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-371"><a href="#cb4-371" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb4-372"><a href="#cb4-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-373"><a href="#cb4-373" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**正規化判別分析（Regularized Discriminant Analysis, RDA）實作**：</span>
-<span id="cb4-374"><a href="#cb4-374" aria-hidden="true" tabindex="-1"></a>   RDA 透過收縮參數 $\alpha \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 平滑 LDA 與 QDA 的共變異數矩陣：$\hat{\boldsymbol{\Sigma}}_k(\alpha) = \alpha \hat{\boldsymbol{\Sigma}}_k + (1 - \alpha) \hat{\boldsymbol{\Sigma}}$。撰寫程式在模擬高維數據上進行網格搜尋，繪製 CV 錯誤率隨 $\alpha$ 之變化曲線。</span>
-<span id="cb4-375"><a href="#cb4-375" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**文字垃圾郵件過濾器（Spam Filtering）實戰**：</span>
-<span id="cb4-376"><a href="#cb4-376" aria-hidden="true" tabindex="-1"></a>   利用 SMS Spam Collection 資料集，實作文字前處理（Tokenization、去除停用詞）、TF-IDF 向量化，並使用多項式單純貝氏（MultinomialNB）進行二元分類，繪製混淆矩陣與 PR 曲線。</span>
-<span id="cb4-377"><a href="#cb4-377" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**高維小樣本情境下 LDA 的奇異性修復（Shrinkage LDA）**：</span>
-<span id="cb4-378"><a href="#cb4-378" aria-hidden="true" tabindex="-1"></a>   當 $n &lt; p$ 時，樣本共變異數矩陣 $\boldsymbol{S}_W$ 不可逆。使用 Ledoit-Wolf 收縮估計量或 Python <span class="in">`LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto')`</span> 擬合基因微陣列數據（如 50 樣本，1,000 基因），評估其穩定性。</span>
-<span id="cb4-379"><a href="#cb4-379" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**決策邊界等高線可視化（2D Decision Boundary Contour）**：</span>
-<span id="cb4-380"><a href="#cb4-380" aria-hidden="true" tabindex="-1"></a>   生成雙月形（Make Moons）或環形（Make Circles）二維數據，撰寫繪圖函數同時繪製 LDA、QDA 與高斯單純貝氏在同一座標平面上的二維決策分界線與測試點分佈。</span>
-<span id="cb4-381"><a href="#cb4-381" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**不平衡類別先驗校正（Prior Correction）**：</span>
-<span id="cb4-382"><a href="#cb4-382" aria-hidden="true" tabindex="-1"></a>    設疾病罕見率為 $1\%$，但在訓練集進行過抽樣使正負樣本比達到 $1:1$。推導並程式驗證如何在推論階段利用貝氏公式重新調整先驗機率 $\pi_1 / \pi_2$，將模型輸出機率校正回母體真實分佈。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb4-356"><a href="#cb4-356" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合三種生成式模型</span></span>
+<span id="cb4-357"><a href="#cb4-357" aria-hidden="true" tabindex="-1"></a>lda <span class="op">=</span> LinearDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb4-358"><a href="#cb4-358" aria-hidden="true" tabindex="-1"></a>qda <span class="op">=</span> QuadraticDiscriminantAnalysis().fit(X_train, y_train)</span>
+<span id="cb4-359"><a href="#cb4-359" aria-hidden="true" tabindex="-1"></a>gnb <span class="op">=</span> GaussianNB().fit(X_train, y_train)</span>
+<span id="cb4-360"><a href="#cb4-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-361"><a href="#cb4-361" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出準確率比較</span></span>
+<span id="cb4-362"><a href="#cb4-362" aria-hidden="true" tabindex="-1"></a>acc_lda <span class="op">=</span> accuracy_score(y_test, lda.predict(X_test))</span>
+<span id="cb4-363"><a href="#cb4-363" aria-hidden="true" tabindex="-1"></a>acc_qda <span class="op">=</span> accuracy_score(y_test, qda.predict(X_test))</span>
+<span id="cb4-364"><a href="#cb4-364" aria-hidden="true" tabindex="-1"></a>acc_gnb <span class="op">=</span> accuracy_score(y_test, gnb.predict(X_test))</span>
+<span id="cb4-365"><a href="#cb4-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-366"><a href="#cb4-366" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性判別分析 (LDA) 測試準確率: </span><span class="sc">{</span>acc_lda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-367"><a href="#cb4-367" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"二次判別分析 (QDA) 測試準確率: </span><span class="sc">{</span>acc_qda<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-368"><a href="#cb4-368" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"高斯單純貝氏 (GNB) 測試準確率: </span><span class="sc">{</span>acc_gnb<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-369"><a href="#cb4-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-370"><a href="#cb4-370" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 檢視 LDA 的 Fisher 特徵投影權重</span></span>
+<span id="cb4-371"><a href="#cb4-371" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">LDA 線性判別特徵係數 (投影法向量):"</span>)</span>
+<span id="cb4-372"><a href="#cb4-372" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(lda.coef_, <span class="dv">4</span>))</span>
+<span id="cb4-373"><a href="#cb4-373" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-374"><a href="#cb4-374" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-375"><a href="#cb4-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-376"><a href="#cb4-376" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-377"><a href="#cb4-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-378"><a href="#cb4-378" aria-hidden="true" tabindex="-1"></a><span class="fu">## 7.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb4-379"><a href="#cb4-379" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-380"><a href="#cb4-380" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb4-381"><a href="#cb4-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-382"><a href="#cb4-382" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**二元 LDA 後驗機率對羅吉斯函數之等價性證明**：</span>
+<span id="cb4-383"><a href="#cb4-383" aria-hidden="true" tabindex="-1"></a>   在二元 LDA 假設下，證明後驗機率 $P(Y=1 \mid \boldsymbol{x})$ 可嚴格表為 $\sigma(\beta_0 + \boldsymbol{\beta}^\top \boldsymbol{x})$，並求出 $\beta_0$ 與 $\boldsymbol{\beta}$ 以 $\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \boldsymbol{\Sigma}, \pi_1, \pi_2$ 表示的封閉表達式。</span>
+<span id="cb4-384"><a href="#cb4-384" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Fisher 廣義瑞利商的一階偏導證明**：</span>
+<span id="cb4-385"><a href="#cb4-385" aria-hidden="true" tabindex="-1"></a>   詳細展開式 (<span class="co">[</span><span class="ot">-@eq-ch07-fisher-solution</span><span class="co">]</span>) 的推導過程，證明使 $\frac{\boldsymbol{w}^\top \boldsymbol{S}_B \boldsymbol{w}}{\boldsymbol{w}^\top \boldsymbol{S}_W \boldsymbol{w}}$ 極大化的向量 $\boldsymbol{w}$ 必然滿足廣義特徵值問題 $\boldsymbol{S}_B \boldsymbol{w} = \lambda \boldsymbol{S}_W \boldsymbol{w}$。</span>
+<span id="cb4-386"><a href="#cb4-386" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**LDA 與 QDA 的參數自由度精確計算**：</span>
+<span id="cb4-387"><a href="#cb4-387" aria-hidden="true" tabindex="-1"></a>   設特徵維度為 $p$，類別數為 $K$。計算 LDA 與 QDA 各自需要估計的獨立純量參數總數（包含先驗、均值與共變異數矩陣），並分析當 $p=50, K=5$ 時兩者的參數估計負擔倍率。</span>
+<span id="cb4-388"><a href="#cb4-388" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**單純貝氏的對數勝算線性形式**：</span>
+<span id="cb4-389"><a href="#cb4-389" aria-hidden="true" tabindex="-1"></a>   對於二元高斯單純貝氏分類器，若假設兩類在各特徵維度上的變異數相同（即 $\sigma_{1j}^2 = \sigma_{2j}^2 = \sigma_j^2$），證明對數後驗勝算 $\ln \frac{P(Y=1 \mid \boldsymbol{x})}{P(Y=2 \mid \boldsymbol{x})}$ 亦為特徵 $\boldsymbol{x}$ 的線性函數。</span>
+<span id="cb4-390"><a href="#cb4-390" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**拉普拉斯平滑的貝氏共軛先驗詮釋**：</span>
+<span id="cb4-391"><a href="#cb4-391" aria-hidden="true" tabindex="-1"></a>   在多項式單純貝氏中，證明加入拉普拉斯平滑（$\alpha = 1$）等價於在多項分佈參數上施加了對稱狄利克雷分佈（Dirichlet Distribution, $\mathrm{Dir}(1, 1, \dots, 1)$）先驗的最大後驗估計（MAP）。</span>
+<span id="cb4-392"><a href="#cb4-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-393"><a href="#cb4-393" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb4-394"><a href="#cb4-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-395"><a href="#cb4-395" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**正規化判別分析（Regularized Discriminant Analysis, RDA）實作**：</span>
+<span id="cb4-396"><a href="#cb4-396" aria-hidden="true" tabindex="-1"></a>   RDA 透過收縮參數 $\alpha \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 平滑 LDA 與 QDA 的共變異數矩陣：$\hat{\boldsymbol{\Sigma}}_k(\alpha) = \alpha \hat{\boldsymbol{\Sigma}}_k + (1 - \alpha) \hat{\boldsymbol{\Sigma}}$。撰寫程式在模擬高維數據上進行網格搜尋，繪製 CV 錯誤率隨 $\alpha$ 之變化曲線。</span>
+<span id="cb4-397"><a href="#cb4-397" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**文字垃圾郵件過濾器（Spam Filtering）實戰**：</span>
+<span id="cb4-398"><a href="#cb4-398" aria-hidden="true" tabindex="-1"></a>   利用 SMS Spam Collection 資料集，實作文字前處理（Tokenization、去除停用詞）、TF-IDF 向量化，並使用多項式單純貝氏（MultinomialNB）進行二元分類，繪製混淆矩陣與 PR 曲線。</span>
+<span id="cb4-399"><a href="#cb4-399" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**高維小樣本情境下 LDA 的奇異性修復（Shrinkage LDA）**：</span>
+<span id="cb4-400"><a href="#cb4-400" aria-hidden="true" tabindex="-1"></a>   當 $n &lt; p$ 時，樣本共變異數矩陣 $\boldsymbol{S}_W$ 不可逆。使用 Ledoit-Wolf 收縮估計量或 Python <span class="in">`LinearDiscriminantAnalysis(solver='lsqr', shrinkage='auto')`</span> 擬合基因微陣列數據（如 50 樣本，1,000 基因），評估其穩定性。</span>
+<span id="cb4-401"><a href="#cb4-401" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**決策邊界等高線可視化（2D Decision Boundary Contour）**：</span>
+<span id="cb4-402"><a href="#cb4-402" aria-hidden="true" tabindex="-1"></a>   生成雙月形（Make Moons）或環形（Make Circles）二維數據，撰寫繪圖函數同時繪製 LDA、QDA 與高斯單純貝氏在同一座標平面上的二維決策分界線與測試點分佈。</span>
+<span id="cb4-403"><a href="#cb4-403" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**不平衡類別先驗校正（Prior Correction）**：</span>
+<span id="cb4-404"><a href="#cb4-404" aria-hidden="true" tabindex="-1"></a>    設疾病罕見率為 $1\%$，但在訓練集進行過抽樣使正負樣本比達到 $1:1$。推導並程式驗證如何在推論階段利用貝氏公式重新調整先驗機率 $\pi_1 / \pi_2$，將模型輸出機率校正回母體真實分佈。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

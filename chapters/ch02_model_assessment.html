@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">2.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">2.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀金融信用卡即時詐欺偵測之99.9-準確率謊言" id="toc-開篇實務案例導讀金融信用卡即時詐欺偵測之99.9-準確率謊言" class="nav-link" data-scroll-target="#開篇實務案例導讀金融信用卡即時詐欺偵測之99.9-準確率謊言"><span class="header-section-number">2.1.1</span> 💡 開篇實務案例導讀：金融信用卡即時詐欺偵測之「99.9% 準確率謊言」</a></li>
+  <li><a href="#概念直覺與幾何啟發靶心射箭系統性偏斜與手部顫抖" id="toc-概念直覺與幾何啟發靶心射箭系統性偏斜與手部顫抖" class="nav-link" data-scroll-target="#概念直覺與幾何啟發靶心射箭系統性偏斜與手部顫抖"><span class="header-section-number">2.1.2</span> 🎯 概念直覺與幾何啟發：靶心射箭、系統性偏斜與手部顫抖</a></li>
+  </ul></li>
   <li><a href="#評估指標的數學形式" id="toc-評估指標的數學形式" class="nav-link" data-scroll-target="#評估指標的數學形式"><span class="header-section-number">2.2</span> 2.1 評估指標的數學形式</a>
   <ul class="collapse">
   <li><a href="#迴歸問題之評估指標" id="toc-迴歸問題之評估指標" class="nav-link" data-scroll-target="#迴歸問題之評估指標"><span class="header-section-number">2.2.1</span> 2.1.1 迴歸問題之評估指標</a></li>
@@ -601,7 +605,24 @@ window.Quarto = {
 <h2 data-number="2.1" class="anchored" data-anchor-id="本章導讀"><span class="header-section-number">2.1</span> 本章導讀</h2>
 <p>在統計學習中，評估一個模型的好壞不能僅依據其在訓練資料上的配適程度，而必須衡量其對<strong>未見過的全新樣本</strong>的泛化能力（Generalization Ability）。然而，在實際應用中，我們通常無法獲得無限的全新數據。如何在有限的樣本條件下，客觀評估模型效能、合理挑選超參數，並理解學習演算法的極限？</p>
 <p>本章將給出統計學習中最經典的<strong>偏誤-變異數權衡（Bias-Variance Decomposition）</strong>的嚴格數學證明，並結合圖像剖析其物理意涵；接著深入解析<strong>交叉驗證（Cross-Validation）</strong>與<strong>自助法（Bootstrap）</strong>之統計性質，並藉由一組 5 筆樣本的玩具資料集進行全流程手把手數值推演；最後引介當代統計學習理論（SLT）基石——<strong>PAC 學習框架與 VC 維度</strong>，搭建起通往高級機器學習的理論橋樑。</p>
+<section id="開篇實務案例導讀金融信用卡即時詐欺偵測之99.9-準確率謊言" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="開篇實務案例導讀金融信用卡即時詐欺偵測之99.9-準確率謊言"><span class="header-section-number">2.1.1</span> 💡 開篇實務案例導讀：金融信用卡即時詐欺偵測之「99.9% 準確率謊言」</h3>
+<p>在跨國金融支付與純網銀風控情境中，每天數千萬筆交易中真正的盜刷案件（Fraud）發生率通常低於 <span class="math inline">0.1\%</span>（極端不平衡資料，Imbalanced Data）。</p>
+<p>若工程團隊建構了一個極其粗暴的「常數預測模型」——不論傳入任何特徵，一律預測為「正常交易」，該模型在測試集上的分類準確率（Accuracy）將高達驚人的 <span class="math inline">99.9\%</span>！然而，一旦將該模型部署上線，第一天就會因完全放行所有真實盜刷行為而造成數百萬美元的巨額損失。</p>
+<p>這個經典的產業真實案例揭示了三大核心課題： 1. <strong>單一指標的盲區</strong>：在不平衡分佈下，準確率是極具欺騙性的指標，我們必須依賴混淆矩陣、查準率（Precision）、召回率（Recall）、ROC-AUC 以及商業「代價敏感矩陣（Cost Matrix）」。 2. <strong>訓練誤差的虛假繁榮</strong>：把訓練集上的損失壓到零是輕而易舉的（例如死記硬背所有樣本），但這對未見過的未來資料毫無防護力。 3. <strong>客觀重抽樣的必要性</strong>：如何在手頭有限的歷史資料中，透過交叉驗證（Cross-Validation）模擬「來自未來的考核」，是防止災難性上線的唯一護城河。</p>
+</section>
+<section id="概念直覺與幾何啟發靶心射箭系統性偏斜與手部顫抖" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發靶心射箭系統性偏斜與手部顫抖"><span class="header-section-number">2.1.2</span> 🎯 概念直覺與幾何啟發：靶心射箭、系統性偏斜與手部顫抖</h3>
+<p>在進入偏誤-變異數分解（Bias-Variance Decomposition）的期望值積分證明前，自修者可透過「射箭打靶」建立極為清晰的幾何心智模型：</p>
+<ul>
+<li><strong>靶心（Bullseye）</strong>：代表自然界未知的真實固定函數值 <span class="math inline">f(x)</span>；</li>
+<li><strong>箭矢散落點</strong>：代表我們利用不同批隨機抽出的訓練資料集 <span class="math inline">\mathcal{D}_k</span>，所訓練出的一系列模型預測值 <span class="math inline">\hat{f}(x; \mathcal{D}_k)</span>；</li>
+<li><strong>偏誤平方（Bias² / 系統性偏差）</strong>：代表<strong>弓箭手瞄準鏡的零位偏移</strong>。若瞄準鏡本身向左歪了 5 公分，無論選手心理素質多穩定，所有箭矢的中心位置永遠落在靶心左側。這對應到「模型容量不足（如用簡單直線去強行擬合高階週期函數）」，產生無法消除的欠配適。</li>
+<li><strong>變異數（Variance / 樣本敏感度）</strong>：代表<strong>弓箭手手部的生理顫抖與心跳擾動</strong>。每換一組訓練樣本（相當於每次扣動扳機時的微風與晃動），預測值就劇烈散落在靶面的各個角落。這對應到「模型過度複雜（如自由度極高的多項式）」，對訓練集內的隨機雜訊過度敏感。</li>
+<li><strong>最優折衷解</strong>：真實世界的泛化誤差等於 <span class="math inline">\text{Bias}^2 + \text{Variance} + \sigma_\epsilon^2</span>。優秀的統計學習模型從不苛求零偏誤，而是容許輕微的系統性偏差，以換取手部顫抖（變異數）的大幅衰減，在整體距離上實現最緊密的環靶聚集。</li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="評估指標的數學形式" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="評估指標的數學形式"><span class="header-section-number">2.2</span> 2.1 評估指標的數學形式</h2>
@@ -1541,501 +1562,522 @@ R(h) \le \hat{R}_n(h) + \mathcal{O}\left( \sqrt{\frac{\mathrm{VC}(\mathcal{H}) \
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>本章將給出統計學習中最經典的**偏誤-變異數權衡（Bias-Variance Decomposition）**的嚴格數學證明，並結合圖像剖析其物理意涵；接著深入解析**交叉驗證（Cross-Validation）**與**自助法（Bootstrap）**之統計性質，並藉由一組 5 筆樣本的玩具資料集進行全流程手把手數值推演；最後引介當代統計學習理論（SLT）基石——**PAC 學習框架與 VC 維度**，搭建起通往高級機器學習的理論橋樑。</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：金融信用卡即時詐欺偵測之「99.9% 準確率謊言」</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1 評估指標的數學形式</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>在跨國金融支付與純網銀風控情境中，每天數千萬筆交易中真正的盜刷案件（Fraud）發生率通常低於 $0.1\%$（極端不平衡資料，Imbalanced Data）。</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.1 迴歸問題之評估指標</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>若工程團隊建構了一個極其粗暴的「常數預測模型」——不論傳入任何特徵，一律預測為「正常交易」，該模型在測試集上的分類準確率（Accuracy）將高達驚人的 $99.9\%$！然而，一旦將該模型部署上線，第一天就會因完全放行所有真實盜刷行為而造成數百萬美元的巨額損失。</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>設測試資料集為 $\mathcal{D}_{\text{test}} = \{(\boldsymbol{x}_i, y_i)\}_{i=1}^m$，模型預測值為 $\hat{y}_i = \hat{f}(\boldsymbol{x}_i)$：</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**均方誤差（Mean Squared Error, MSE）**：</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>   \mathrm{MSE} = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y}_i)^2</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**均方根誤差（Root Mean Squared Error, RMSE）**：</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>   \mathrm{RMSE} = \sqrt{\mathrm{MSE}}</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>   量綱與目標變數 $Y$ 相同，易於實務解釋。</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**平均絕對誤差（Mean Absolute Error, MAE）**：</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>   \mathrm{MAE} = \frac{1}{m} \sum_{i=1}^m |y_i - \hat{y}_i|</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>   對極端離群值較 MSE 更具穩健性（Robustness）。</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**決定係數（Coefficient of Determination, $R^2$）**：</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>   R^2 = 1 - \frac{\sum_{i=1}^m (y_i - \hat{y}_i)^2}{\sum_{i=1}^m (y_i - \bar{y})^2} = 1 - \frac{\mathrm{SS}_{\text{res}}}{\mathrm{SS}_{\text{tot}}}</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>   代表目標變數的總變異中，可被模型所解釋的比例。</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2 分類問題之評估指標</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>對於二元分類問題，樣本真實標籤 $y \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$，模型預測機率 $\hat{p}(\boldsymbol{x}) = P(Y=1 \mid \boldsymbol{x})$，給定決策閥值 $\tau \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 後判別為 $\hat{y} = \mathbb{I}(\hat{p}(\boldsymbol{x}) \ge \tau)$。</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**分類錯誤率（Error Rate）**：</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>   \mathrm{Err} = \frac{1}{m} \sum_{i=1}^m \mathbb{I}(y_i \neq \hat{y}_i)</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**混淆矩陣與衍生指標**：</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**精確率（Precision / Positive Predictive Value）**：$\mathrm{Precision} = \frac{TP}{TP + FP}$（預測為陽性者中，真正陽性的比例）。</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**召回率 / 靈敏度（Recall / Sensitivity）**：$\mathrm{Recall} = \frac{TP}{TP + FN}$（真實為陽性者中，被正確檢出之比例）。</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**特異度（Specificity）**：$\mathrm{Specificity} = \frac{TN}{TN + FP}$（真實為陰性者中，被正確判定為陰性之比例）。</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**$F_1$-Score**：精確率與召回率之調和平均數：</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>     F_1 = 2 \cdot \frac{\mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}} = \frac{2TP}{2TP + FP + FN}</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**ROC 曲線與 AUC（Area Under Curve）**：</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>   以假陽性率（$\mathrm{FPR} = 1 - \mathrm{Specificity} = \frac{FP}{FP + TN}$）為橫軸、真陽性率（$\mathrm{TPR} = \mathrm{Recall}$）為縱軸，改變分類閥值 $\tau \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 所描繪出的軌跡曲線。$\mathrm{AUC}$ 數值介於 $0.5$（隨機猜測）與 $1.0$（完美分類）之間，衡量排序能力的整體優劣。</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**對數損失（Log-Loss / Cross-Entropy）**：</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>   \mathcal{L} = -\frac{1}{m} \sum_{i=1}^m \left<span class="co">[</span><span class="ot"> y_i \ln \hat{p}(\boldsymbol{x}_i) + (1 - y_i) \ln(1 - \hat{p}(\boldsymbol{x}_i)) \right</span><span class="co">]</span></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>這個經典的產業真實案例揭示了三大核心課題：</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**單一指標的盲區**：在不平衡分佈下，準確率是極具欺騙性的指標，我們必須依賴混淆矩陣、查準率（Precision）、召回率（Recall）、ROC-AUC 以及商業「代價敏感矩陣（Cost Matrix）」。</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**訓練誤差的虛假繁榮**：把訓練集上的損失壓到零是輕而易舉的（例如死記硬背所有樣本），但這對未見過的未來資料毫無防護力。</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**客觀重抽樣的必要性**：如何在手頭有限的歷史資料中，透過交叉驗證（Cross-Validation）模擬「來自未來的考核」，是防止災難性上線的唯一護城河。</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：靶心射箭、系統性偏斜與手部顫抖</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>在進入偏誤-變異數分解（Bias-Variance Decomposition）的期望值積分證明前，自修者可透過「射箭打靶」建立極為清晰的幾何心智模型：</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**靶心（Bullseye）**：代表自然界未知的真實固定函數值 $f(x)$；</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**箭矢散落點**：代表我們利用不同批隨機抽出的訓練資料集 $\mathcal{D}_k$，所訓練出的一系列模型預測值 $\hat{f}(x; \mathcal{D}_k)$；</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**偏誤平方（Bias² / 系統性偏差）**：代表**弓箭手瞄準鏡的零位偏移**。若瞄準鏡本身向左歪了 5 公分，無論選手心理素質多穩定，所有箭矢的中心位置永遠落在靶心左側。這對應到「模型容量不足（如用簡單直線去強行擬合高階週期函數）」，產生無法消除的欠配適。</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**變異數（Variance / 樣本敏感度）**：代表**弓箭手手部的生理顫抖與心跳擾動**。每換一組訓練樣本（相當於每次扣動扳機時的微風與晃動），預測值就劇烈散落在靶面的各個角落。這對應到「模型過度複雜（如自由度極高的多項式）」，對訓練集內的隨機雜訊過度敏感。</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**最優折衷解**：真實世界的泛化誤差等於 $\text{Bias}^2 + \text{Variance} + \sigma_\epsilon^2$。優秀的統計學習模型從不苛求零偏誤，而是容許輕微的系統性偏差，以換取手部顫抖（變異數）的大幅衰減，在整體距離上實現最緊密的環靶聚集。</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1 評估指標的數學形式</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.1 迴歸問題之評估指標</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>設測試資料集為 $\mathcal{D}_{\text{test}} = \{(\boldsymbol{x}_i, y_i)\}_{i=1}^m$，模型預測值為 $\hat{y}_i = \hat{f}(\boldsymbol{x}_i)$：</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**均方誤差（Mean Squared Error, MSE）**：</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>   \mathrm{MSE} = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y}_i)^2</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**均方根誤差（Root Mean Squared Error, RMSE）**：</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>   \mathrm{RMSE} = \sqrt{\mathrm{MSE}}</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>   量綱與目標變數 $Y$ 相同，易於實務解釋。</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**平均絕對誤差（Mean Absolute Error, MAE）**：</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>   \mathrm{MAE} = \frac{1}{m} \sum_{i=1}^m |y_i - \hat{y}_i|</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>   對極端離群值較 MSE 更具穩健性（Robustness）。</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**決定係數（Coefficient of Determination, $R^2$）**：</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>   R^2 = 1 - \frac{\sum_{i=1}^m (y_i - \hat{y}_i)^2}{\sum_{i=1}^m (y_i - \bar{y})^2} = 1 - \frac{\mathrm{SS}_{\text{res}}}{\mathrm{SS}_{\text{tot}}}</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>   代表目標變數的總變異中，可被模型所解釋的比例。</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.1.2 分類問題之評估指標</span></span>
 <span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>對於二元分類問題，樣本真實標籤 $y \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$，模型預測機率 $\hat{p}(\boldsymbol{x}) = P(Y=1 \mid \boldsymbol{x})$，給定決策閥值 $\tau \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 後判別為 $\hat{y} = \mathbb{I}(\hat{p}(\boldsymbol{x}) \ge \tau)$。</span>
 <span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.2 偏誤-變異數權衡（Bias-Variance Decomposition）之嚴格證明</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>這是統計學習中最重要的定理之一。它揭示了任何監督式學習演算法在預測時不可避免的面臨之兩難困境。</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="fu">### 定理陳述</span></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>設訓練集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_i, y_i)\}_{i=1}^n$ 隨機取樣自真實母體 $Y = f(\boldsymbol{X}) + \epsilon$，其中雜訊滿足高斯或任意零均值獨立分佈：$\mathbb{E}[\epsilon] = 0$ 且 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$。</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>基於隨機訓練集 $\mathcal{D}$ 學習出的預測模型為 $\hat{f}_\mathcal{D}(\boldsymbol{x})$。</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>考慮任意一個固定的未見測試點 $\boldsymbol{x}_0$，其對應真實值為 $Y_0 = f(\boldsymbol{x}_0) + \epsilon$。此時，跨越不同隨機訓練集 $\mathcal{D}$ 的**期望測試均方誤差（Expected Test MSE）**，精確分解為三項之和：</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_\mathcal{D}\left[(Y_0 - \hat{f}_\mathcal{D}(\boldsymbol{x}_0))^2\right] = \underbrace{\left(\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0))\right)^2}_{\text{偏誤平方}} + \underbrace{\mathrm{Var}_\mathcal{D}(\hat{f}_\mathcal{D}(\boldsymbol{x}_0))}_{\text{估計量變異數}} + \underbrace{\sigma_\epsilon^2}_{\text{不可約化誤差}}</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-bias-var-theorem}</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>其中：</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0)) \triangleq \mathbb{E}_\mathcal{D}[\hat{f}_\mathcal{D}(\boldsymbol{x}_0)] - f(\boldsymbol{x}_0)$：模型的期望預測與真實函數值之間的差距（反映模型假設的僵化程度或欠配適）。</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mathrm{Var}_\mathcal{D}(\hat{f}_\mathcal{D}(\boldsymbol{x}_0)) \triangleq \mathbb{E}_\mathcal{D}\left[\left(\hat{f}_\mathcal{D}(\boldsymbol{x}_0) - \mathbb{E}_\mathcal{D}[\hat{f}_\mathcal{D}(\boldsymbol{x}_0)]\right)^2\right]$：模型對特定訓練集抽樣波動的敏感程度（反映過度配適）。</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\sigma_\epsilon^2$：母體固有的不可約化誤差（Irreducible Error），任何學習演算法皆無法消除。</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**分類錯誤率（Error Rate）**：</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>   \mathrm{Err} = \frac{1}{m} \sum_{i=1}^m \mathbb{I}(y_i \neq \hat{y}_i)</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**混淆矩陣與衍生指標**：</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**精確率（Precision / Positive Predictive Value）**：$\mathrm{Precision} = \frac{TP}{TP + FP}$（預測為陽性者中，真正陽性的比例）。</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**召回率 / 靈敏度（Recall / Sensitivity）**：$\mathrm{Recall} = \frac{TP}{TP + FN}$（真實為陽性者中，被正確檢出之比例）。</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**特異度（Specificity）**：$\mathrm{Specificity} = \frac{TN}{TN + FP}$（真實為陰性者中，被正確判定為陰性之比例）。</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**$F_1$-Score**：精確率與召回率之調和平均數：</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>     F_1 = 2 \cdot \frac{\mathrm{Precision} \cdot \mathrm{Recall}}{\mathrm{Precision} + \mathrm{Recall}} = \frac{2TP}{2TP + FP + FN}</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**ROC 曲線與 AUC（Area Under Curve）**：</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>   以假陽性率（$\mathrm{FPR} = 1 - \mathrm{Specificity} = \frac{FP}{FP + TN}$）為橫軸、真陽性率（$\mathrm{TPR} = \mathrm{Recall}$）為縱軸，改變分類閥值 $\tau \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 所描繪出的軌跡曲線。$\mathrm{AUC}$ 數值介於 $0.5$（隨機猜測）與 $1.0$（完美分類）之間，衡量排序能力的整體優劣。</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**對數損失（Log-Loss / Cross-Entropy）**：</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>   \mathcal{L} = -\frac{1}{m} \sum_{i=1}^m \left<span class="co">[</span><span class="ot"> y_i \ln \hat{p}(\boldsymbol{x}_i) + (1 - y_i) \ln(1 - \hat{p}(\boldsymbol{x}_i)) \right</span><span class="co">]</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>   $$</span>
 <span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="fu">### 逐步數學證明</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.2 偏誤-變異數權衡（Bias-Variance Decomposition）之嚴格證明</span></span>
 <span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>為書寫精簡，我們將 $\hat{f}_\mathcal{D}(\boldsymbol{x}_0)$ 簡記為 $\hat{f}$，$f(\boldsymbol{x}_0)$ 記為 $f$。</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>這是統計學習中最重要的定理之一。它揭示了任何監督式學習演算法在預測時不可避免的面臨之兩難困境。</span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>將被求期望項展開，並在括號內巧妙地引入「估計量期望值 $\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>$」：</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>Y_0 - \hat{f} = (f + \epsilon) - \hat{f} = \left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) + \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right) + \epsilon</span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>對等式兩端進行平方：</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="fu">### 定理陳述</span></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>設訓練集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_i, y_i)\}_{i=1}^n$ 隨機取樣自真實母體 $Y = f(\boldsymbol{X}) + \epsilon$，其中雜訊滿足高斯或任意零均值獨立分佈：$\mathbb{E}[\epsilon] = 0$ 且 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$。</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>基於隨機訓練集 $\mathcal{D}$ 學習出的預測模型為 $\hat{f}_\mathcal{D}(\boldsymbol{x})$。</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>考慮任意一個固定的未見測試點 $\boldsymbol{x}_0$，其對應真實值為 $Y_0 = f(\boldsymbol{x}_0) + \epsilon$。此時，跨越不同隨機訓練集 $\mathcal{D}$ 的**期望測試均方誤差（Expected Test MSE）**，精確分解為三項之和：</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>(Y_0 - \hat{f})^2 &amp;= \left<span class="co">[</span><span class="ot"> \left(f - \mathbb{E}[\hat{f}]\right) + \left(\mathbb{E}[\hat{f}] - \hat{f}\right) + \epsilon \right</span><span class="co">]</span>^2 <span class="sc">\\</span></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>&amp;= \left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)^2 + \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right)^2 + \epsilon^2 <span class="sc">\\</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)\left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right) <span class="sc">\\</span></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)\epsilon <span class="sc">\\</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right)\epsilon</span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>現在，對上式兩端取期望值 $\mathbb{E}<span class="co">[</span><span class="ot">\cdot</span><span class="co">]</span>$（同時對隨機訓練集 $\mathcal{D}$ 與隨機雜訊 $\epsilon$ 取期望）：</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**第一項**：$\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)^2$ 為確定性常數（非隨機）：</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">\left(f - \mathbb{E}[\hat{f}]\right)^2\right</span><span class="co">]</span> = \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - f\right)^2 = \left(\mathrm{Bias}(\hat{f})\right)^2</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**第二項**：依據變異數之定義：</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">\left(\hat{f} - \mathbb{E}[\hat{f}]\right)^2\right</span><span class="co">]</span> = \mathrm{Var}(\hat{f})</span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**第三項**：依據雜訊之性質，$\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$ 且 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$：</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}<span class="co">[</span><span class="ot">\epsilon^2</span><span class="co">]</span> = \mathrm{Var}(\epsilon) + (\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span>)^2 = \sigma_\epsilon^2</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**第四項（交叉項）**：$(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>)$ 為常數，提取至期望外：</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(f - \mathbb{E}[\hat{f}]\right)\left(\mathbb{E}[\hat{f}] - \hat{f}\right)\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \cdot \mathbb{E}\left<span class="co">[</span><span class="ot">\mathbb{E}[\hat{f}] - \hat{f}\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \cdot \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) = 0</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**第五項（交叉項）**：雜訊 $\epsilon$ 與訓練集 $\mathcal{D}$ 獨立，$\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$：</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(f - \mathbb{E}[\hat{f}]\right)\epsilon\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**第六項（交叉項）**：$\hat{f}$ 是基於訓練集 $\mathcal{D}$ 的函數，與測試點的雜訊 $\epsilon$ 互相獨立：</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(\mathbb{E}[\hat{f}] - \hat{f}\right)\epsilon\right</span><span class="co">]</span> = 2\,\mathbb{E}\left<span class="co">[</span><span class="ot">\mathbb{E}[\hat{f}] - \hat{f}\right</span><span class="co">]</span> \cdot \mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0 \cdot 0 = 0</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>將上述六項求和，即嚴格得證式 (<span class="co">[</span><span class="ot">-@eq-ch02-bias-var-theorem</span><span class="co">]</span>)：</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y_0 - \hat{f}(\boldsymbol{x}_0))^2\right</span><span class="co">]</span> = \left<span class="co">[</span><span class="ot">\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0))\right</span><span class="co">]</span>^2 + \mathrm{Var}(\hat{f}(\boldsymbol{x}_0)) + \sigma_\epsilon^2 \quad \blacksquare</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="fu">### 圖像幾何剖析與 U 型曲線</span></span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>偏誤-變異數權衡的宏觀幾何結構如 @fig-ch02-bias-variance 所示：</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="al">![偏誤-變異數權衡曲線與測試誤差 U 型分佈](../figures/fig02_bias_variance.png)</span>{#fig-ch02-bias-variance width=85%}</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>從 @fig-ch02-bias-variance 可以清晰地觀察到以下關鍵規律：</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**訓練誤差單調遞減**：隨著模型彈性（Flexibility）或複雜度提升（例如多項式階數增加），模型有更多自由度去遷就訓練資料，訓練 MSE 必然單調遞減，甚至逼近於零。</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**偏誤平方（$\text{Bias}^2$）單調遞減**：模型越靈活，假設空間越大，真實函數越容易被逼近，系統性偏誤迅速縮小。</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**估計變異數（$\text{Variance}$）單調遞增**：模型越靈活，對訓練資料中的偶然擾動與雜訊越敏感；更換一組訓練集時，預測函數將劇烈晃動。</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**測試誤差呈現經典 U 型曲線**：</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**欠配適區（Underfitting, 模型過度僵化）**：偏誤極大主導了整體誤差。</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**過度配適區（Overfitting, 模型過度靈活）**：變異數暴增主導了整體誤差。</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**最優複雜度（Optimal Model Flexibility, $d^*$）**：總測試誤差達到局部最低點，此時偏誤的邊際下降幅度恰好等於變異數的邊際上升幅度。且整體曲線永遠不可能低於水平的不可約化誤差基準底線 $\sigma_\epsilon^2$。</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.3 重抽樣方法（Resampling Methods）</span></span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.3.1 $K$-折交叉驗證（$K$-Fold Cross-Validation）</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_\mathcal{D}\left[(Y_0 - \hat{f}_\mathcal{D}(\boldsymbol{x}_0))^2\right] = \underbrace{\left(\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0))\right)^2}_{\text{偏誤平方}} + \underbrace{\mathrm{Var}_\mathcal{D}(\hat{f}_\mathcal{D}(\boldsymbol{x}_0))}_{\text{估計量變異數}} + \underbrace{\sigma_\epsilon^2}_{\text{不可約化誤差}}</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-bias-var-theorem}</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>其中：</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0)) \triangleq \mathbb{E}_\mathcal{D}[\hat{f}_\mathcal{D}(\boldsymbol{x}_0)] - f(\boldsymbol{x}_0)$：模型的期望預測與真實函數值之間的差距（反映模型假設的僵化程度或欠配適）。</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\mathrm{Var}_\mathcal{D}(\hat{f}_\mathcal{D}(\boldsymbol{x}_0)) \triangleq \mathbb{E}_\mathcal{D}\left[\left(\hat{f}_\mathcal{D}(\boldsymbol{x}_0) - \mathbb{E}_\mathcal{D}[\hat{f}_\mathcal{D}(\boldsymbol{x}_0)]\right)^2\right]$：模型對特定訓練集抽樣波動的敏感程度（反映過度配適）。</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\sigma_\epsilon^2$：母體固有的不可約化誤差（Irreducible Error），任何學習演算法皆無法消除。</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="fu">### 逐步數學證明</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>為書寫精簡，我們將 $\hat{f}_\mathcal{D}(\boldsymbol{x}_0)$ 簡記為 $\hat{f}$，$f(\boldsymbol{x}_0)$ 記為 $f$。</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>將被求期望項展開，並在括號內巧妙地引入「估計量期望值 $\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>$」：</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>Y_0 - \hat{f} = (f + \epsilon) - \hat{f} = \left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) + \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right) + \epsilon</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>對等式兩端進行平方：</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>(Y_0 - \hat{f})^2 &amp;= \left<span class="co">[</span><span class="ot"> \left(f - \mathbb{E}[\hat{f}]\right) + \left(\mathbb{E}[\hat{f}] - \hat{f}\right) + \epsilon \right</span><span class="co">]</span>^2 <span class="sc">\\</span></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>&amp;= \left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)^2 + \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right)^2 + \epsilon^2 <span class="sc">\\</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)\left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right) <span class="sc">\\</span></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)\epsilon <span class="sc">\\</span></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>&amp;\quad + 2\left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \hat{f}\right)\epsilon</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>現在，對上式兩端取期望值 $\mathbb{E}<span class="co">[</span><span class="ot">\cdot</span><span class="co">]</span>$（同時對隨機訓練集 $\mathcal{D}$ 與隨機雜訊 $\epsilon$ 取期望）：</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**第一項**：$\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right)^2$ 為確定性常數（非隨機）：</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">\left(f - \mathbb{E}[\hat{f}]\right)^2\right</span><span class="co">]</span> = \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - f\right)^2 = \left(\mathrm{Bias}(\hat{f})\right)^2</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**第二項**：依據變異數之定義：</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">\left(\hat{f} - \mathbb{E}[\hat{f}]\right)^2\right</span><span class="co">]</span> = \mathrm{Var}(\hat{f})</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**第三項**：依據雜訊之性質，$\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$ 且 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$：</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}<span class="co">[</span><span class="ot">\epsilon^2</span><span class="co">]</span> = \mathrm{Var}(\epsilon) + (\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span>)^2 = \sigma_\epsilon^2</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**第四項（交叉項）**：$(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>)$ 為常數，提取至期望外：</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(f - \mathbb{E}[\hat{f}]\right)\left(\mathbb{E}[\hat{f}] - \hat{f}\right)\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \cdot \mathbb{E}\left<span class="co">[</span><span class="ot">\mathbb{E}[\hat{f}] - \hat{f}\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \cdot \left(\mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span> - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) = 0</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**第五項（交叉項）**：雜訊 $\epsilon$ 與訓練集 $\mathcal{D}$ 獨立，$\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$：</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(f - \mathbb{E}[\hat{f}]\right)\epsilon\right</span><span class="co">]</span> = 2\left(f - \mathbb{E}<span class="co">[</span><span class="ot">\hat{f}</span><span class="co">]</span>\right) \mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**第六項（交叉項）**：$\hat{f}$ 是基於訓練集 $\mathcal{D}$ 的函數，與測試點的雜訊 $\epsilon$ 互相獨立：</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>   \mathbb{E}\left<span class="co">[</span><span class="ot">2\left(\mathbb{E}[\hat{f}] - \hat{f}\right)\epsilon\right</span><span class="co">]</span> = 2\,\mathbb{E}\left<span class="co">[</span><span class="ot">\mathbb{E}[\hat{f}] - \hat{f}\right</span><span class="co">]</span> \cdot \mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0 \cdot 0 = 0</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>將上述六項求和，即嚴格得證式 (<span class="co">[</span><span class="ot">-@eq-ch02-bias-var-theorem</span><span class="co">]</span>)：</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y_0 - \hat{f}(\boldsymbol{x}_0))^2\right</span><span class="co">]</span> = \left<span class="co">[</span><span class="ot">\mathrm{Bias}(\hat{f}(\boldsymbol{x}_0))\right</span><span class="co">]</span>^2 + \mathrm{Var}(\hat{f}(\boldsymbol{x}_0)) + \sigma_\epsilon^2 \quad \blacksquare</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>將訓練資料集 $\mathcal{D}$ 隨機平均劃分為 $K$ 個互斥的子集（Folds）$\mathcal{C}_1, \mathcal{C}_2, \dots, \mathcal{C}_K$。</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>在第 $k$ 次迭代中，將 $\mathcal{C}_k$ 作為驗證集，其餘 $K-1$ 個子集合併作為訓練集，擬合模型並計算在 $\mathcal{C}_k$ 上的均方誤差 $\mathrm{MSE}_k$。</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>$K$-折交叉驗證估計值為其平均：</span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(K)} = \frac{1}{K} \sum_{k=1}^K \mathrm{MSE}_k</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$K$ 的選取與偏誤-變異數權衡**：</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>**留一法（LOOCV, 即 $K = n$）**：每次訓練使用 $n-1$ 筆樣本，模型偏誤極低（幾乎等於在全資料集訓練）。但由於各次訓練的子集高度重疊（彼此間有 $n-2$ 筆共同數據），各折的預測結果呈現**高度正相關**，使得平均值的變異數較大；且計算開銷龐大。</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>**$K=5$ 或 $K=10$（黃金標準）**：經驗與實證顯示，$K=5$ 或 $10$ 能在計算成本、偏誤與變異數之間取得最佳平衡。</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 💡 線性模型的 LOOCV 計算捷徑定理</span></span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>對於普通最小平方法（OLS）線性迴歸，若直接跑 $n$ 次模型，需計算 $n$ 次矩陣求逆。然而，利用 Sherman-Morrison-Woodbury 矩陣求逆引理，可嚴格證明其 LOOCV 誤差具有**單次封閉解**：</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="fu">### 圖像幾何剖析與 U 型曲線</span></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>偏誤-變異數權衡的宏觀幾何結構如 @fig-ch02-bias-variance 所示：</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="al">![偏誤-變異數權衡曲線與測試誤差 U 型分佈](../figures/fig02_bias_variance.png)</span>{#fig-ch02-bias-variance width=85%}</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>從 @fig-ch02-bias-variance 可以清晰地觀察到以下關鍵規律：</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**訓練誤差單調遞減**：隨著模型彈性（Flexibility）或複雜度提升（例如多項式階數增加），模型有更多自由度去遷就訓練資料，訓練 MSE 必然單調遞減，甚至逼近於零。</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**偏誤平方（$\text{Bias}^2$）單調遞減**：模型越靈活，假設空間越大，真實函數越容易被逼近，系統性偏誤迅速縮小。</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**估計變異數（$\text{Variance}$）單調遞增**：模型越靈活，對訓練資料中的偶然擾動與雜訊越敏感；更換一組訓練集時，預測函數將劇烈晃動。</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**測試誤差呈現經典 U 型曲線**：</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**欠配適區（Underfitting, 模型過度僵化）**：偏誤極大主導了整體誤差。</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**過度配適區（Overfitting, 模型過度靈活）**：變異數暴增主導了整體誤差。</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**最優複雜度（Optimal Model Flexibility, $d^*$）**：總測試誤差達到局部最低點，此時偏誤的邊際下降幅度恰好等於變異數的邊際上升幅度。且整體曲線永遠不可能低於水平的不可約化誤差基準底線 $\sigma_\epsilon^2$。</span>
 <span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(n)} = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat{y}_i}{1 - h_{ii}} \right)^2</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-loocv-shortcut}</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.3 重抽樣方法（Resampling Methods）</span></span>
 <span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>其中 $\hat{y}_i$ 是在**全體**樣本上擬合所得之第 $i$ 點預測值，$h_{ii} = \boldsymbol{x}_i^\top (\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{x}_i$ 是帽矩陣（Hat Matrix）$\boldsymbol{H}$ 的第 $i$ 個對角元素（槓桿值 Leverage）。</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>此公式僅需執行**一次**全樣本 OLS 擬合即可精確獲得 LOOCV 誤差，省去 $n$ 次重複擬合！</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.3.1 $K$-折交叉驗證（$K$-Fold Cross-Validation）</span></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>將訓練資料集 $\mathcal{D}$ 隨機平均劃分為 $K$ 個互斥的子集（Folds）$\mathcal{C}_1, \mathcal{C}_2, \dots, \mathcal{C}_K$。</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>在第 $k$ 次迭代中，將 $\mathcal{C}_k$ 作為驗證集，其餘 $K-1$ 個子集合併作為訓練集，擬合模型並計算在 $\mathcal{C}_k$ 上的均方誤差 $\mathrm{MSE}_k$。</span>
 <span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.3.2 自助法（Bootstrap）與未抽中機率極限定理</span></span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>設原始樣本容量為 $n$。Bootstrap 是從該樣本中有放回地隨機抽取 $n$ 次，構成一個容量為 $n$ 的 Bootstrap 樣本 $\mathcal{D}^*$。</span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 定理：某特定觀測值在 Bootstrap 抽樣中未被抽中的機率極限為 $e^{-1} \approx 36.8\%$。</span></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>**證明**：</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>在單次抽樣中，任一特定樣本點 $i$ 被選中的機率為 $1/n$，未被選中的機率為 $1 - 1/n$。</span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>因為是有放回獨立重複抽取 $n$ 次，該樣本點在 $n$ 次抽樣中**完全未被抽中**的機率為：</span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>P(\text{樣本 } i \text{ 未被抽中}) = \left( 1 - \frac{1}{n} \right)^n</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>由微積分基本極限定理：$\lim_{n \to \infty} (1 + x/n)^n = e^x$。令 $x = -1$：</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>\lim_{n \to \infty} \left( 1 - \frac{1}{n} \right)^n = e^{-1} \approx 0.367879 \dots \approx 36.8\% \quad \blacksquare</span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>因此，平均約有 **$63.2\%$** 的原始樣本會出現在 Bootstrap 樣本中，而剩下的約 **$36.8\%$** 未被抽中的樣本被稱為**袋外數據（Out-Of-Bag, OOB）**。這項統計性質在第 10 章隨機森林（Random Forest）的模型評估中扮演核心角色。</span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.4 手把手數值推演：5 筆資料之 LOOCV 捷徑 vs 剔除重算</span></span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>為了讓讀者透徹理解式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>) 的精妙之處，我們建構一組 $n=5$ 的單變量線性迴歸數據：</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> $y_i$ <span class="pp">|</span></span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span></span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span></span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 5 <span class="pp">|</span></span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 4 <span class="pp">|</span> 4 <span class="pp">|</span></span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>$K$-折交叉驗證估計值為其平均：</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(K)} = \frac{1}{K} \sum_{k=1}^K \mathrm{MSE}_k</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$K$ 的選取與偏誤-變異數權衡**：</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>**留一法（LOOCV, 即 $K = n$）**：每次訓練使用 $n-1$ 筆樣本，模型偏誤極低（幾乎等於在全資料集訓練）。但由於各次訓練的子集高度重疊（彼此間有 $n-2$ 筆共同數據），各折的預測結果呈現**高度正相關**，使得平均值的變異數較大；且計算開銷龐大。</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>**$K=5$ 或 $K=10$（黃金標準）**：經驗與實證顯示，$K=5$ 或 $10$ 能在計算成本、偏誤與變異數之間取得最佳平衡。</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 💡 線性模型的 LOOCV 計算捷徑定理</span></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>對於普通最小平方法（OLS）線性迴歸，若直接跑 $n$ 次模型，需計算 $n$ 次矩陣求逆。然而，利用 Sherman-Morrison-Woodbury 矩陣求逆引理，可嚴格證明其 LOOCV 誤差具有**單次封閉解**：</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(n)} = \frac{1}{n} \sum_{i=1}^n \left( \frac{y_i - \hat{y}_i}{1 - h_{ii}} \right)^2</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-loocv-shortcut}</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>其中 $\hat{y}_i$ 是在**全體**樣本上擬合所得之第 $i$ 點預測值，$h_{ii} = \boldsymbol{x}_i^\top (\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{x}_i$ 是帽矩陣（Hat Matrix）$\boldsymbol{H}$ 的第 $i$ 個對角元素（槓桿值 Leverage）。</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>此公式僅需執行**一次**全樣本 OLS 擬合即可精確獲得 LOOCV 誤差，省去 $n$ 次重複擬合！</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.3.2 自助法（Bootstrap）與未抽中機率極限定理</span></span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>設原始樣本容量為 $n$。Bootstrap 是從該樣本中有放回地隨機抽取 $n$ 次，構成一個容量為 $n$ 的 Bootstrap 樣本 $\mathcal{D}^*$。</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 定理：某特定觀測值在 Bootstrap 抽樣中未被抽中的機率極限為 $e^{-1} \approx 36.8\%$。</span></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>**證明**：</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>在單次抽樣中，任一特定樣本點 $i$ 被選中的機率為 $1/n$，未被選中的機率為 $1 - 1/n$。</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>因為是有放回獨立重複抽取 $n$ 次，該樣本點在 $n$ 次抽樣中**完全未被抽中**的機率為：</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>P(\text{樣本 } i \text{ 未被抽中}) = \left( 1 - \frac{1}{n} \right)^n</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：全樣本 OLS 參數估計</span></span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本均值：$\bar{x} = \frac{1+2+3+4+5}{5} = 3$；$\bar{y} = \frac{2+3+5+4+6}{5} = 4$。</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>中心化平方和與叉積和：</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>  \sum_{i=1}^5 (x_i - \bar{x})^2 = (-2)^2 + (-1)^2 + 0^2 + 1^2 + 2^2 = 4 + 1 + 0 + 1 + 4 = 10</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>  \begin{aligned}</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>  \sum_{i=1}^5 (x_i - \bar{x})(y_i - \bar{y}) &amp;= (-2)(2-4) + (-1)(3-4) + 0(5-4) + 1(4-4) + 2(6-4) <span class="sc">\\</span></span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>  &amp;= (-2)(-2) + (-1)(-1) + 0 + 0 + 2(2) = 4 + 1 + 0 + 0 + 4 = 9</span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>  \end{aligned}</span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>斜率與截距：</span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>  \hat{\beta}_1 = \frac{9}{10} = 0.9, \quad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x} = 4 - 0.9(3) = 1.3</span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>  迴歸方程式為：$\hat{y} = 1.3 + 0.9x$。</span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各樣本之槓桿值（Leverage）$h_{ii}$</span></span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>單變量線性迴歸帽矩陣對角線公式為：</span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>h_{ii} = \frac{1}{n} + \frac{(x_i - \bar{x})^2}{\sum_{j=1}^n (x_j - \bar{x})^2} = \frac{1}{5} + \frac{(x_i - 3)^2}{10} = 0.2 + 0.1(x_i - 3)^2</span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1 (x=1)$：$h_{11} = 0.2 + 0.1(-2)^2 = 0.2 + 0.4 = 0.60$</span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2 (x=2)$：$h_{22} = 0.2 + 0.1(-1)^2 = 0.2 + 0.1 = 0.30$</span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3 (x=3)$：$h_{33} = 0.2 + 0.1(0)^2 = 0.20$</span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4 (x=4)$：$h_{44} = 0.2 + 0.1(1)^2 = 0.30$</span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5 (x=5)$：$h_{55} = 0.2 + 0.1(2)^2 = 0.60$</span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證槓桿值跡數定理**：$\sum_{i=1}^5 h_{ii} = 0.6 + 0.3 + 0.2 + 0.3 + 0.6 = 2.0 = p+1$（含截距共 2 個參數，嚴格吻合！）。</span></span>
-<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：全樣本預測值與殘差</span></span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1$：$\hat{y}_1 = 1.3 + 0.9(1) = 2.2 \implies e_1 = y_1 - \hat{y}_1 = 2 - 2.2 = -0.2$</span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2$：$\hat{y}_2 = 1.3 + 0.9(2) = 3.1 \implies e_2 = 3 - 3.1 = -0.1$</span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3$：$\hat{y}_3 = 1.3 + 0.9(3) = 4.0 \implies e_3 = 5 - 4.0 = +1.0$</span>
-<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4$：$\hat{y}_4 = 1.3 + 0.9(4) = 4.9 \implies e_4 = 4 - 4.9 = -0.9$</span>
-<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5$：$\hat{y}_5 = 1.3 + 0.9(5) = 5.8 \implies e_5 = 6 - 5.8 = +0.2$</span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證殘差和定理**：$\sum_{i=1}^5 e_i = -0.2 - 0.1 + 1.0 - 0.9 + 0.2 = 0$。</span></span>
-<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：套用捷徑公式計算留一預測殘差 $e_{(-i)}$</span></span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>由 $e_{(-i)} = \frac{e_i}{1 - h_{ii}}$：</span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1$：$e_{(-1)} = \frac{-0.2}{1 - 0.60} = \frac{-0.2}{0.40} = -0.50$</span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2$：$e_{(-2)} = \frac{-0.1}{1 - 0.30} = \frac{-0.1}{0.70} \approx -0.14286$</span>
-<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3$：$e_{(-3)} = \frac{1.0}{1 - 0.20} = \frac{1.0}{0.80} = +1.25$</span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4$：$e_{(-4)} = \frac{-0.9}{1 - 0.30} = \frac{-0.9}{0.70} \approx -1.28571$</span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5$：$e_{(-5)} = \frac{0.2}{1 - 0.60} = \frac{0.2}{0.40} = +0.50$</span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：實體剔除第 1 筆樣本後重算（手工驗證）</span></span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>現在我們真的將樣本 1 剔除，僅用剩下的 4 筆樣本擬合線性迴歸：</span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>剩餘樣本集：$<span class="sc">\{</span>(2, 3), (3, 5), (4, 4), (5, 6)<span class="sc">\}</span>$</span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\bar{x}_{(-1)} = \frac{2+3+4+5}{4} = 3.5$</span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\bar{y}_{(-1)} = \frac{3+5+4+6}{4} = 4.5$</span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>變異數項：</span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>  \sum_{j=2}^5 (x_j - 3.5)^2 = (-1.5)^2 + (-0.5)^2 + (0.5)^2 + (1.5)^2 = 2.25 + 0.25 + 0.25 + 2.25 = 5.0</span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共變異數項：</span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>  \begin{aligned}</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>  \sum_{j=2}^5 (x_j - 3.5)(y_j - 4.5) &amp;= (-1.5)(3-4.5) + (-0.5)(5-4.5) + (0.5)(4-4.5) + (1.5)(6-4.5) <span class="sc">\\</span></span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>  &amp;= (-1.5)(-1.5) + (-0.5)(0.5) + (0.5)(-0.5) + (1.5)(1.5) <span class="sc">\\</span></span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>  &amp;= 2.25 - 0.25 - 0.25 + 2.25 = 4.0</span>
-<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>  \end{aligned}</span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>剔除第 1 筆樣本後的估計參數：</span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>  \hat{\beta}_1^{(-1)} = \frac{4.0}{5.0} = 0.8, \quad \hat{\beta}_0^{(-1)} = 4.5 - 0.8(3.5) = 4.5 - 2.8 = 1.7</span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>  模型為：$\hat{y}_{(-1)} = 1.7 + 0.8x$。</span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>將被剔除的第 1 筆樣本 $x_1=1$ 代入進行外推預測：</span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>  \hat{y}_{(-1)}(x_1=1) = 1.7 + 0.8(1) = 2.5</span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>留一預測真實殘差：</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>由微積分基本極限定理：$\lim_{n \to \infty} (1 + x/n)^n = e^x$。令 $x = -1$：</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>\lim_{n \to \infty} \left( 1 - \frac{1}{n} \right)^n = e^{-1} \approx 0.367879 \dots \approx 36.8\% \quad \blacksquare</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>因此，平均約有 **$63.2\%$** 的原始樣本會出現在 Bootstrap 樣本中，而剩下的約 **$36.8\%$** 未被抽中的樣本被稱為**袋外數據（Out-Of-Bag, OOB）**。這項統計性質在第 10 章隨機森林（Random Forest）的模型評估中扮演核心角色。</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.4 手把手數值推演：5 筆資料之 LOOCV 捷徑 vs 剔除重算</span></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>為了讓讀者透徹理解式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>) 的精妙之處，我們建構一組 $n=5$ 的單變量線性迴歸數據：</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> $y_i$ <span class="pp">|</span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3 <span class="pp">|</span> 5 <span class="pp">|</span></span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 4 <span class="pp">|</span> 4 <span class="pp">|</span></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：全樣本 OLS 參數估計</span></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本均值：$\bar{x} = \frac{1+2+3+4+5}{5} = 3$；$\bar{y} = \frac{2+3+5+4+6}{5} = 4$。</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>中心化平方和與叉積和：</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>  \sum_{i=1}^5 (x_i - \bar{x})^2 = (-2)^2 + (-1)^2 + 0^2 + 1^2 + 2^2 = 4 + 1 + 0 + 1 + 4 = 10</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>  \begin{aligned}</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>  \sum_{i=1}^5 (x_i - \bar{x})(y_i - \bar{y}) &amp;= (-2)(2-4) + (-1)(3-4) + 0(5-4) + 1(4-4) + 2(6-4) <span class="sc">\\</span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a>  &amp;= (-2)(-2) + (-1)(-1) + 0 + 0 + 2(2) = 4 + 1 + 0 + 0 + 4 = 9</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>  \end{aligned}</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>斜率與截距：</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>  \hat{\beta}_1 = \frac{9}{10} = 0.9, \quad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x} = 4 - 0.9(3) = 1.3</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>  迴歸方程式為：$\hat{y} = 1.3 + 0.9x$。</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各樣本之槓桿值（Leverage）$h_{ii}$</span></span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>單變量線性迴歸帽矩陣對角線公式為：</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>h_{ii} = \frac{1}{n} + \frac{(x_i - \bar{x})^2}{\sum_{j=1}^n (x_j - \bar{x})^2} = \frac{1}{5} + \frac{(x_i - 3)^2}{10} = 0.2 + 0.1(x_i - 3)^2</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1 (x=1)$：$h_{11} = 0.2 + 0.1(-2)^2 = 0.2 + 0.4 = 0.60$</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2 (x=2)$：$h_{22} = 0.2 + 0.1(-1)^2 = 0.2 + 0.1 = 0.30$</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3 (x=3)$：$h_{33} = 0.2 + 0.1(0)^2 = 0.20$</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4 (x=4)$：$h_{44} = 0.2 + 0.1(1)^2 = 0.30$</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5 (x=5)$：$h_{55} = 0.2 + 0.1(2)^2 = 0.60$</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證槓桿值跡數定理**：$\sum_{i=1}^5 h_{ii} = 0.6 + 0.3 + 0.2 + 0.3 + 0.6 = 2.0 = p+1$（含截距共 2 個參數，嚴格吻合！）。</span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：全樣本預測值與殘差</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1$：$\hat{y}_1 = 1.3 + 0.9(1) = 2.2 \implies e_1 = y_1 - \hat{y}_1 = 2 - 2.2 = -0.2$</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2$：$\hat{y}_2 = 1.3 + 0.9(2) = 3.1 \implies e_2 = 3 - 3.1 = -0.1$</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3$：$\hat{y}_3 = 1.3 + 0.9(3) = 4.0 \implies e_3 = 5 - 4.0 = +1.0$</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4$：$\hat{y}_4 = 1.3 + 0.9(4) = 4.9 \implies e_4 = 4 - 4.9 = -0.9$</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5$：$\hat{y}_5 = 1.3 + 0.9(5) = 5.8 \implies e_5 = 6 - 5.8 = +0.2$</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **驗證殘差和定理**：$\sum_{i=1}^5 e_i = -0.2 - 0.1 + 1.0 - 0.9 + 0.2 = 0$。</span></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：套用捷徑公式計算留一預測殘差 $e_{(-i)}$</span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>由 $e_{(-i)} = \frac{e_i}{1 - h_{ii}}$：</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=1$：$e_{(-1)} = \frac{-0.2}{1 - 0.60} = \frac{-0.2}{0.40} = -0.50$</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=2$：$e_{(-2)} = \frac{-0.1}{1 - 0.30} = \frac{-0.1}{0.70} \approx -0.14286$</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=3$：$e_{(-3)} = \frac{1.0}{1 - 0.20} = \frac{1.0}{0.80} = +1.25$</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=4$：$e_{(-4)} = \frac{-0.9}{1 - 0.30} = \frac{-0.9}{0.70} \approx -1.28571$</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$i=5$：$e_{(-5)} = \frac{0.2}{1 - 0.60} = \frac{0.2}{0.40} = +0.50$</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：實體剔除第 1 筆樣本後重算（手工驗證）</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>現在我們真的將樣本 1 剔除，僅用剩下的 4 筆樣本擬合線性迴歸：</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>剩餘樣本集：$<span class="sc">\{</span>(2, 3), (3, 5), (4, 4), (5, 6)<span class="sc">\}</span>$</span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\bar{x}_{(-1)} = \frac{2+3+4+5}{4} = 3.5$</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\bar{y}_{(-1)} = \frac{3+5+4+6}{4} = 4.5$</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>變異數項：</span>
 <span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>  y_1 - \hat{y}_{(-1)}(1) = 2 - 2.5 = \mathbf{-0.50}</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>  \sum_{j=2}^5 (x_j - 3.5)^2 = (-1.5)^2 + (-0.5)^2 + (0.5)^2 + (1.5)^2 = 2.25 + 0.25 + 0.25 + 2.25 = 5.0</span>
 <span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 🎯 **無可置疑的一致性**：手工剔除後重新求解得到的留一殘差 $-0.50$，與利用捷徑公式 $\frac{e_1}{1 - h_{11}} = \frac{-0.2}{0.4} = -0.50$ **完全一模一樣**！這展示了代數幾何在統計學習中的巨大威力。</span></span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 6：計算 LOOCV 總均方誤差</span></span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(5)} &amp;= \frac{1}{5} \sum_{i=1}^5 e_{(-i)}^2 <span class="sc">\\</span></span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{5} \left<span class="co">[</span><span class="ot"> (-0.5)^2 + (-0.14286)^2 + (1.25)^2 + (-1.28571)^2 + (0.5)^2 \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{5} <span class="co">[</span><span class="ot">0.25 + 0.02041 + 1.5625 + 1.65306 + 0.25</span><span class="co">]</span> = \frac{3.73597}{5} \approx \mathbf{0.7472}</span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>相較之下，全樣本訓練 MSE 為：</span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a>\mathrm{MSE}_{\text{train}} = \frac{(-0.2)^2 + (-0.1)^2 + 1.0^2 + (-0.9)^2 + 0.2^2}{5} = \frac{0.04 + 0.01 + 1.0 + 0.81 + 0.04}{5} = \frac{1.90}{5} = 0.3800</span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>顯然，全樣本訓練 MSE（$0.3800$）嚴重低估了真實泛化誤差，而 LOOCV（$0.7472$）給出了客觀無偏的估計。</span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.5 統計學習理論入門：PAC 與 VC 維度</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共變異數項：</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>  \begin{aligned}</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>  \sum_{j=2}^5 (x_j - 3.5)(y_j - 4.5) &amp;= (-1.5)(3-4.5) + (-0.5)(5-4.5) + (0.5)(4-4.5) + (1.5)(6-4.5) <span class="sc">\\</span></span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>  &amp;= (-1.5)(-1.5) + (-0.5)(0.5) + (0.5)(-0.5) + (1.5)(1.5) <span class="sc">\\</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>  &amp;= 2.25 - 0.25 - 0.25 + 2.25 = 4.0</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>  \end{aligned}</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>剔除第 1 筆樣本後的估計參數：</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>  \hat{\beta}_1^{(-1)} = \frac{4.0}{5.0} = 0.8, \quad \hat{\beta}_0^{(-1)} = 4.5 - 0.8(3.5) = 4.5 - 2.8 = 1.7</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>  模型為：$\hat{y}_{(-1)} = 1.7 + 0.8x$。</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>將被剔除的第 1 筆樣本 $x_1=1$ 代入進行外推預測：</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>  \hat{y}_{(-1)}(x_1=1) = 1.7 + 0.8(1) = 2.5</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>留一預測真實殘差：</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>  y_1 - \hat{y}_{(-1)}(1) = 2 - 2.5 = \mathbf{-0.50}</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>  $$</span>
 <span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a>當我們最小化訓練集上的經驗誤差時，模型在未知母體上的誤差是否真能獲得保證？這正是 Vapnik 與 Chervonenkis 創立的**統計學習理論（Statistical Learning Theory, SLT）**回答的問題。</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 🎯 **無可置疑的一致性**：手工剔除後重新求解得到的留一殘差 $-0.50$，與利用捷徑公式 $\frac{e_1}{1 - h_{11}} = \frac{-0.2}{0.4} = -0.50$ **完全一模一樣**！這展示了代數幾何在統計學習中的巨大威力。</span></span>
 <span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.1 經驗風險最小化（ERM）</span></span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>設損失函數為 $L(h(\boldsymbol{x}), y)$。</span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**真實風險（True Risk / Generalization Risk）**：</span>
-<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a>  R(h) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim \mathcal{P}}<span class="co">[</span><span class="ot">L(h(\boldsymbol{X}), Y)</span><span class="co">]</span></span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**經驗風險（Empirical Risk）**：在訓練集 $\mathcal{D}_n$ 上的平均損失：</span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>  \hat{R}_n(h) = \frac{1}{n} \sum_{i=1}^n L(h(\boldsymbol{x}_i), y_i)</span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>**經驗風險最小化（Empirical Risk Minimization, ERM）**原則即尋找假設空間 $\mathcal{H}$ 中使得經驗風險最低之假設：</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 6：計算 LOOCV 總均方誤差</span></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a>\mathrm{CV}_{(5)} &amp;= \frac{1}{5} \sum_{i=1}^5 e_{(-i)}^2 <span class="sc">\\</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{5} \left<span class="co">[</span><span class="ot"> (-0.5)^2 + (-0.14286)^2 + (1.25)^2 + (-1.28571)^2 + (0.5)^2 \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{5} <span class="co">[</span><span class="ot">0.25 + 0.02041 + 1.5625 + 1.65306 + 0.25</span><span class="co">]</span> = \frac{3.73597}{5} \approx \mathbf{0.7472}</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>相較之下，全樣本訓練 MSE 為：</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>\mathrm{MSE}_{\text{train}} = \frac{(-0.2)^2 + (-0.1)^2 + 1.0^2 + (-0.9)^2 + 0.2^2}{5} = \frac{0.04 + 0.01 + 1.0 + 0.81 + 0.04}{5} = \frac{1.90}{5} = 0.3800</span>
 <span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>\hat{h}_n = \arg\min_{h \in \mathcal{H}} \hat{R}_n(h)</span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.2 PAC 學習框架（Probably Approximately Correct）</span></span>
-<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a>由 Leslie Valiant (1984) 提出。若一個學習演算法在給定任意小之容忍度 $\epsilon &gt; 0$ 與信心度 $\delta \in (0, 1)$ 下，只要樣本數 $n$ 達到多項式規模 $n \ge \mathrm{poly}(1/\epsilon, 1/\delta)$，演算法所選出的假設 $\hat{h}$ 滿足：</span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a>P\left( R(\hat{h}) - \inf_{h \in \mathcal{H}} R(h) \le \epsilon \right) \ge 1 - \delta</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a>則稱假設空間 $\mathcal{H}$ 是**PAC 可學習的（PAC-Learnable）**。</span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.3 VC 維度（Vapnik-Chervonenkis Dimension）</span></span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>當假設空間 $\mathcal{H}$ 包含無限多個函數時，我們如何量化 $\mathcal{H}$ 的容量（Capacity）？</span>
-<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**打散（Shattering）**：若存在一個大小為 $d$ 的樣本集，假設空間 $\mathcal{H}$ 能夠實現對這 $d$ 個點的所有 $2^d$ 種二元標籤指派，則稱該樣本集可被 $\mathcal{H}$「打散」。</span>
-<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**VC 維度**：定義為能被 $\mathcal{H}$ 打散的**最大樣本數量** $d$。記為 $\mathrm{VC}(\mathcal{H})$。</span>
-<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>例如：在 $\mathbb{R}^2$ 平面上的二維線性分類器（直線），可以打散任意非共線的 3 個點，但對於任意 4 個點（考慮異或 XOR 佈局），直線無法實現全部 16 種分類，故二維線性超平面的 $\mathrm{VC}$ 維度為 $3$。推廣至 $p$ 維空間，線性分類器的 $\mathrm{VC}$ 維度恰為 $p + 1$。</span>
-<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="fu">#### VC 泛化誤差上界定理（Vapnik 1995）</span></span>
-<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>對於二元分類問題，在機率至少為 $1 - \delta$ 下，對假設空間 $\mathcal{H}$ 中之所有假設 $h \in \mathcal{H}$，真實風險滿足：</span>
-<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a>R(h) \le \hat{R}_n(h) + \mathcal{O}\left( \sqrt{\frac{\mathrm{VC}(\mathcal{H}) \ln(n) + \ln(1/\delta)}{n}} \right)</span>
-<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-vc-bound}</span>
-<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **💡 理論啟發**：式 (</span><span class="co">[</span><span class="ot">-@eq-ch02-vc-bound</span><span class="co">]</span><span class="at">) 在數學上嚴格揭示了：</span></span>
-<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 1. 當樣本數 $n \to \infty$ 時，經驗誤差一致收斂至真實誤差。</span></span>
-<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 2. 當模型容量 $\mathrm{VC}(\mathcal{H})$ 過大時，上界右端的泛化代價將劇增，這正是過度配適的理論本質。</span></span>
-<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.6 雙軌實務實驗室：交叉驗證與 Bootstrap 實戰</span></span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>顯然，全樣本訓練 MSE（$0.3800$）嚴重低估了真實泛化誤差，而 LOOCV（$0.7472$）給出了客觀無偏的估計。</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.5 統計學習理論入門：PAC 與 VC 維度</span></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a>當我們最小化訓練集上的經驗誤差時，模型在未知母體上的誤差是否真能獲得保證？這正是 Vapnik 與 Chervonenkis 創立的**統計學習理論（Statistical Learning Theory, SLT）**回答的問題。</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.1 經驗風險最小化（ERM）</span></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>設損失函數為 $L(h(\boldsymbol{x}), y)$。</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**真實風險（True Risk / Generalization Risk）**：</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a>  R(h) = \mathbb{E}_{(\boldsymbol{X}, Y) \sim \mathcal{P}}<span class="co">[</span><span class="ot">L(h(\boldsymbol{X}), Y)</span><span class="co">]</span></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**經驗風險（Empirical Risk）**：在訓練集 $\mathcal{D}_n$ 上的平均損失：</span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>  \hat{R}_n(h) = \frac{1}{n} \sum_{i=1}^n L(h(\boldsymbol{x}_i), y_i)</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a>**經驗風險最小化（Empirical Risk Minimization, ERM）**原則即尋找假設空間 $\mathcal{H}$ 中使得經驗風險最低之假設：</span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>\hat{h}_n = \arg\min_{h \in \mathcal{H}} \hat{R}_n(h)</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.2 PAC 學習框架（Probably Approximately Correct）</span></span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>由 Leslie Valiant (1984) 提出。若一個學習演算法在給定任意小之容忍度 $\epsilon &gt; 0$ 與信心度 $\delta \in (0, 1)$ 下，只要樣本數 $n$ 達到多項式規模 $n \ge \mathrm{poly}(1/\epsilon, 1/\delta)$，演算法所選出的假設 $\hat{h}$ 滿足：</span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>P\left( R(\hat{h}) - \inf_{h \in \mathcal{H}} R(h) \le \epsilon \right) \ge 1 - \delta</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a>則稱假設空間 $\mathcal{H}$ 是**PAC 可學習的（PAC-Learnable）**。</span>
 <span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：K-Fold 交叉驗證、LOOCV 捷徑公式驗證與 Bootstrap 估計</span></span>
-<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：boot, ISLR2</span></span>
-<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
-<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
-<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 檢視 Auto 資料集</span></span>
-<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Auto)</span>
-<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 驗證線性模型的 LOOCV 捷徑公式</span></span>
-<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a>fit_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> Auto)</span>
-<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a>hat_diag <span class="ot">&lt;-</span> <span class="fu">hatvalues</span>(fit_ols) <span class="co"># 槓桿值 h_ii</span></span>
-<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a>residuals_raw <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fit_ols)</span>
-<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a><span class="co"># 手刻 LOOCV 捷徑公式</span></span>
-<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>loocv_manual <span class="ot">&lt;-</span> <span class="fu">mean</span>((residuals_raw <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> hat_diag))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用 boot 套件標準 cv.glm 驗證</span></span>
-<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>fit_glm <span class="ot">&lt;-</span> <span class="fu">glm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> Auto)</span>
-<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a>cv_boot <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(Auto, fit_glm) <span class="co"># 預設 K=n 即 LOOCV</span></span>
-<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"手刻捷徑 LOOCV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, loocv_manual))</span>
-<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"套件 cv.glm LOOCV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, cv_boot<span class="sc">$</span>delta[<span class="dv">1</span>]))</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2.5.3 VC 維度（Vapnik-Chervonenkis Dimension）</span></span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a>當假設空間 $\mathcal{H}$ 包含無限多個函數時，我們如何量化 $\mathcal{H}$ 的容量（Capacity）？</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**打散（Shattering）**：若存在一個大小為 $d$ 的樣本集，假設空間 $\mathcal{H}$ 能夠實現對這 $d$ 個點的所有 $2^d$ 種二元標籤指派，則稱該樣本集可被 $\mathcal{H}$「打散」。</span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**VC 維度**：定義為能被 $\mathcal{H}$ 打散的**最大樣本數量** $d$。記為 $\mathrm{VC}(\mathcal{H})$。</span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>例如：在 $\mathbb{R}^2$ 平面上的二維線性分類器（直線），可以打散任意非共線的 3 個點，但對於任意 4 個點（考慮異或 XOR 佈局），直線無法實現全部 16 種分類，故二維線性超平面的 $\mathrm{VC}$ 維度為 $3$。推廣至 $p$ 維空間，線性分類器的 $\mathrm{VC}$ 維度恰為 $p + 1$。</span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="fu">#### VC 泛化誤差上界定理（Vapnik 1995）</span></span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a>對於二元分類問題，在機率至少為 $1 - \delta$ 下，對假設空間 $\mathcal{H}$ 中之所有假設 $h \in \mathcal{H}$，真實風險滿足：</span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a>R(h) \le \hat{R}_n(h) + \mathcal{O}\left( \sqrt{\frac{\mathrm{VC}(\mathcal{H}) \ln(n) + \ln(1/\delta)}{n}} \right)</span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch02-vc-bound}</span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **💡 理論啟發**：式 (</span><span class="co">[</span><span class="ot">-@eq-ch02-vc-bound</span><span class="co">]</span><span class="at">) 在數學上嚴格揭示了：</span></span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 1. 當樣本數 $n \to \infty$ 時，經驗誤差一致收斂至真實誤差。</span></span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 2. 當模型容量 $\mathrm{VC}(\mathcal{H})$ 過大時，上界右端的泛化代價將劇增，這正是過度配適的理論本質。</span></span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.6 雙軌實務實驗室：交叉驗證與 Bootstrap 實戰</span></span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：K-Fold 交叉驗證、LOOCV 捷徑公式驗證與 Bootstrap 估計</span></span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：boot, ISLR2</span></span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
 <span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. K-Fold 交叉驗證 (K=10) 評估多項式階數</span></span>
-<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a>cv_errors <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">5</span>)</span>
-<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
-<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>  glm_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(mpg <span class="sc">~</span> <span class="fu">poly</span>(horsepower, d), <span class="at">data =</span> Auto)</span>
-<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>  cv_errors[d] <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(Auto, glm_poly, <span class="at">K =</span> <span class="dv">10</span>)<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
-<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
-<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"多項式階數 %d 之 10-Fold CV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, d, cv_errors[d]))</span>
-<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Bootstrap 估計迴歸係數的標準誤 (Standard Error)</span></span>
-<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a>boot_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(data, index) {</span>
-<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> data, <span class="at">subset =</span> index))</span>
-<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a>boot_res <span class="ot">&lt;-</span> <span class="fu">boot</span>(Auto, boot_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
-<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(boot_res)</span>
-<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
-<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：K-Fold 交叉驗證、LOOCV 捷徑與 Bootstrap 信賴區間</span></span>
-<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
-<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold, cross_val_score</span>
-<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
-<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
-<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬非線性資料</span></span>
-<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">392</span></span>
-<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a>horsepower <span class="op">=</span> np.random.uniform(<span class="dv">50</span>, <span class="dv">230</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a>mpg <span class="op">=</span> <span class="dv">45</span> <span class="op">-</span> <span class="fl">0.15</span> <span class="op">*</span> horsepower <span class="op">+</span> <span class="fl">0.0003</span> <span class="op">*</span> (horsepower<span class="op">**</span><span class="dv">2</span>) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">4.5</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> horsepower[:, np.newaxis]</span>
-<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> mpg</span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 檢視 Auto 資料集</span></span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Auto)</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 驗證線性模型的 LOOCV 捷徑公式</span></span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>fit_ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> Auto)</span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a>hat_diag <span class="ot">&lt;-</span> <span class="fu">hatvalues</span>(fit_ols) <span class="co"># 槓桿值 h_ii</span></span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a>residuals_raw <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fit_ols)</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="co"># 手刻 LOOCV 捷徑公式</span></span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a>loocv_manual <span class="ot">&lt;-</span> <span class="fu">mean</span>((residuals_raw <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> hat_diag))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用 boot 套件標準 cv.glm 驗證</span></span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>fit_glm <span class="ot">&lt;-</span> <span class="fu">glm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> Auto)</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a>cv_boot <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(Auto, fit_glm) <span class="co"># 預設 K=n 即 LOOCV</span></span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"手刻捷徑 LOOCV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, loocv_manual))</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"套件 cv.glm LOOCV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, cv_boot<span class="sc">$</span>delta[<span class="dv">1</span>]))</span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. K-Fold 交叉驗證 (K=10) 評估多項式階數</span></span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a>cv_errors <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">5</span>)</span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>  glm_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(mpg <span class="sc">~</span> <span class="fu">poly</span>(horsepower, d), <span class="at">data =</span> Auto)</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a>  cv_errors[d] <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(Auto, glm_poly, <span class="at">K =</span> <span class="dv">10</span>)<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (d <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"多項式階數 %d 之 10-Fold CV MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, d, cv_errors[d]))</span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Bootstrap 估計迴歸係數的標準誤 (Standard Error)</span></span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a>boot_fn <span class="ot">&lt;-</span> <span class="cf">function</span>(data, index) {</span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> horsepower, <span class="at">data =</span> data, <span class="at">subset =</span> index))</span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a>boot_res <span class="ot">&lt;-</span> <span class="fu">boot</span>(Auto, boot_fn, <span class="at">R =</span> <span class="dv">1000</span>)</span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(boot_res)</span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
 <span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 評估不同多項式階數的 10-Fold 交叉驗證 MSE</span></span>
-<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a>kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">10</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>):</span>
-<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span>degree), LinearRegression())</span>
-<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> <span class="op">-</span>cross_val_score(model, X, y, cv<span class="op">=</span>kf, scoring<span class="op">=</span><span class="st">'neg_mean_squared_error'</span>)</span>
-<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"多項式階數 </span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss"> 之 10-Fold CV MSE: </span><span class="sc">{</span>scores<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> (標準差: </span><span class="sc">{</span>scores<span class="sc">.</span>std()<span class="sc">:.4f}</span><span class="ss">)"</span>)</span>
-<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 手刻驗證 LOOCV 捷徑公式</span></span>
-<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a>reg <span class="op">=</span> LinearRegression().fit(X, y)</span>
-<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a>y_hat <span class="op">=</span> reg.predict(X)</span>
-<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> y <span class="op">-</span> y_hat</span>
-<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算 Hat 矩陣對角項</span></span>
-<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a>X_design <span class="op">=</span> np.column_stack([np.ones(n), X])</span>
-<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> X_design <span class="op">@</span> np.linalg.inv(X_design.T <span class="op">@</span> X_design) <span class="op">@</span> X_design.T</span>
-<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a>h_diag <span class="op">=</span> np.diag(H)</span>
-<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a>loocv_shortcut_mse <span class="op">=</span> np.mean((residuals <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> h_diag))<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Python 手刻捷徑 LOOCV MSE: </span><span class="sc">{</span>loocv_shortcut_mse<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Bootstrap 估計迴歸斜率係數與 95% 信賴區間</span></span>
-<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a>n_bootstraps <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a>boot_slopes <span class="op">=</span> []</span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：K-Fold 交叉驗證、LOOCV 捷徑與 Bootstrap 信賴區間</span></span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold, cross_val_score</span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬非線性資料</span></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">392</span></span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a>horsepower <span class="op">=</span> np.random.uniform(<span class="dv">50</span>, <span class="dv">230</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a>mpg <span class="op">=</span> <span class="dv">45</span> <span class="op">-</span> <span class="fl">0.15</span> <span class="op">*</span> horsepower <span class="op">+</span> <span class="fl">0.0003</span> <span class="op">*</span> (horsepower<span class="op">**</span><span class="dv">2</span>) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">4.5</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> horsepower[:, np.newaxis]</span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> mpg</span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 評估不同多項式階數的 10-Fold 交叉驗證 MSE</span></span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a>kf <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">10</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_bootstraps):</span>
-<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>    indices <span class="op">=</span> np.random.choice(n, size<span class="op">=</span>n, replace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a>    X_b, y_b <span class="op">=</span> X[indices], y[indices]</span>
-<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a>    reg_b <span class="op">=</span> LinearRegression().fit(X_b, y_b)</span>
-<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a>    boot_slopes.append(reg_b.coef_[<span class="dv">0</span>])</span>
-<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>boot_slopes <span class="op">=</span> np.array(boot_slopes)</span>
-<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a>ci_lower <span class="op">=</span> np.percentile(boot_slopes, <span class="fl">2.5</span>)</span>
-<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a>ci_upper <span class="op">=</span> np.percentile(boot_slopes, <span class="fl">97.5</span>)</span>
-<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Bootstrap 斜率估計平均值: </span><span class="sc">{</span>boot_slopes<span class="sc">.</span>mean()<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
-<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bootstrap 斜率標準誤: </span><span class="sc">{</span>boot_slopes<span class="sc">.</span>std()<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
-<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% 百分位數信賴區間: [</span><span class="sc">{</span>ci_lower<span class="sc">:.5f}</span><span class="ss">, </span><span class="sc">{</span>ci_upper<span class="sc">:.5f}</span><span class="ss">]"</span>)</span>
-<span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.7 課後全方位習題庫（10 題）</span></span>
-<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**二元分類下的偏誤-變異數權衡反直覺現象**：</span>
-<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a>   在 0-1 損失分類問題中，證明或論證為何某些情況下「增加估計變異數」反而可能降低分類錯誤率？（提示：考慮貝氏決策邊界附近的邊界翻轉效應）。</span>
-<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**LOOCV 與 $K$-Fold 交叉驗證的變異數比較**：</span>
-<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a>   為什麼在 LOOCV 中，各次訓練的子集之間存在極高的相關性（Correlation）？請利用兩個隨機變數和的變異數公式 $\mathrm{Var}\left(\frac{1}{K}\sum Z_k\right) = \frac{1}{K}\mathrm{Var}(Z_1) + \frac{K-1}{K}\mathrm{Cov}(Z_1, Z_2)$，數學論證為何 $K=5$ 或 $10$ 的交叉驗證估計變異數通常低於 LOOCV。</span>
-<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Sherman-Morrison-Woodbury 矩陣引理與 LOOCV 捷徑推導**：</span>
-<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a>   設 $\boldsymbol{X}_{(-i)}$ 為剔除第 $i$ 列後的特徵矩陣，證明 $(\boldsymbol{X}_{(-i)}^\top \boldsymbol{X}_{(-i)})^{-1} = (\boldsymbol{X}^\top \boldsymbol{X})^{-1} + \frac{(\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{x}_i \boldsymbol{x}_i^\top (\boldsymbol{X}^\top \boldsymbol{X})^{-1}}{1 - h_{ii}}$，進而推導出式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>)。</span>
-<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**極端槓桿點與留一殘差的奇異性**：</span>
-<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a>   若某筆觀測樣本 $i$ 的槓桿值 $h_{ii} = 1$（例如單點獨佔某個維度），式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>) 的分母變為 0。請從幾何與線性代數角度解釋，剔除該點後 OLS 模型會發生什麼現象？</span>
-<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**一維區間分類器的 VC 維度證明**：</span>
-<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a>   設假設空間 $\mathcal{H}$ 為實數軸上的閉區間分類器 $h_{<span class="co">[</span><span class="ot">a, b</span><span class="co">]</span>}(x) = \mathbb{I}(x \in <span class="co">[</span><span class="ot">a, b</span><span class="co">]</span>)$。證明 $\mathrm{VC}(\mathcal{H}) = 2$。</span>
-<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**驗證 Bootstrap 0.632 特性之實證模擬**：</span>
-<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a>   撰寫程式，對 $n = 10, 50, 100, 1000$ 分別進行 10,000 次 Bootstrap 抽樣，統計獨特樣本數佔比之平均值，並繪製隨 $n$ 趨近於理論極限 $1 - 1/e \approx 0.6321$ 之收斂折線圖。</span>
-<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**嚴格防止資料外洩（Data Leakage）的交叉驗證**：</span>
-<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a>   設特徵標準化（Standardization）或特徵篩選（Feature Selection）若在整個資料集上執行，會導致資訊外洩。請使用 Python <span class="in">`Pipeline`</span> 或 R 實作一個「在每折內部獨立擬合標準化與主成分萃取」的完整流程，並對比「先全局標準化再 CV」所導致的樂觀偏誤（Optimism Bias）。</span>
-<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**分層 K-Fold（Stratified K-Fold）對不平衡資料之必要性**：</span>
-<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a>   生成一個類別比例為 95:5 的高度不平衡二元資料集。比較隨機 K-Fold 與分層 K-Fold 在各折驗證時標籤分佈的穩定性，並計算各自評估所得的 $F_1$-Score 變異數。</span>
-<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**時間序列數據的走前交叉驗證（Rolling Walk-Forward CV）**：</span>
-<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a>   對於具備時間相依性的數據，普通隨機 K-Fold 會利用未來數據預測過去。請實作一個 Rolling-Window 交叉驗證演算法，並套用至模擬的時間序列自迴歸 AR(1) 模型上。</span>
-<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**Bootstrap $t$-信賴區間與百分位數區間比較**：</span>
-<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a>    利用非對稱分佈（如指數分佈 $\mathrm{Exp}(1)$）生成數據，分別計算母體平均數之標準百分位數信賴區間（Percentile CI）與學生化 Bootstrap $t$-信賴區間（Studentized CI），並評估在 2,000 次蒙地卡羅重複實驗中各自的真實覆蓋率（Coverage Rate）是否達到名義上的 95%。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>):</span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span>degree), LinearRegression())</span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> <span class="op">-</span>cross_val_score(model, X, y, cv<span class="op">=</span>kf, scoring<span class="op">=</span><span class="st">'neg_mean_squared_error'</span>)</span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"多項式階數 </span><span class="sc">{</span>degree<span class="sc">}</span><span class="ss"> 之 10-Fold CV MSE: </span><span class="sc">{</span>scores<span class="sc">.</span>mean()<span class="sc">:.4f}</span><span class="ss"> (標準差: </span><span class="sc">{</span>scores<span class="sc">.</span>std()<span class="sc">:.4f}</span><span class="ss">)"</span>)</span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 手刻驗證 LOOCV 捷徑公式</span></span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>reg <span class="op">=</span> LinearRegression().fit(X, y)</span>
+<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a>y_hat <span class="op">=</span> reg.predict(X)</span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a>residuals <span class="op">=</span> y <span class="op">-</span> y_hat</span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算 Hat 矩陣對角項</span></span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a>X_design <span class="op">=</span> np.column_stack([np.ones(n), X])</span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> X_design <span class="op">@</span> np.linalg.inv(X_design.T <span class="op">@</span> X_design) <span class="op">@</span> X_design.T</span>
+<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a>h_diag <span class="op">=</span> np.diag(H)</span>
+<span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a>loocv_shortcut_mse <span class="op">=</span> np.mean((residuals <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> h_diag))<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Python 手刻捷徑 LOOCV MSE: </span><span class="sc">{</span>loocv_shortcut_mse<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Bootstrap 估計迴歸斜率係數與 95% 信賴區間</span></span>
+<span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a>n_bootstraps <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a>boot_slopes <span class="op">=</span> []</span>
+<span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_bootstraps):</span>
+<span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a>    indices <span class="op">=</span> np.random.choice(n, size<span class="op">=</span>n, replace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a>    X_b, y_b <span class="op">=</span> X[indices], y[indices]</span>
+<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a>    reg_b <span class="op">=</span> LinearRegression().fit(X_b, y_b)</span>
+<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a>    boot_slopes.append(reg_b.coef_[<span class="dv">0</span>])</span>
+<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a>boot_slopes <span class="op">=</span> np.array(boot_slopes)</span>
+<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a>ci_lower <span class="op">=</span> np.percentile(boot_slopes, <span class="fl">2.5</span>)</span>
+<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a>ci_upper <span class="op">=</span> np.percentile(boot_slopes, <span class="fl">97.5</span>)</span>
+<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">Bootstrap 斜率估計平均值: </span><span class="sc">{</span>boot_slopes<span class="sc">.</span>mean()<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
+<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bootstrap 斜率標準誤: </span><span class="sc">{</span>boot_slopes<span class="sc">.</span>std()<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
+<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"95% 百分位數信賴區間: [</span><span class="sc">{</span>ci_lower<span class="sc">:.5f}</span><span class="ss">, </span><span class="sc">{</span>ci_upper<span class="sc">:.5f}</span><span class="ss">]"</span>)</span>
+<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**二元分類下的偏誤-變異數權衡反直覺現象**：</span>
+<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a>   在 0-1 損失分類問題中，證明或論證為何某些情況下「增加估計變異數」反而可能降低分類錯誤率？（提示：考慮貝氏決策邊界附近的邊界翻轉效應）。</span>
+<span id="cb3-504"><a href="#cb3-504" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**LOOCV 與 $K$-Fold 交叉驗證的變異數比較**：</span>
+<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a>   為什麼在 LOOCV 中，各次訓練的子集之間存在極高的相關性（Correlation）？請利用兩個隨機變數和的變異數公式 $\mathrm{Var}\left(\frac{1}{K}\sum Z_k\right) = \frac{1}{K}\mathrm{Var}(Z_1) + \frac{K-1}{K}\mathrm{Cov}(Z_1, Z_2)$，數學論證為何 $K=5$ 或 $10$ 的交叉驗證估計變異數通常低於 LOOCV。</span>
+<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Sherman-Morrison-Woodbury 矩陣引理與 LOOCV 捷徑推導**：</span>
+<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a>   設 $\boldsymbol{X}_{(-i)}$ 為剔除第 $i$ 列後的特徵矩陣，證明 $(\boldsymbol{X}_{(-i)}^\top \boldsymbol{X}_{(-i)})^{-1} = (\boldsymbol{X}^\top \boldsymbol{X})^{-1} + \frac{(\boldsymbol{X}^\top \boldsymbol{X})^{-1} \boldsymbol{x}_i \boldsymbol{x}_i^\top (\boldsymbol{X}^\top \boldsymbol{X})^{-1}}{1 - h_{ii}}$，進而推導出式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>)。</span>
+<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**極端槓桿點與留一殘差的奇異性**：</span>
+<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a>   若某筆觀測樣本 $i$ 的槓桿值 $h_{ii} = 1$（例如單點獨佔某個維度），式 (<span class="co">[</span><span class="ot">-@eq-ch02-loocv-shortcut</span><span class="co">]</span>) 的分母變為 0。請從幾何與線性代數角度解釋，剔除該點後 OLS 模型會發生什麼現象？</span>
+<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**一維區間分類器的 VC 維度證明**：</span>
+<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a>   設假設空間 $\mathcal{H}$ 為實數軸上的閉區間分類器 $h_{<span class="co">[</span><span class="ot">a, b</span><span class="co">]</span>}(x) = \mathbb{I}(x \in <span class="co">[</span><span class="ot">a, b</span><span class="co">]</span>)$。證明 $\mathrm{VC}(\mathcal{H}) = 2$。</span>
+<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**驗證 Bootstrap 0.632 特性之實證模擬**：</span>
+<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a>   撰寫程式，對 $n = 10, 50, 100, 1000$ 分別進行 10,000 次 Bootstrap 抽樣，統計獨特樣本數佔比之平均值，並繪製隨 $n$ 趨近於理論極限 $1 - 1/e \approx 0.6321$ 之收斂折線圖。</span>
+<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**嚴格防止資料外洩（Data Leakage）的交叉驗證**：</span>
+<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a>   設特徵標準化（Standardization）或特徵篩選（Feature Selection）若在整個資料集上執行，會導致資訊外洩。請使用 Python <span class="in">`Pipeline`</span> 或 R 實作一個「在每折內部獨立擬合標準化與主成分萃取」的完整流程，並對比「先全局標準化再 CV」所導致的樂觀偏誤（Optimism Bias）。</span>
+<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**分層 K-Fold（Stratified K-Fold）對不平衡資料之必要性**：</span>
+<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a>   生成一個類別比例為 95:5 的高度不平衡二元資料集。比較隨機 K-Fold 與分層 K-Fold 在各折驗證時標籤分佈的穩定性，並計算各自評估所得的 $F_1$-Score 變異數。</span>
+<span id="cb3-521"><a href="#cb3-521" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**時間序列數據的走前交叉驗證（Rolling Walk-Forward CV）**：</span>
+<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a>   對於具備時間相依性的數據，普通隨機 K-Fold 會利用未來數據預測過去。請實作一個 Rolling-Window 交叉驗證演算法，並套用至模擬的時間序列自迴歸 AR(1) 模型上。</span>
+<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**Bootstrap $t$-信賴區間與百分位數區間比較**：</span>
+<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a>    利用非對稱分佈（如指數分佈 $\mathrm{Exp}(1)$）生成數據，分別計算母體平均數之標準百分位數信賴區間（Percentile CI）與學生化 Bootstrap $t$-信賴區間（Studentized CI），並評估在 2,000 次蒙地卡羅重複實驗中各自的真實覆蓋率（Coverage Rate）是否達到名義上的 95%。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

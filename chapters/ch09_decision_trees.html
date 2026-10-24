@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">9.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">9.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀急診醫學檢傷分級臨床處置決策流" id="toc-開篇實務案例導讀急診醫學檢傷分級臨床處置決策流" class="nav-link" data-scroll-target="#開篇實務案例導讀急診醫學檢傷分級臨床處置決策流"><span class="header-section-number">9.1.1</span> 💡 開篇實務案例導讀：急診醫學檢傷分級臨床處置決策流</a></li>
+  <li><a href="#概念直覺與幾何啟發正交切蛋糕不純度純化與逆向剪枝拼裝" id="toc-概念直覺與幾何啟發正交切蛋糕不純度純化與逆向剪枝拼裝" class="nav-link" data-scroll-target="#概念直覺與幾何啟發正交切蛋糕不純度純化與逆向剪枝拼裝"><span class="header-section-number">9.1.2</span> 🎯 概念直覺與幾何啟發：正交切蛋糕、不純度純化與逆向剪枝拼裝</a></li>
+  </ul></li>
   <li><a href="#決策樹的幾何本質與特徵空間劃分" id="toc-決策樹的幾何本質與特徵空間劃分" class="nav-link" data-scroll-target="#決策樹的幾何本質與特徵空間劃分"><span class="header-section-number">9.2</span> 9.1 決策樹的幾何本質與特徵空間劃分</a>
   <ul class="collapse">
   <li><a href="#軸向對齊的超矩形分割" id="toc-軸向對齊的超矩形分割" class="nav-link" data-scroll-target="#軸向對齊的超矩形分割"><span class="header-section-number">9.2.1</span> 9.1.1 軸向對齊的超矩形分割</a></li>
@@ -598,7 +602,22 @@ window.Quarto = {
 <p>在先前的章節中，我們討論的線性模型、羅吉斯迴歸或支援向量機，本質上都是在特徵空間中尋求某種光滑的代數超平面。然而，在醫療臨床診斷、金融信用審查以及許多人類決策情境中，專家的思維模式通常不是計算加權總和，而是依循一系列階層式的<strong>「若-則」（If-Then）規則判斷</strong>。</p>
 <p><strong>樹狀模型（Tree-Based Methods）</strong>直接模擬了這種劃分思維。由 Leo Breiman、Jerome Friedman 等人於 1984 年奠定的 <strong>CART（Classification and Regression Trees）</strong> 演算法，將特徵空間劃分為一系列軸向對齊的超矩形區域，並在每個區域內給出簡潔常數預測。</p>
 <p>本章將剖析決策樹的幾何正交劃分原理；推導迴歸樹的貪婪二元分割；深入分析分類樹的三大不純度指標（<strong>錯誤率、吉尼係數、交叉熵</strong>）的數學凹性；提供一組 6 筆樣本手把手計算所有候選切分點吉尼增益與弱連接剪枝臨界成本；詳解利用動態規劃思想的<strong>成本-複雜度剪枝（Cost-Complexity Pruning）</strong>；最後探討決策樹「低偏誤、高變異數」的內在弱點，為下一章引進集成學習奠定基石。</p>
+<section id="開篇實務案例導讀急診醫學檢傷分級臨床處置決策流" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="開篇實務案例導讀急診醫學檢傷分級臨床處置決策流"><span class="header-section-number">9.1.1</span> 💡 開篇實務案例導讀：急診醫學檢傷分級臨床處置決策流</h3>
+<p>在醫學中心急診室的檢傷分流站，分秒必爭。護理師必須在 30 秒之內對甫送達的急性傷病患完成處置分流（第一級復甦急救、第二級危急、第三級緊急）。</p>
+<p>在極高壓、生死交關的醫療第一線，醫護團隊絕不可能去打開筆電執行多變量矩陣反矩陣，或等待黑盒神經網路輸出浮點數。臨床團隊需要的是一張極其清晰、無任何邏輯歧義的條件分流樹狀圖： 「收縮壓是否低於 90 mmHg？若【是】 <span class="math inline">\to</span> 意識狀態是否清醒？若【否】 <span class="math inline">\to</span> 立即推入紅區急救室；若【是】 <span class="math inline">\to</span> 檢查呼吸頻率是否大於 30 次/分…」。</p>
+<p>這種階層式「若-則（If-Then）」規則樹，具有極致的人類直覺可解釋性，且對資料的尺度縮放（如毫升與公升）完全不敏感，不需要繁瑣的特徵標準化。 然而，未經約束的決策樹存在致命盲點：如果放任樹無限制向下生長，它會把某一天偶然走進急診室的「75 歲、患有痛風、碰巧穿著紅色外套」的罕見個案，也硬切出一條專屬分枝。這種將隨機雜訊當成普適臨床規則的惡果就是過度配適。如何以數學方法客觀「修剪枯枝（Pruning）」，是建構可信決策樹的工程核心。</p>
+</section>
+<section id="概念直覺與幾何啟發正交切蛋糕不純度純化與逆向剪枝拼裝" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發正交切蛋糕不純度純化與逆向剪枝拼裝"><span class="header-section-number">9.1.2</span> 🎯 概念直覺與幾何啟發：正交切蛋糕、不純度純化與逆向剪枝拼裝</h3>
+<p>自修者在研讀 CART 遞迴二元分割（Recursive Binary Splitting）與吉尼係數時，請在心智中構想一幅「直角刀工切蛋糕」的幾何圖像：</p>
+<ul>
+<li><strong>軸向對齊的直角刀工（幾何正交劃分）</strong>： 決策樹在特徵空間中不具備自由旋轉刀刃的能力，它的每一刀都必須<strong>嚴格平行於座標軸</strong>（即條件 <span class="math inline">X_j \le s</span>）。這在幾何上就是拿一把筆直的菜刀，將原本完整的特徵蛋糕，一刀刀垂直切成一塊塊邊界平直的「拼圖格子（超矩形區域）」。</li>
+<li><strong>吉尼不純度（色彩純度強迫症）</strong>： 演算法決定在何處下刀的唯一準則，是評估切開後左右兩塊小蛋糕的「色彩純淨度（Purity）」。若左邊蛋糕切出來全是草莓（類別 1）、右邊全是藍莓（類別 2），則吉尼不純度降至最低（<span class="math inline">G = 0</span>）。貪婪演算法就是每一步都挑選能讓總不純度下降幅度最大的那條直角切線。</li>
+<li><strong>成本-複雜度剪枝（把過細的蛋糕屑重新捏合）</strong>： 如果任由樹狂暴下刀 50 次，每個微小格子裡只剩一顆單獨的水果，訓練誤差雖完美歸零，但整個蛋糕已被切成粉碎渣滓，失去結構性。 成本-複雜度目標函數 <span class="math inline">\mathcal{R}_\alpha(T) = \mathcal{R}(T) + \alpha |T|</span>，在物理上就是給「每一刀都標上維持成本 <span class="math inline">\alpha</span>」——透過動態規劃逆向折疊，將那些「代價高昂但對提升純度毫無實質貢獻」的細碎末端分枝大膽砍除，還原出兼具簡明泛化力與結構穩健性的粗壯主幹。</li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="決策樹的幾何本質與特徵空間劃分" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="決策樹的幾何本質與特徵空間劃分"><span class="header-section-number">9.2</span> 9.1 決策樹的幾何本質與特徵空間劃分</h2>
@@ -1533,401 +1552,423 @@ g(t) \triangleq \frac{R(t) - R(T_t)}{|T_t| - 1}
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>本章將剖析決策樹的幾何正交劃分原理；推導迴歸樹的貪婪二元分割；深入分析分類樹的三大不純度指標（**錯誤率、吉尼係數、交叉熵**）的數學凹性；提供一組 6 筆樣本手把手計算所有候選切分點吉尼增益與弱連接剪枝臨界成本；詳解利用動態規劃思想的**成本-複雜度剪枝（Cost-Complexity Pruning）**；最後探討決策樹「低偏誤、高變異數」的內在弱點，為下一章引進集成學習奠定基石。</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：急診醫學檢傷分級臨床處置決策流</span></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.1 決策樹的幾何本質與特徵空間劃分</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>在醫學中心急診室的檢傷分流站，分秒必爭。護理師必須在 30 秒之內對甫送達的急性傷病患完成處置分流（第一級復甦急救、第二級危急、第三級緊急）。</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.1.1 軸向對齊的超矩形分割</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>決策樹的幾何核心是：**透過正交於座標軸的超平面，將 $p$ 維特徵空間 $\mathcal{X}$ 遞迴二元切割為 $J$ 個互不相交的超矩形區域（Hyper-rectangles）$\mathcal{R}_1, \mathcal{R}_2, \dots, \mathcal{R}_J$**。</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="in">              X2 ▲</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                ┌───────────────────────┐</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │                       │</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │          R3           │</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="in">             s2  ┼────────────────┼───────────────────────┤</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │           │           │</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="in">                 │       R1       │    R2     │    R4     │</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │           │           │</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="in">                 └────────────────┴───────────┴───────────► X1</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="in">                                  s1          s3</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>對於任意輸入樣本 $\boldsymbol{x}$，若其落入區域 $\mathcal{R}_m$，模型即輸出該區域對應的模型參數：</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>f(\boldsymbol{x}) = \sum_{m=1}^J c_m \mathbb{I}(\boldsymbol{x} \in \mathcal{R}_m)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-tree-partition}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>在極高壓、生死交關的醫療第一線，醫護團隊絕不可能去打開筆電執行多變量矩陣反矩陣，或等待黑盒神經網路輸出浮點數。臨床團隊需要的是一張極其清晰、無任何邏輯歧義的條件分流樹狀圖：</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>「收縮壓是否低於 90 mmHg？若【是】 $\to$ 意識狀態是否清醒？若【否】 $\to$ 立即推入紅區急救室；若【是】 $\to$ 檢查呼吸頻率是否大於 30 次/分...」。</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>這種階層式「若-則（If-Then）」規則樹，具有極致的人類直覺可解釋性，且對資料的尺度縮放（如毫升與公升）完全不敏感，不需要繁瑣的特徵標準化。</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>然而，未經約束的決策樹存在致命盲點：如果放任樹無限制向下生長，它會把某一天偶然走進急診室的「75 歲、患有痛風、碰巧穿著紅色外套」的罕見個案，也硬切出一條專屬分枝。這種將隨機雜訊當成普適臨床規則的惡果就是過度配適。如何以數學方法客觀「修剪枯枝（Pruning）」，是建構可信決策樹的工程核心。</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：正交切蛋糕、不純度純化與逆向剪枝拼裝</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>自修者在研讀 CART 遞迴二元分割（Recursive Binary Splitting）與吉尼係數時，請在心智中構想一幅「直角刀工切蛋糕」的幾何圖像：</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**軸向對齊的直角刀工（幾何正交劃分）**：</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  決策樹在特徵空間中不具備自由旋轉刀刃的能力，它的每一刀都必須**嚴格平行於座標軸**（即條件 $X_j \le s$）。這在幾何上就是拿一把筆直的菜刀，將原本完整的特徵蛋糕，一刀刀垂直切成一塊塊邊界平直的「拼圖格子（超矩形區域）」。</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**吉尼不純度（色彩純度強迫症）**：</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  演算法決定在何處下刀的唯一準則，是評估切開後左右兩塊小蛋糕的「色彩純淨度（Purity）」。若左邊蛋糕切出來全是草莓（類別 1）、右邊全是藍莓（類別 2），則吉尼不純度降至最低（$G = 0$）。貪婪演算法就是每一步都挑選能讓總不純度下降幅度最大的那條直角切線。</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**成本-複雜度剪枝（把過細的蛋糕屑重新捏合）**：</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  如果任由樹狂暴下刀 50 次，每個微小格子裡只剩一顆單獨的水果，訓練誤差雖完美歸零，但整個蛋糕已被切成粉碎渣滓，失去結構性。</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  成本-複雜度目標函數 $\mathcal{R}_\alpha(T) = \mathcal{R}(T) + \alpha |T|$，在物理上就是給「每一刀都標上維持成本 $\alpha$」——透過動態規劃逆向折疊，將那些「代價高昂但對提升純度毫無實質貢獻」的細碎末端分枝大膽砍除，還原出兼具簡明泛化力與結構穩健性的粗壯主幹。</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.1 決策樹的幾何本質與特徵空間劃分</span></span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**迴歸樹（Regression Tree）**：$c_m$ 為落入區域 $\mathcal{R}_m$ 內所有訓練樣本標籤的**平均值**：</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  \hat{c}_m = \mathrm{ave}(y_i \mid \boldsymbol{x}_i \in \mathcal{R}_m)</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**分類樹（Classification Tree）**：$c_m$ 為區域 $\mathcal{R}_m$ 內出現頻率最高的**多數類別（Majority Vote）**。</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.2 迴歸樹與遞迴二元分割（Recursive Binary Splitting）</span></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>理論上，尋求全域最優的矩形劃分以最小化全域 RSS 是一個 NP-hard 組合最佳化問題。因此，CART 採用**由上而下的貪婪啟發式演算法（Top-Down Greedy Algorithm）**，稱為**遞迴二元分割**。</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.2.1 最優切分點搜尋</span></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>在任何一個內部節點處，演算法遍歷所有特徵 $j \in <span class="sc">\{</span>1, 2, \dots, p<span class="sc">\}</span>$ 以及特徵 $X_j$ 的所有可能切分閥值 $s$，將當前節點劃分為兩個半空間：</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>\mathcal{R}_1(j, s) = <span class="sc">\{</span>\boldsymbol{X} \mid X_j \le s<span class="sc">\}</span> \quad \text{與} \quad \mathcal{R}_2(j, s) = <span class="sc">\{</span>\boldsymbol{X} \mid X_j &gt; s<span class="sc">\}</span></span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>目標是尋找最優的特徵維度 $j^*$ 與切分點 $s^*$，使得分裂後的兩個子節點內部殘差平方和（RSS）之和最小化：</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>\min_{j, s} \left<span class="sc">\{</span> \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_1(j, s)} (y_i - \hat{y}_{\mathcal{R}_1})^2 + \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_2(j, s)} (y_i - \hat{y}_{\mathcal{R}_2})^2 \right<span class="sc">\}</span></span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-regression-split}</span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>其中 $\hat{y}_{\mathcal{R}_1}$ 與 $\hat{y}_{\mathcal{R}_2}$ 分別為落在兩子區域內的樣本目標平均值。</span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.1.1 軸向對齊的超矩形分割</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>決策樹的幾何核心是：**透過正交於座標軸的超平面，將 $p$ 維特徵空間 $\mathcal{X}$ 遞迴二元切割為 $J$ 個互不相交的超矩形區域（Hyper-rectangles）$\mathcal{R}_1, \mathcal{R}_2, \dots, \mathcal{R}_J$**。</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="in">              X2 ▲</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                ┌───────────────────────┐</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │                       │</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │          R3           │</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="in">             s2  ┼────────────────┼───────────────────────┤</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │           │           │</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="in">                 │       R1       │    R2     │    R4     │</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="in">                 │                │           │           │</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="in">                 └────────────────┴───────────┴───────────► X1</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="in">                                  s1          s3</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>對於任意輸入樣本 $\boldsymbol{x}$，若其落入區域 $\mathcal{R}_m$，模型即輸出該區域對應的模型參數：</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>f(\boldsymbol{x}) = \sum_{m=1}^J c_m \mathbb{I}(\boldsymbol{x} \in \mathcal{R}_m)</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-tree-partition}</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**迴歸樹（Regression Tree）**：$c_m$ 為落入區域 $\mathcal{R}_m$ 內所有訓練樣本標籤的**平均值**：</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>  \hat{c}_m = \mathrm{ave}(y_i \mid \boldsymbol{x}_i \in \mathcal{R}_m)</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**分類樹（Classification Tree）**：$c_m$ 為區域 $\mathcal{R}_m$ 內出現頻率最高的**多數類別（Majority Vote）**。</span>
 <span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.3 分類樹與節點不純度指標（Impurity Measures）</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>對於分類問題，我們不能使用 RSS。設節點 $m$ 共有 $N_m$ 筆訓練樣本，落入該節點且真實標籤為類別 $k$ 的樣本比例定義為：</span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>\hat{p}_{mk} \triangleq \frac{1}{N_m} \sum_{\boldsymbol{x}_i \in \mathcal{R}_m} \mathbb{I}(y_i = k), \quad k = 1, 2, \dots, K</span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>評估節點 $m$ 內部樣本混雜程度的指標稱為**不純度指標（Impurity Measure）$Q_m(T)$**。</span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.3.1 三大不純度指標對比</span></span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**分類錯誤率（Classification Error Rate）**：</span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>   E_m = 1 - \max_{k} \hat{p}_{mk}</span>
-<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**吉尼不純度（Gini Index / Gini Impurity）**：</span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>   G_m \triangleq \sum_{k=1}^K \hat{p}_{mk} (1 - \hat{p}_{mk}) = 1 - \sum_{k=1}^K \hat{p}_{mk}^2</span>
-<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch09-gini}</span>
-<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>   幾何意義：若依據節點內的機率分佈隨機挑選一個樣本並隨機指派一個類別標籤，該標籤指派錯誤的機率。</span>
-<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**交叉熵（Cross-Entropy / Information Entropy）**：</span>
-<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>   D_m \triangleq -\sum_{k=1}^K \hat{p}_{mk} \ln \hat{p}_{mk}</span>
-<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch09-entropy}</span>
-<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>   （若 $\hat{p}_{mk} = 0$，約定 $0 \ln 0 \equiv 0$）。</span>
-<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a><span class="in">        不純度 Q</span></span>
-<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a><span class="in">           ▲</span></span>
-<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="in">       0.5 ┼                        . ─── . (交叉熵除以 2ln2 歸一化)</span></span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="in">           │                      /         \</span></span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="in">           │                    /             \</span></span>
-<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="in">           │                  /                 \  (吉尼不純度 Gini)</span></span>
-<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="in">           │                /                     \</span></span>
-<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a><span class="in">           │               /                       \  (分類錯誤率 Error)</span></span>
-<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a><span class="in">           └──────────────┴─────────────────────────┴──────────► p (類別1比例)</span></span>
-<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a><span class="in">           0             0.5                       1.0</span></span>
-<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.3.2 為什麼分類樹生長偏好吉尼係數與交叉熵？</span></span>
-<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>直覺上分類錯誤率最符合最終目標，但在樹的生長分割中，**錯誤率對節點機率的微小改變極度不敏感**！</span>
-<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 經典反例：</span></span>
-<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>考慮二元分類（各 400 樣本，共 800 樣本），當前節點狀態為 $(400, 400)$，錯誤率為 $0.5$。</span>
-<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**切分方案 A**：分裂為 $(300, 100)$ 與 $(100, 300)$。</span>
-<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>兩子節點的錯誤率均為 $100/400 = 0.25$，加權平均錯誤率為 $0.25$。</span>
-<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**切分方案 B**：分裂為 $(200, 400)$ 與 $(200, 0)$。</span>
-<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>第二個子節點達到 100% 完全純淨！其錯誤率分別為 $200/600 = 0.333$ 與 $0/200 = 0$。加權平均錯誤率為 $\frac{600}{800}(0.333) + 0 = 0.25$。</span>
-<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>在分類錯誤率下，方案 A 與方案 B 的評分**完全相同**！然而方案 B 已經成功分離出一個 100% 純淨的葉節點，在實務上顯然優於方案 A。</span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>而 **Gini 係數與交叉熵為嚴格凹函數（Strictly Concave）**，能強烈獎勵產生「高純度節點」的分割，因此 CART 與 C4.5 一律採用 Gini 或交叉熵作為分裂增益的評判基準。</span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.4 手把手數值推演：6 筆樣本之吉尼切分點窮舉與剪枝手算</span></span>
-<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.4.1 切分點搜尋全流程數值計算</span></span>
-<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a>考慮以下 1D 單特徵二元分類資料集（$n=6$）：</span>
-<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 <span class="pp">|</span> 特徵 $x_i$ <span class="pp">|</span> 真實類別 $y_i$ <span class="pp">|</span></span>
-<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
-<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
-<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
-<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 4.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
-<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> 6.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
-<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 6 <span class="pp">|</span> 7.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
-<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**母節點狀態**：總樣本數 $N = 6$。類別 0 有 3 筆，類別 1 有 3 筆。</span>
-<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a>  p_0 = \frac{3}{6} = 0.5, \quad p_1 = \frac{3}{6} = 0.5</span>
-<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>  母節點吉尼不純度：</span>
-<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a>  G_{\text{parent}} = 1 - (0.5^2 + 0.5^2) = 1 - 0.50 = \mathbf{0.5000}</span>
-<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a>相鄰點中點構成 5 個潛在切分閥值候選點：$s \in <span class="sc">\{</span>1.5, 2.5, 3.5, 5.0, 6.5<span class="sc">\}</span>$。</span>
-<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. 候選切分點 $s = 1.5$：</span></span>
-<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 1.5$）：樣本 $<span class="sc">\{</span>1<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0<span class="sc">\}</span>$。</span>
-<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a>  $N_L = 1, p_{L0} = 1, p_{L1} = 0 \implies G_L = 1 - (1^2 + 0^2) = 0$。</span>
-<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 1.5$）：樣本 $<span class="sc">\{</span>2, 3, 4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 1, 0, 1, 1<span class="sc">\}</span>$（2 個 0, 3 個 1）。</span>
-<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a>  $N_R = 5, p_{R0} = 2/5 = 0.4, p_{R1} = 3/5 = 0.6 \implies G_R = 1 - (0.4^2 + 0.6^2) = 1 - 0.52 = 0.48$。</span>
-<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
-<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a>  G(s=1.5) = \frac{1}{6}(0) + \frac{5}{6}(0.48) = \frac{2.4}{6} = \mathbf{0.4000}</span>
-<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.2 迴歸樹與遞迴二元分割（Recursive Binary Splitting）</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>理論上，尋求全域最優的矩形劃分以最小化全域 RSS 是一個 NP-hard 組合最佳化問題。因此，CART 採用**由上而下的貪婪啟發式演算法（Top-Down Greedy Algorithm）**，稱為**遞迴二元分割**。</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.2.1 最優切分點搜尋</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>在任何一個內部節點處，演算法遍歷所有特徵 $j \in <span class="sc">\{</span>1, 2, \dots, p<span class="sc">\}</span>$ 以及特徵 $X_j$ 的所有可能切分閥值 $s$，將當前節點劃分為兩個半空間：</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>\mathcal{R}_1(j, s) = <span class="sc">\{</span>\boldsymbol{X} \mid X_j \le s<span class="sc">\}</span> \quad \text{與} \quad \mathcal{R}_2(j, s) = <span class="sc">\{</span>\boldsymbol{X} \mid X_j &gt; s<span class="sc">\}</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>目標是尋找最優的特徵維度 $j^*$ 與切分點 $s^*$，使得分裂後的兩個子節點內部殘差平方和（RSS）之和最小化：</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>\min_{j, s} \left<span class="sc">\{</span> \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_1(j, s)} (y_i - \hat{y}_{\mathcal{R}_1})^2 + \sum_{i: \boldsymbol{x}_i \in \mathcal{R}_2(j, s)} (y_i - \hat{y}_{\mathcal{R}_2})^2 \right<span class="sc">\}</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-regression-split}</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>其中 $\hat{y}_{\mathcal{R}_1}$ 與 $\hat{y}_{\mathcal{R}_2}$ 分別為落在兩子區域內的樣本目標平均值。</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.3 分類樹與節點不純度指標（Impurity Measures）</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>對於分類問題，我們不能使用 RSS。設節點 $m$ 共有 $N_m$ 筆訓練樣本，落入該節點且真實標籤為類別 $k$ 的樣本比例定義為：</span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>\hat{p}_{mk} \triangleq \frac{1}{N_m} \sum_{\boldsymbol{x}_i \in \mathcal{R}_m} \mathbb{I}(y_i = k), \quad k = 1, 2, \dots, K</span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>評估節點 $m$ 內部樣本混雜程度的指標稱為**不純度指標（Impurity Measure）$Q_m(T)$**。</span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.3.1 三大不純度指標對比</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**分類錯誤率（Classification Error Rate）**：</span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>   E_m = 1 - \max_{k} \hat{p}_{mk}</span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**吉尼不純度（Gini Index / Gini Impurity）**：</span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a>   G_m \triangleq \sum_{k=1}^K \hat{p}_{mk} (1 - \hat{p}_{mk}) = 1 - \sum_{k=1}^K \hat{p}_{mk}^2</span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch09-gini}</span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>   幾何意義：若依據節點內的機率分佈隨機挑選一個樣本並隨機指派一個類別標籤，該標籤指派錯誤的機率。</span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**交叉熵（Cross-Entropy / Information Entropy）**：</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>   D_m \triangleq -\sum_{k=1}^K \hat{p}_{mk} \ln \hat{p}_{mk}</span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch09-entropy}</span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>   （若 $\hat{p}_{mk} = 0$，約定 $0 \ln 0 \equiv 0$）。</span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="in">        不純度 Q</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a><span class="in">           ▲</span></span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a><span class="in">       0.5 ┼                        . ─── . (交叉熵除以 2ln2 歸一化)</span></span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="in">           │                      /         \</span></span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="in">           │                    /             \</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a><span class="in">           │                  /                 \  (吉尼不純度 Gini)</span></span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="in">           │                /                     \</span></span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a><span class="in">           │               /                       \  (分類錯誤率 Error)</span></span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="in">           └──────────────┴─────────────────────────┴──────────► p (類別1比例)</span></span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="in">           0             0.5                       1.0</span></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.3.2 為什麼分類樹生長偏好吉尼係數與交叉熵？</span></span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a>直覺上分類錯誤率最符合最終目標，但在樹的生長分割中，**錯誤率對節點機率的微小改變極度不敏感**！</span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 經典反例：</span></span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>考慮二元分類（各 400 樣本，共 800 樣本），當前節點狀態為 $(400, 400)$，錯誤率為 $0.5$。</span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**切分方案 A**：分裂為 $(300, 100)$ 與 $(100, 300)$。</span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>兩子節點的錯誤率均為 $100/400 = 0.25$，加權平均錯誤率為 $0.25$。</span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**切分方案 B**：分裂為 $(200, 400)$ 與 $(200, 0)$。</span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>第二個子節點達到 100% 完全純淨！其錯誤率分別為 $200/600 = 0.333$ 與 $0/200 = 0$。加權平均錯誤率為 $\frac{600}{800}(0.333) + 0 = 0.25$。</span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>在分類錯誤率下，方案 A 與方案 B 的評分**完全相同**！然而方案 B 已經成功分離出一個 100% 純淨的葉節點，在實務上顯然優於方案 A。</span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>而 **Gini 係數與交叉熵為嚴格凹函數（Strictly Concave）**，能強烈獎勵產生「高純度節點」的分割，因此 CART 與 C4.5 一律採用 Gini 或交叉熵作為分裂增益的評判基準。</span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.4 手把手數值推演：6 筆樣本之吉尼切分點窮舉與剪枝手算</span></span>
+<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.4.1 切分點搜尋全流程數值計算</span></span>
+<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>考慮以下 1D 單特徵二元分類資料集（$n=6$）：</span>
+<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 <span class="pp">|</span> 特徵 $x_i$ <span class="pp">|</span> 真實類別 $y_i$ <span class="pp">|</span></span>
+<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 1.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 2.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 3.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 4.0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 5 <span class="pp">|</span> 6.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 6 <span class="pp">|</span> 7.0 <span class="pp">|</span> 1 <span class="pp">|</span></span>
 <span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. 候選切分點 $s = 2.5$：</span></span>
-<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 2.5$）：樣本 $<span class="sc">\{</span>1, 2<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0<span class="sc">\}</span>$。</span>
-<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>  $N_L = 2, p_{L0} = 1, p_{L1} = 0 \implies G_L = 0$（完全純淨！）。</span>
-<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 2.5$）：樣本 $<span class="sc">\{</span>3, 4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1, 0, 1, 1<span class="sc">\}</span>$（1 個 0, 3 個 1）。</span>
-<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>  $N_R = 4, p_{R0} = 1/4 = 0.25, p_{R1} = 3/4 = 0.75 \implies G_R = 1 - (0.25^2 + 0.75^2) = 1 - 0.625 = 0.375$。</span>
-<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
-<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a>  G(s=2.5) = \frac{2}{6}(0) + \frac{4}{6}(0.375) = \frac{1.5}{6} = \mathbf{0.2500}</span>
-<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.2500 = \mathbf{0.2500}$。</span>
+<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**母節點狀態**：總樣本數 $N = 6$。類別 0 有 3 筆，類別 1 有 3 筆。</span>
+<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>  p_0 = \frac{3}{6} = 0.5, \quad p_1 = \frac{3}{6} = 0.5</span>
+<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>  母節點吉尼不純度：</span>
+<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>  G_{\text{parent}} = 1 - (0.5^2 + 0.5^2) = 1 - 0.50 = \mathbf{0.5000}</span>
+<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a>相鄰點中點構成 5 個潛在切分閥值候選點：$s \in <span class="sc">\{</span>1.5, 2.5, 3.5, 5.0, 6.5<span class="sc">\}</span>$。</span>
 <span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 3. 候選切分點 $s = 3.5$：</span></span>
-<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 3.5$）：樣本 $<span class="sc">\{</span>1, 2, 3<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1<span class="sc">\}</span>$。</span>
-<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>  $N_L = 3, p_{L0} = 2/3, p_{L1} = 1/3 \implies G_L = 1 - (4/9 + 1/9) = 4/9 \approx 0.4444$。</span>
-<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 3.5$）：樣本 $<span class="sc">\{</span>4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 1, 1<span class="sc">\}</span>$。</span>
-<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>  $N_R = 3, p_{R0} = 1/3, p_{R1} = 2/3 \implies G_R = 1 - (1/9 + 4/9) = 4/9 \approx 0.4444$。</span>
+<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. 候選切分點 $s = 1.5$：</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 1.5$）：樣本 $<span class="sc">\{</span>1<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0<span class="sc">\}</span>$。</span>
+<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>  $N_L = 1, p_{L0} = 1, p_{L1} = 0 \implies G_L = 1 - (1^2 + 0^2) = 0$。</span>
+<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 1.5$）：樣本 $<span class="sc">\{</span>2, 3, 4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 1, 0, 1, 1<span class="sc">\}</span>$（2 個 0, 3 個 1）。</span>
+<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>  $N_R = 5, p_{R0} = 2/5 = 0.4, p_{R1} = 3/5 = 0.6 \implies G_R = 1 - (0.4^2 + 0.6^2) = 1 - 0.52 = 0.48$。</span>
 <span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
 <span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>  G(s=3.5) = \frac{3}{6}(4/9) + \frac{3}{6}(4/9) = \frac{4}{9} \approx \mathbf{0.4444}</span>
+<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>  G(s=1.5) = \frac{1}{6}(0) + \frac{5}{6}(0.48) = \frac{2.4}{6} = \mathbf{0.4000}</span>
 <span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4444 = \mathbf{0.0556}$。</span>
+<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。</span>
 <span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 4. 候選切分點 $s = 5.0$：</span></span>
-<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 5.0$）：樣本 $<span class="sc">\{</span>1, 2, 3, 4<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1, 0<span class="sc">\}</span>$（3 個 0, 1 個 1）。</span>
-<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>  $N_L = 4, p_{L0} = 3/4 = 0.75, p_{L1} = 0.25 \implies G_L = 1 - (0.5625 + 0.0625) = 0.375$。</span>
-<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 5.0$）：樣本 $<span class="sc">\{</span>5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1, 1<span class="sc">\}</span>$。</span>
-<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a>  $N_R = 2, p_{R0} = 0, p_{R1} = 1 \implies G_R = 0$（完全純淨！）。</span>
+<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. 候選切分點 $s = 2.5$：</span></span>
+<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 2.5$）：樣本 $<span class="sc">\{</span>1, 2<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0<span class="sc">\}</span>$。</span>
+<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>  $N_L = 2, p_{L0} = 1, p_{L1} = 0 \implies G_L = 0$（完全純淨！）。</span>
+<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 2.5$）：樣本 $<span class="sc">\{</span>3, 4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1, 0, 1, 1<span class="sc">\}</span>$（1 個 0, 3 個 1）。</span>
+<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a>  $N_R = 4, p_{R0} = 1/4 = 0.25, p_{R1} = 3/4 = 0.75 \implies G_R = 1 - (0.25^2 + 0.75^2) = 1 - 0.625 = 0.375$。</span>
 <span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
 <span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a>  G(s=5.0) = \frac{4}{6}(0.375) + \frac{2}{6}(0) = \frac{1.5}{6} = \mathbf{0.2500}</span>
+<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a>  G(s=2.5) = \frac{2}{6}(0) + \frac{4}{6}(0.375) = \frac{1.5}{6} = \mathbf{0.2500}</span>
 <span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a>  $$</span>
 <span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.2500 = \mathbf{0.2500}$。</span>
 <span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 5. 候選切分點 $s = 6.5$：</span></span>
-<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 6.5$）：樣本 $<span class="sc">\{</span>1, 2, 3, 4, 5<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1, 0, 1<span class="sc">\}</span>$（3 個 0, 2 個 1）。</span>
-<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a>  $N_L = 5, p_{L0} = 3/5 = 0.6, p_{L1} = 0.4 \implies G_L = 1 - (0.36 + 0.16) = 0.48$。</span>
-<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 6.5$）：樣本 $<span class="sc">\{</span>6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1<span class="sc">\}</span>$。</span>
-<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a>  $N_R = 1, G_R = 0$。</span>
+<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 3. 候選切分點 $s = 3.5$：</span></span>
+<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 3.5$）：樣本 $<span class="sc">\{</span>1, 2, 3<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1<span class="sc">\}</span>$。</span>
+<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a>  $N_L = 3, p_{L0} = 2/3, p_{L1} = 1/3 \implies G_L = 1 - (4/9 + 1/9) = 4/9 \approx 0.4444$。</span>
+<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 3.5$）：樣本 $<span class="sc">\{</span>4, 5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 1, 1<span class="sc">\}</span>$。</span>
+<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a>  $N_R = 3, p_{R0} = 1/3, p_{R1} = 2/3 \implies G_R = 1 - (1/9 + 4/9) = 4/9 \approx 0.4444$。</span>
 <span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
 <span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a>  G(s=6.5) = \frac{5}{6}(0.48) + 0 = \mathbf{0.4000}</span>
+<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a>  G(s=3.5) = \frac{3}{6}(4/9) + \frac{3}{6}(4/9) = \frac{4}{9} \approx \mathbf{0.4444}</span>
 <span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。</span>
+<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4444 = \mathbf{0.0556}$。</span>
 <span id="cb5-199"><a href="#cb5-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 切分點評比匯總表：</span></span>
-<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 切分閥值 $s$ <span class="pp">|</span> 左節點分佈 $(0, 1)$ <span class="pp">|</span> 右節點分佈 $(0, 1)$ <span class="pp">|</span> 加權 Gini 不純度 <span class="pp">|</span> 吉尼增益 $\Delta G$ <span class="pp">|</span> 決策 <span class="pp">|</span></span>
-<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $1.5$ <span class="pp">|</span> $(1, 0)$ <span class="pp">|</span> $(2, 3)$ <span class="pp">|</span> $0.4000$ <span class="pp">|</span> $0.1000$ <span class="pp">|</span> 次優 <span class="pp">|</span></span>
-<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **$2.5$** | **$(2, 0)$** | **$(1, 3)$** | **$0.2500$** | **$0.2500$** | **最優首選** <span class="pp">|</span></span>
-<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $3.5$ <span class="pp">|</span> $(2, 1)$ <span class="pp">|</span> $(1, 2)$ <span class="pp">|</span> $0.4444$ <span class="pp">|</span> $0.0556$ <span class="pp">|</span> 最差 <span class="pp">|</span></span>
-<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **$5.0$** | **$(3, 1)$** | **$(0, 2)$** | **$0.2500$** | **$0.2500$** | **最優候選** <span class="pp">|</span></span>
-<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $6.5$ <span class="pp">|</span> $(3, 2)$ <span class="pp">|</span> $(0, 1)$ <span class="pp">|</span> $0.4000$ <span class="pp">|</span> $0.1000$ <span class="pp">|</span> 次優 <span class="pp">|</span></span>
-<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a>CART 演算法將挑選 $s^* = 2.5$（或 $5.0$）作為第一層分割！</span>
-<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.5 樹的剪枝：成本-複雜度剪枝（Cost-Complexity Pruning）</span></span>
-<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a>若任由決策樹自由生長直至每個葉節點純度達到 100%，將生成一棵包含大量節點的龐大樹 $T_0$。此時訓練誤差為 0，但在測試集上將發生災難性的過度配適。</span>
-<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a>CART 採用**成本-複雜度剪枝（Cost-Complexity Pruning / 弱連接剪枝 Weakest Link Pruning）**：</span>
-<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.5.1 剪枝目標函數</span></span>
+<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 4. 候選切分點 $s = 5.0$：</span></span>
+<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 5.0$）：樣本 $<span class="sc">\{</span>1, 2, 3, 4<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1, 0<span class="sc">\}</span>$（3 個 0, 1 個 1）。</span>
+<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a>  $N_L = 4, p_{L0} = 3/4 = 0.75, p_{L1} = 0.25 \implies G_L = 1 - (0.5625 + 0.0625) = 0.375$。</span>
+<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 5.0$）：樣本 $<span class="sc">\{</span>5, 6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1, 1<span class="sc">\}</span>$。</span>
+<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a>  $N_R = 2, p_{R0} = 0, p_{R1} = 1 \implies G_R = 0$（完全純淨！）。</span>
+<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
+<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a>  G(s=5.0) = \frac{4}{6}(0.375) + \frac{2}{6}(0) = \frac{1.5}{6} = \mathbf{0.2500}</span>
+<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.2500 = \mathbf{0.2500}$。</span>
+<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 5. 候選切分點 $s = 6.5$：</span></span>
+<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>左子節點（$x \le 6.5$）：樣本 $<span class="sc">\{</span>1, 2, 3, 4, 5<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>0, 0, 1, 0, 1<span class="sc">\}</span>$（3 個 0, 2 個 1）。</span>
+<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a>  $N_L = 5, p_{L0} = 3/5 = 0.6, p_{L1} = 0.4 \implies G_L = 1 - (0.36 + 0.16) = 0.48$。</span>
+<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>右子節點（$x &gt; 6.5$）：樣本 $<span class="sc">\{</span>6<span class="sc">\}</span>$，標籤 $<span class="sc">\{</span>1<span class="sc">\}</span>$。</span>
+<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a>  $N_R = 1, G_R = 0$。</span>
+<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>加權平均吉尼係數：</span>
+<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a>  G(s=6.5) = \frac{5}{6}(0.48) + 0 = \mathbf{0.4000}</span>
+<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a>  吉尼增益：$\Delta G = 0.5000 - 0.4000 = \mathbf{0.1000}$。</span>
 <span id="cb5-221"><a href="#cb5-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a>設 $T$ 為大樹 $T_0$ 的任意子樹（Subtree），$|T|$ 代表子樹 $T$ 的終端葉節點總數。定義正則化損失函數：</span>
+<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 切分點評比匯總表：</span></span>
 <span id="cb5-223"><a href="#cb5-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a>R_\alpha(T) \triangleq R(T) + \alpha |T| = \sum_{m=1}^{|T|} N_m Q_m(T) + \alpha |T|</span>
-<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-cost-complexity}</span>
-<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a>其中 $\alpha \ge 0$ 為**複雜度懲罰參數（Complexity Parameter, 在 R 中記為 `cp`）**：</span>
-<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha = 0$ 時：目標即為最小化訓練誤差，解為全生長大樹 $T_0$。</span>
-<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha \to \infty$ 時：懲罰項佔絕對主導，解為只有單一根節點的極簡樹。</span>
+<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 切分閥值 $s$ <span class="pp">|</span> 左節點分佈 $(0, 1)$ <span class="pp">|</span> 右節點分佈 $(0, 1)$ <span class="pp">|</span> 加權 Gini 不純度 <span class="pp">|</span> 吉尼增益 $\Delta G$ <span class="pp">|</span> 決策 <span class="pp">|</span></span>
+<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $1.5$ <span class="pp">|</span> $(1, 0)$ <span class="pp">|</span> $(2, 3)$ <span class="pp">|</span> $0.4000$ <span class="pp">|</span> $0.1000$ <span class="pp">|</span> 次優 <span class="pp">|</span></span>
+<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **$2.5$** | **$(2, 0)$** | **$(1, 3)$** | **$0.2500$** | **$0.2500$** | **最優首選** <span class="pp">|</span></span>
+<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $3.5$ <span class="pp">|</span> $(2, 1)$ <span class="pp">|</span> $(1, 2)$ <span class="pp">|</span> $0.4444$ <span class="pp">|</span> $0.0556$ <span class="pp">|</span> 最差 <span class="pp">|</span></span>
+<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **$5.0$** | **$(3, 1)$** | **$(0, 2)$** | **$0.2500$** | **$0.2500$** | **最優候選** <span class="pp">|</span></span>
+<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $6.5$ <span class="pp">|</span> $(3, 2)$ <span class="pp">|</span> $(0, 1)$ <span class="pp">|</span> $0.4000$ <span class="pp">|</span> $0.1000$ <span class="pp">|</span> 次優 <span class="pp">|</span></span>
 <span id="cb5-231"><a href="#cb5-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.5.2 弱連接剪枝演算法定理</span></span>
+<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a>CART 演算法將挑選 $s^* = 2.5$（或 $5.0$）作為第一層分割！</span>
 <span id="cb5-233"><a href="#cb5-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Breiman 剪枝定理**：</span></span>
-<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 對於任意固定的 $\alpha \ge 0$，使得式 (</span><span class="co">[</span><span class="ot">-@eq-ch09-cost-complexity</span><span class="co">]</span><span class="at">) 最小化的最優子樹 $T_\alpha$ 不僅存在，而且隨著 $\alpha$ 從 $0$ 連續增加至 $\infty$，$T_\alpha$ 構成一個**有限的、彼此嵌套的子樹序列**：</span></span>
-<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
-<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; T_0 \supset T_1 \supset T_2 \supset \cdots \supset T_K = </span><span class="sc">\{</span><span class="at">\text{Root}</span><span class="sc">\}</span></span>
-<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.5 樹的剪枝：成本-複雜度剪枝（Cost-Complexity Pruning）</span></span>
+<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a>若任由決策樹自由生長直至每個葉節點純度達到 100%，將生成一棵包含大量節點的龐大樹 $T_0$。此時訓練誤差為 0，但在測試集上將發生災難性的過度配適。</span>
 <span id="cb5-239"><a href="#cb5-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 演算法執行步驟：</span></span>
-<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**內部節點有效收縮率計算**：</span>
-<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a>   對內部任意非葉節點 $t$，若將以 $t$ 為根的子樹 $T_t$ 剪除，收縮為單一葉節點 $t$：</span>
-<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>誤差增加量：$R(t) - R(T_t)$。</span>
-<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>葉節點減少量：$|T_t| - 1$。</span>
-<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>定義剪除該節點的**臨界成本係數**：</span>
-<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a>     g(t) \triangleq \frac{R(t) - R(T_t)}{|T_t| - 1}</span>
-<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>在當前樹中尋找使 $g(t)$ 最小的內部節點 $t^* = \arg\min_t g(t)$，將其子樹剪除，得到更小的子樹 $T_1$。</span>
-<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>重複上述剪枝步驟，直至剩下根節點，得到子樹序列 $<span class="sc">\{</span>T_0, T_1, \dots, T_K<span class="sc">\}</span>$。</span>
-<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>採用 **$K$-折交叉驗證**，在該序列中挑選驗證集誤差最小的最優子樹 $T^*$。</span>
-<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.6 決策樹的優缺點與統計病態</span></span>
-<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.6.1 決策樹的核心優點</span></span>
-<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**極致的可解釋性**：樹狀圖可被非專業人士直觀理解，決策流程完全透明。</span>
-<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**對非線性與交互作用自然適配**：無需手動建構高階交互特徵項。</span>
-<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**特徵單調變換不變性（Monotonic Invariance）**：僅依賴特徵的排序，**完全不受量綱尺度影響**（無須進行標準化或正規化）。</span>
-<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**天然容忍缺失值**：可透過代理切分（Surrogate Splits）優雅處理。</span>
-<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.6.2 致命缺陷：高變異性（High Variance）</span></span>
-<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a>決策樹最大的軟肋在於**極度不穩定（Instability）**：在訓練集中增加或刪除少數幾筆樣本，可能導致樹頂層的第一個切分點發生改變，進而引發整棵樹結構的完全重組。</span>
-<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a>如何克服高變異性？答案正是將數百棵不穩定的樹進行投票與加權——即下一章的**隨機森林與梯度提升（Ensemble Learning）**。</span>
-<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.7 雙軌實務實驗室：決策樹擬合與成本-複雜度剪枝</span></span>
-<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb5-272"><a href="#cb5-272" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb5-273"><a href="#cb5-273" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-274"><a href="#cb5-274" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb5-275"><a href="#cb5-275" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb5-276"><a href="#cb5-276" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：rpart 決策樹生長、複雜度參數 cp 剪枝與樹狀圖繪製</span></span>
-<span id="cb5-277"><a href="#cb5-277" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：rpart, rpart.plot, ISLR2</span></span>
-<span id="cb5-278"><a href="#cb5-278" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb5-279"><a href="#cb5-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-280"><a href="#cb5-280" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
-<span id="cb5-281"><a href="#cb5-281" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
-<span id="cb5-282"><a href="#cb5-282" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
-<span id="cb5-283"><a href="#cb5-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-284"><a href="#cb5-284" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用 Carseats (兒童安全座椅銷量) 資料集</span></span>
-<span id="cb5-285"><a href="#cb5-285" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Carseats)</span>
-<span id="cb5-286"><a href="#cb5-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-287"><a href="#cb5-287" aria-hidden="true" tabindex="-1"></a><span class="co"># 建立二元分類目標：銷量 High (Sales &gt; 8 為 High)</span></span>
-<span id="cb5-288"><a href="#cb5-288" aria-hidden="true" tabindex="-1"></a>Carseats<span class="sc">$</span>High <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(Carseats<span class="sc">$</span>Sales <span class="sc">&gt;</span> <span class="dv">8</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>))</span>
-<span id="cb5-289"><a href="#cb5-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-290"><a href="#cb5-290" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分訓練集 (70%) 與測試集 (30%)</span></span>
-<span id="cb5-291"><a href="#cb5-291" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb5-292"><a href="#cb5-292" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Carseats), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(Carseats))</span>
-<span id="cb5-293"><a href="#cb5-293" aria-hidden="true" tabindex="-1"></a>carseats_train <span class="ot">&lt;-</span> Carseats[train_idx, ]</span>
-<span id="cb5-294"><a href="#cb5-294" aria-hidden="true" tabindex="-1"></a>carseats_test <span class="ot">&lt;-</span> Carseats[<span class="sc">-</span>train_idx, ]</span>
+<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a>CART 採用**成本-複雜度剪枝（Cost-Complexity Pruning / 弱連接剪枝 Weakest Link Pruning）**：</span>
+<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.5.1 剪枝目標函數</span></span>
+<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a>設 $T$ 為大樹 $T_0$ 的任意子樹（Subtree），$|T|$ 代表子樹 $T$ 的終端葉節點總數。定義正則化損失函數：</span>
+<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a>R_\alpha(T) \triangleq R(T) + \alpha |T| = \sum_{m=1}^{|T|} N_m Q_m(T) + \alpha |T|</span>
+<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch09-cost-complexity}</span>
+<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a>其中 $\alpha \ge 0$ 為**複雜度懲罰參數（Complexity Parameter, 在 R 中記為 `cp`）**：</span>
+<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha = 0$ 時：目標即為最小化訓練誤差，解為全生長大樹 $T_0$。</span>
+<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\alpha \to \infty$ 時：懲罰項佔絕對主導，解為只有單一根節點的極簡樹。</span>
+<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.5.2 弱連接剪枝演算法定理</span></span>
+<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Breiman 剪枝定理**：</span></span>
+<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 對於任意固定的 $\alpha \ge 0$，使得式 (</span><span class="co">[</span><span class="ot">-@eq-ch09-cost-complexity</span><span class="co">]</span><span class="at">) 最小化的最優子樹 $T_\alpha$ 不僅存在，而且隨著 $\alpha$ 從 $0$ 連續增加至 $\infty$，$T_\alpha$ 構成一個**有限的、彼此嵌套的子樹序列**：</span></span>
+<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; T_0 \supset T_1 \supset T_2 \supset \cdots \supset T_K = </span><span class="sc">\{</span><span class="at">\text{Root}</span><span class="sc">\}</span></span>
+<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; $$</span></span>
+<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 演算法執行步驟：</span></span>
+<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**內部節點有效收縮率計算**：</span>
+<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a>   對內部任意非葉節點 $t$，若將以 $t$ 為根的子樹 $T_t$ 剪除，收縮為單一葉節點 $t$：</span>
+<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>誤差增加量：$R(t) - R(T_t)$。</span>
+<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>葉節點減少量：$|T_t| - 1$。</span>
+<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>定義剪除該節點的**臨界成本係數**：</span>
+<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a>     g(t) \triangleq \frac{R(t) - R(T_t)}{|T_t| - 1}</span>
+<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>在當前樹中尋找使 $g(t)$ 最小的內部節點 $t^* = \arg\min_t g(t)$，將其子樹剪除，得到更小的子樹 $T_1$。</span>
+<span id="cb5-272"><a href="#cb5-272" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>重複上述剪枝步驟，直至剩下根節點，得到子樹序列 $<span class="sc">\{</span>T_0, T_1, \dots, T_K<span class="sc">\}</span>$。</span>
+<span id="cb5-273"><a href="#cb5-273" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>採用 **$K$-折交叉驗證**，在該序列中挑選驗證集誤差最小的最優子樹 $T^*$。</span>
+<span id="cb5-274"><a href="#cb5-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-275"><a href="#cb5-275" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-276"><a href="#cb5-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-277"><a href="#cb5-277" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.6 決策樹的優缺點與統計病態</span></span>
+<span id="cb5-278"><a href="#cb5-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-279"><a href="#cb5-279" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.6.1 決策樹的核心優點</span></span>
+<span id="cb5-280"><a href="#cb5-280" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**極致的可解釋性**：樹狀圖可被非專業人士直觀理解，決策流程完全透明。</span>
+<span id="cb5-281"><a href="#cb5-281" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**對非線性與交互作用自然適配**：無需手動建構高階交互特徵項。</span>
+<span id="cb5-282"><a href="#cb5-282" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**特徵單調變換不變性（Monotonic Invariance）**：僅依賴特徵的排序，**完全不受量綱尺度影響**（無須進行標準化或正規化）。</span>
+<span id="cb5-283"><a href="#cb5-283" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**天然容忍缺失值**：可透過代理切分（Surrogate Splits）優雅處理。</span>
+<span id="cb5-284"><a href="#cb5-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-285"><a href="#cb5-285" aria-hidden="true" tabindex="-1"></a><span class="fu">### 9.6.2 致命缺陷：高變異性（High Variance）</span></span>
+<span id="cb5-286"><a href="#cb5-286" aria-hidden="true" tabindex="-1"></a>決策樹最大的軟肋在於**極度不穩定（Instability）**：在訓練集中增加或刪除少數幾筆樣本，可能導致樹頂層的第一個切分點發生改變，進而引發整棵樹結構的完全重組。</span>
+<span id="cb5-287"><a href="#cb5-287" aria-hidden="true" tabindex="-1"></a>如何克服高變異性？答案正是將數百棵不穩定的樹進行投票與加權——即下一章的**隨機森林與梯度提升（Ensemble Learning）**。</span>
+<span id="cb5-288"><a href="#cb5-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-289"><a href="#cb5-289" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-290"><a href="#cb5-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-291"><a href="#cb5-291" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.7 雙軌實務實驗室：決策樹擬合與成本-複雜度剪枝</span></span>
+<span id="cb5-292"><a href="#cb5-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-293"><a href="#cb5-293" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-294"><a href="#cb5-294" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
 <span id="cb5-295"><a href="#cb5-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-296"><a href="#cb5-296" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 生長全樹 (設定 cp = 0 允許完全生長)</span></span>
-<span id="cb5-297"><a href="#cb5-297" aria-hidden="true" tabindex="-1"></a>tree_full <span class="ot">&lt;-</span> <span class="fu">rpart</span>(High <span class="sc">~</span> . <span class="sc">-</span> Sales, <span class="at">data =</span> carseats_train, <span class="at">method =</span> <span class="st">"class"</span>,</span>
-<span id="cb5-298"><a href="#cb5-298" aria-hidden="true" tabindex="-1"></a>                   <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">cp =</span> <span class="fl">0.0</span>, <span class="at">minsplit =</span> <span class="dv">10</span>))</span>
-<span id="cb5-299"><a href="#cb5-299" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-300"><a href="#cb5-300" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"全樹終端葉節點數量: %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">sum</span>(tree_full<span class="sc">$</span>frame<span class="sc">$</span>var <span class="sc">==</span> <span class="st">"&lt;leaf&gt;"</span>)))</span>
+<span id="cb5-296"><a href="#cb5-296" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-297"><a href="#cb5-297" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb5-298"><a href="#cb5-298" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：rpart 決策樹生長、複雜度參數 cp 剪枝與樹狀圖繪製</span></span>
+<span id="cb5-299"><a href="#cb5-299" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：rpart, rpart.plot, ISLR2</span></span>
+<span id="cb5-300"><a href="#cb5-300" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
 <span id="cb5-301"><a href="#cb5-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-302"><a href="#cb5-302" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 檢視交叉驗證 cp 表格</span></span>
-<span id="cb5-303"><a href="#cb5-303" aria-hidden="true" tabindex="-1"></a>cp_table <span class="ot">&lt;-</span> tree_full<span class="sc">$</span>cptable</span>
-<span id="cb5-304"><a href="#cb5-304" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(cp_table, <span class="dv">8</span>))</span>
+<span id="cb5-302"><a href="#cb5-302" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb5-303"><a href="#cb5-303" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb5-304"><a href="#cb5-304" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
 <span id="cb5-305"><a href="#cb5-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-306"><a href="#cb5-306" aria-hidden="true" tabindex="-1"></a><span class="co"># 自動尋找交叉驗證誤差 (xerror) 最小的 cp 閥值</span></span>
-<span id="cb5-307"><a href="#cb5-307" aria-hidden="true" tabindex="-1"></a>best_cp <span class="ot">&lt;-</span> cp_table[<span class="fu">which.min</span>(cp_table[, <span class="st">"xerror"</span>]), <span class="st">"CP"</span>]</span>
-<span id="cb5-308"><a href="#cb5-308" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">10-Fold 交叉驗證最優 cp: %.5f</span><span class="sc">\n</span><span class="st">"</span>, best_cp))</span>
-<span id="cb5-309"><a href="#cb5-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-310"><a href="#cb5-310" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 執行成本-複雜度剪枝 (Pruning)</span></span>
-<span id="cb5-311"><a href="#cb5-311" aria-hidden="true" tabindex="-1"></a>tree_pruned <span class="ot">&lt;-</span> <span class="fu">prune</span>(tree_full, <span class="at">cp =</span> best_cp)</span>
-<span id="cb5-312"><a href="#cb5-312" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"剪枝後最優樹葉節點數量: %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">sum</span>(tree_pruned<span class="sc">$</span>frame<span class="sc">$</span>var <span class="sc">==</span> <span class="st">"&lt;leaf&gt;"</span>)))</span>
-<span id="cb5-313"><a href="#cb5-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-314"><a href="#cb5-314" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 測試集準確率評估</span></span>
-<span id="cb5-315"><a href="#cb5-315" aria-hidden="true" tabindex="-1"></a>pred_full <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_full, carseats_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
-<span id="cb5-316"><a href="#cb5-316" aria-hidden="true" tabindex="-1"></a>pred_pruned <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_pruned, carseats_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb5-306"><a href="#cb5-306" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 使用 Carseats (兒童安全座椅銷量) 資料集</span></span>
+<span id="cb5-307"><a href="#cb5-307" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Carseats)</span>
+<span id="cb5-308"><a href="#cb5-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-309"><a href="#cb5-309" aria-hidden="true" tabindex="-1"></a><span class="co"># 建立二元分類目標：銷量 High (Sales &gt; 8 為 High)</span></span>
+<span id="cb5-310"><a href="#cb5-310" aria-hidden="true" tabindex="-1"></a>Carseats<span class="sc">$</span>High <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(Carseats<span class="sc">$</span>Sales <span class="sc">&gt;</span> <span class="dv">8</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>))</span>
+<span id="cb5-311"><a href="#cb5-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-312"><a href="#cb5-312" aria-hidden="true" tabindex="-1"></a><span class="co"># 劃分訓練集 (70%) 與測試集 (30%)</span></span>
+<span id="cb5-313"><a href="#cb5-313" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-314"><a href="#cb5-314" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Carseats), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(Carseats))</span>
+<span id="cb5-315"><a href="#cb5-315" aria-hidden="true" tabindex="-1"></a>carseats_train <span class="ot">&lt;-</span> Carseats[train_idx, ]</span>
+<span id="cb5-316"><a href="#cb5-316" aria-hidden="true" tabindex="-1"></a>carseats_test <span class="ot">&lt;-</span> Carseats[<span class="sc">-</span>train_idx, ]</span>
 <span id="cb5-317"><a href="#cb5-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-318"><a href="#cb5-318" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"全樹測試集準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_full <span class="sc">==</span> carseats_test<span class="sc">$</span>High)))</span>
-<span id="cb5-319"><a href="#cb5-319" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"剪枝最優樹測試集準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_pruned <span class="sc">==</span> carseats_test<span class="sc">$</span>High)))</span>
-<span id="cb5-320"><a href="#cb5-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-318"><a href="#cb5-318" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 生長全樹 (設定 cp = 0 允許完全生長)</span></span>
+<span id="cb5-319"><a href="#cb5-319" aria-hidden="true" tabindex="-1"></a>tree_full <span class="ot">&lt;-</span> <span class="fu">rpart</span>(High <span class="sc">~</span> . <span class="sc">-</span> Sales, <span class="at">data =</span> carseats_train, <span class="at">method =</span> <span class="st">"class"</span>,</span>
+<span id="cb5-320"><a href="#cb5-320" aria-hidden="true" tabindex="-1"></a>                   <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">cp =</span> <span class="fl">0.0</span>, <span class="at">minsplit =</span> <span class="dv">10</span>))</span>
 <span id="cb5-321"><a href="#cb5-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-322"><a href="#cb5-322" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb5-322"><a href="#cb5-322" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"全樹終端葉節點數量: %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">sum</span>(tree_full<span class="sc">$</span>frame<span class="sc">$</span>var <span class="sc">==</span> <span class="st">"&lt;leaf&gt;"</span>)))</span>
 <span id="cb5-323"><a href="#cb5-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-324"><a href="#cb5-324" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb5-325"><a href="#cb5-325" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb5-326"><a href="#cb5-326" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：DecisionTreeClassifier 與成本-複雜度剪枝路徑 (ccp_alpha)</span></span>
-<span id="cb5-327"><a href="#cb5-327" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
-<span id="cb5-328"><a href="#cb5-328" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb5-329"><a href="#cb5-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-330"><a href="#cb5-330" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-331"><a href="#cb5-331" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb5-332"><a href="#cb5-332" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
-<span id="cb5-333"><a href="#cb5-333" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, cross_val_score</span>
-<span id="cb5-334"><a href="#cb5-334" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb5-324"><a href="#cb5-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 檢視交叉驗證 cp 表格</span></span>
+<span id="cb5-325"><a href="#cb5-325" aria-hidden="true" tabindex="-1"></a>cp_table <span class="ot">&lt;-</span> tree_full<span class="sc">$</span>cptable</span>
+<span id="cb5-326"><a href="#cb5-326" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(cp_table, <span class="dv">8</span>))</span>
+<span id="cb5-327"><a href="#cb5-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-328"><a href="#cb5-328" aria-hidden="true" tabindex="-1"></a><span class="co"># 自動尋找交叉驗證誤差 (xerror) 最小的 cp 閥值</span></span>
+<span id="cb5-329"><a href="#cb5-329" aria-hidden="true" tabindex="-1"></a>best_cp <span class="ot">&lt;-</span> cp_table[<span class="fu">which.min</span>(cp_table[, <span class="st">"xerror"</span>]), <span class="st">"CP"</span>]</span>
+<span id="cb5-330"><a href="#cb5-330" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">10-Fold 交叉驗證最優 cp: %.5f</span><span class="sc">\n</span><span class="st">"</span>, best_cp))</span>
+<span id="cb5-331"><a href="#cb5-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-332"><a href="#cb5-332" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 執行成本-複雜度剪枝 (Pruning)</span></span>
+<span id="cb5-333"><a href="#cb5-333" aria-hidden="true" tabindex="-1"></a>tree_pruned <span class="ot">&lt;-</span> <span class="fu">prune</span>(tree_full, <span class="at">cp =</span> best_cp)</span>
+<span id="cb5-334"><a href="#cb5-334" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"剪枝後最優樹葉節點數量: %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">sum</span>(tree_pruned<span class="sc">$</span>frame<span class="sc">$</span>var <span class="sc">==</span> <span class="st">"&lt;leaf&gt;"</span>)))</span>
 <span id="cb5-335"><a href="#cb5-335" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-336"><a href="#cb5-336" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬高維非線性分類資料</span></span>
-<span id="cb5-337"><a href="#cb5-337" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb5-338"><a href="#cb5-338" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">400</span>, <span class="dv">10</span></span>
-<span id="cb5-339"><a href="#cb5-339" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, p))</span>
-<span id="cb5-340"><a href="#cb5-340" aria-hidden="true" tabindex="-1"></a><span class="co"># 非線性分類規則：若 (X0 &gt; 0 且 X1 &gt; 0) 或 (X2 &lt; -0.5) 則為 1</span></span>
-<span id="cb5-341"><a href="#cb5-341" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> ((X[:, <span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> (X[:, <span class="dv">1</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">|</span> (X[:, <span class="dv">2</span>] <span class="op">&lt;</span> <span class="op">-</span><span class="fl">0.5</span>)).astype(<span class="bu">int</span>)</span>
-<span id="cb5-342"><a href="#cb5-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-343"><a href="#cb5-343" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb5-344"><a href="#cb5-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-345"><a href="#cb5-345" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 計算成本-複雜度剪枝路徑 (Cost Complexity Pruning Path)</span></span>
-<span id="cb5-346"><a href="#cb5-346" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb5-347"><a href="#cb5-347" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> clf.cost_complexity_pruning_path(X_train, y_train)</span>
-<span id="cb5-348"><a href="#cb5-348" aria-hidden="true" tabindex="-1"></a>ccp_alphas, impurities <span class="op">=</span> path.ccp_alphas, path.impurities</span>
-<span id="cb5-349"><a href="#cb5-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-350"><a href="#cb5-350" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"生成的剪枝候選 alpha 數量: </span><span class="sc">{</span><span class="bu">len</span>(ccp_alphas)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-336"><a href="#cb5-336" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 測試集準確率評估</span></span>
+<span id="cb5-337"><a href="#cb5-337" aria-hidden="true" tabindex="-1"></a>pred_full <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_full, carseats_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb5-338"><a href="#cb5-338" aria-hidden="true" tabindex="-1"></a>pred_pruned <span class="ot">&lt;-</span> <span class="fu">predict</span>(tree_pruned, carseats_test, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb5-339"><a href="#cb5-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-340"><a href="#cb5-340" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"全樹測試集準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_full <span class="sc">==</span> carseats_test<span class="sc">$</span>High)))</span>
+<span id="cb5-341"><a href="#cb5-341" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"剪枝最優樹測試集準確率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>(pred_pruned <span class="sc">==</span> carseats_test<span class="sc">$</span>High)))</span>
+<span id="cb5-342"><a href="#cb5-342" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-343"><a href="#cb5-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-344"><a href="#cb5-344" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb5-345"><a href="#cb5-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-346"><a href="#cb5-346" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb5-347"><a href="#cb5-347" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb5-348"><a href="#cb5-348" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：DecisionTreeClassifier 與成本-複雜度剪枝路徑 (ccp_alpha)</span></span>
+<span id="cb5-349"><a href="#cb5-349" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb5-350"><a href="#cb5-350" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
 <span id="cb5-351"><a href="#cb5-351" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-352"><a href="#cb5-352" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 透過 5-Fold 交叉驗證挑選最佳 ccp_alpha</span></span>
-<span id="cb5-353"><a href="#cb5-353" aria-hidden="true" tabindex="-1"></a>alpha_scores <span class="op">=</span> []</span>
-<span id="cb5-354"><a href="#cb5-354" aria-hidden="true" tabindex="-1"></a><span class="co"># 抽樣候選 alpha 進行評估</span></span>
-<span id="cb5-355"><a href="#cb5-355" aria-hidden="true" tabindex="-1"></a>sampled_alphas <span class="op">=</span> ccp_alphas[::<span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">len</span>(ccp_alphas)<span class="op">//</span><span class="dv">15</span>)]</span>
-<span id="cb5-356"><a href="#cb5-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-357"><a href="#cb5-357" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> alpha <span class="kw">in</span> sampled_alphas:</span>
-<span id="cb5-358"><a href="#cb5-358" aria-hidden="true" tabindex="-1"></a>    tree <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>, ccp_alpha<span class="op">=</span>alpha)</span>
-<span id="cb5-359"><a href="#cb5-359" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(tree, X_train, y_train, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'accuracy'</span>)</span>
-<span id="cb5-360"><a href="#cb5-360" aria-hidden="true" tabindex="-1"></a>    alpha_scores.append(scores.mean())</span>
-<span id="cb5-361"><a href="#cb5-361" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-362"><a href="#cb5-362" aria-hidden="true" tabindex="-1"></a>best_alpha <span class="op">=</span> sampled_alphas[np.argmax(alpha_scores)]</span>
-<span id="cb5-363"><a href="#cb5-363" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"交叉驗證最優 ccp_alpha: </span><span class="sc">{</span>best_alpha<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
+<span id="cb5-352"><a href="#cb5-352" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-353"><a href="#cb5-353" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-354"><a href="#cb5-354" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb5-355"><a href="#cb5-355" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, cross_val_score</span>
+<span id="cb5-356"><a href="#cb5-356" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb5-357"><a href="#cb5-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-358"><a href="#cb5-358" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬高維非線性分類資料</span></span>
+<span id="cb5-359"><a href="#cb5-359" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb5-360"><a href="#cb5-360" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">400</span>, <span class="dv">10</span></span>
+<span id="cb5-361"><a href="#cb5-361" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, p))</span>
+<span id="cb5-362"><a href="#cb5-362" aria-hidden="true" tabindex="-1"></a><span class="co"># 非線性分類規則：若 (X0 &gt; 0 且 X1 &gt; 0) 或 (X2 &lt; -0.5) 則為 1</span></span>
+<span id="cb5-363"><a href="#cb5-363" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> ((X[:, <span class="dv">0</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">&amp;</span> (X[:, <span class="dv">1</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">|</span> (X[:, <span class="dv">2</span>] <span class="op">&lt;</span> <span class="op">-</span><span class="fl">0.5</span>)).astype(<span class="bu">int</span>)</span>
 <span id="cb5-364"><a href="#cb5-364" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-365"><a href="#cb5-365" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合全樹與最優剪枝樹對比</span></span>
-<span id="cb5-366"><a href="#cb5-366" aria-hidden="true" tabindex="-1"></a>tree_full <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>).fit(X_train, y_train)</span>
-<span id="cb5-367"><a href="#cb5-367" aria-hidden="true" tabindex="-1"></a>tree_pruned <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>, ccp_alpha<span class="op">=</span>best_alpha).fit(X_train, y_train)</span>
-<span id="cb5-368"><a href="#cb5-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-369"><a href="#cb5-369" aria-hidden="true" tabindex="-1"></a>acc_full <span class="op">=</span> accuracy_score(y_test, tree_full.predict(X_test))</span>
-<span id="cb5-370"><a href="#cb5-370" aria-hidden="true" tabindex="-1"></a>acc_pruned <span class="op">=</span> accuracy_score(y_test, tree_pruned.predict(X_test))</span>
+<span id="cb5-365"><a href="#cb5-365" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb5-366"><a href="#cb5-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-367"><a href="#cb5-367" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 計算成本-複雜度剪枝路徑 (Cost Complexity Pruning Path)</span></span>
+<span id="cb5-368"><a href="#cb5-368" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb5-369"><a href="#cb5-369" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> clf.cost_complexity_pruning_path(X_train, y_train)</span>
+<span id="cb5-370"><a href="#cb5-370" aria-hidden="true" tabindex="-1"></a>ccp_alphas, impurities <span class="op">=</span> path.ccp_alphas, path.impurities</span>
 <span id="cb5-371"><a href="#cb5-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-372"><a href="#cb5-372" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">全樹葉節點數量: </span><span class="sc">{</span>tree_full<span class="sc">.</span>get_n_leaves()<span class="sc">}</span><span class="ss"> | 測試集準確率: </span><span class="sc">{</span>acc_full<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb5-373"><a href="#cb5-373" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"剪枝後葉節點數量: </span><span class="sc">{</span>tree_pruned<span class="sc">.</span>get_n_leaves()<span class="sc">}</span><span class="ss"> | 測試集準確率: </span><span class="sc">{</span>acc_pruned<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb5-374"><a href="#cb5-374" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb5-375"><a href="#cb5-375" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb5-376"><a href="#cb5-376" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-377"><a href="#cb5-377" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-372"><a href="#cb5-372" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"生成的剪枝候選 alpha 數量: </span><span class="sc">{</span><span class="bu">len</span>(ccp_alphas)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-373"><a href="#cb5-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-374"><a href="#cb5-374" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 透過 5-Fold 交叉驗證挑選最佳 ccp_alpha</span></span>
+<span id="cb5-375"><a href="#cb5-375" aria-hidden="true" tabindex="-1"></a>alpha_scores <span class="op">=</span> []</span>
+<span id="cb5-376"><a href="#cb5-376" aria-hidden="true" tabindex="-1"></a><span class="co"># 抽樣候選 alpha 進行評估</span></span>
+<span id="cb5-377"><a href="#cb5-377" aria-hidden="true" tabindex="-1"></a>sampled_alphas <span class="op">=</span> ccp_alphas[::<span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">len</span>(ccp_alphas)<span class="op">//</span><span class="dv">15</span>)]</span>
 <span id="cb5-378"><a href="#cb5-378" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-379"><a href="#cb5-379" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.8 課後全方位習題庫（10 題）</span></span>
-<span id="cb5-380"><a href="#cb5-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-381"><a href="#cb5-381" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb5-382"><a href="#cb5-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-383"><a href="#cb5-383" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**吉尼係數與交叉熵的凹性與資訊增益非負性**：</span>
-<span id="cb5-384"><a href="#cb5-384" aria-hidden="true" tabindex="-1"></a>   證明二元吉尼不純度函數 $G(p) = 2p(1-p)$ 在 $p \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 上為嚴格凹函數（$\frac{d^2 G}{dp^2} &lt; 0$）。利用 Jensen 不等式證明：任何切分所產生的加權吉尼不純度必小於或等於切分前的母節點不純度（$\Delta G \ge 0$）。</span>
-<span id="cb5-385"><a href="#cb5-385" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**多類別分類中吉尼指數的幾何含義**：</span>
-<span id="cb5-386"><a href="#cb5-386" aria-hidden="true" tabindex="-1"></a>   設類別向量以 one-hot 編碼表示，證明節點內所有樣本兩兩之間歐氏距離平方的均值，恰好等於該節點吉尼係數的 2 倍：$\frac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N \frac{1}{2}<span class="sc">\|</span>\boldsymbol{y}_i - \boldsymbol{y}_j<span class="sc">\|</span>^2 = G$。</span>
-<span id="cb5-387"><a href="#cb5-387" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**連續特徵切分點數量的上限分析**：</span>
-<span id="cb5-388"><a href="#cb5-388" aria-hidden="true" tabindex="-1"></a>   若某連續特徵包含 $N$ 筆觀測值，證明最多只需檢驗 $N-1$ 個候選切分點。若特徵值全部相異，說明如何利用排序演算法在 $\mathcal{O}(N \log N)$ 時間複雜度內完成最佳切分點搜尋。</span>
-<span id="cb5-389"><a href="#cb5-389" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**弱連接剪枝的嵌套性證明（Nested Subtrees）**：</span>
-<span id="cb5-390"><a href="#cb5-390" aria-hidden="true" tabindex="-1"></a>   證明在成本-複雜度剪枝式 (<span class="co">[</span><span class="ot">-@eq-ch09-cost-complexity</span><span class="co">]</span>) 中，若 $\alpha_1 &lt; \alpha_2$，則對應的最優子樹必滿足 $T_{\alpha_2} \subseteq T_{\alpha_1}$。</span>
-<span id="cb5-391"><a href="#cb5-391" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**對角線邊界逼近的階梯效應（Staircase Effect）**：</span>
-<span id="cb5-392"><a href="#cb5-392" aria-hidden="true" tabindex="-1"></a>   設二維特徵空間中的真實決策邊界為 $x_1 + x_2 = 1$。證明單一軸向對齊的決策樹若要達到 $\epsilon$ 的逼近誤差，所需的葉節點數量至少隨 $1/\epsilon$ 呈線性或多項式增長。</span>
+<span id="cb5-379"><a href="#cb5-379" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> alpha <span class="kw">in</span> sampled_alphas:</span>
+<span id="cb5-380"><a href="#cb5-380" aria-hidden="true" tabindex="-1"></a>    tree <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>, ccp_alpha<span class="op">=</span>alpha)</span>
+<span id="cb5-381"><a href="#cb5-381" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(tree, X_train, y_train, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'accuracy'</span>)</span>
+<span id="cb5-382"><a href="#cb5-382" aria-hidden="true" tabindex="-1"></a>    alpha_scores.append(scores.mean())</span>
+<span id="cb5-383"><a href="#cb5-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-384"><a href="#cb5-384" aria-hidden="true" tabindex="-1"></a>best_alpha <span class="op">=</span> sampled_alphas[np.argmax(alpha_scores)]</span>
+<span id="cb5-385"><a href="#cb5-385" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"交叉驗證最優 ccp_alpha: </span><span class="sc">{</span>best_alpha<span class="sc">:.5f}</span><span class="ss">"</span>)</span>
+<span id="cb5-386"><a href="#cb5-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-387"><a href="#cb5-387" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 擬合全樹與最優剪枝樹對比</span></span>
+<span id="cb5-388"><a href="#cb5-388" aria-hidden="true" tabindex="-1"></a>tree_full <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>).fit(X_train, y_train)</span>
+<span id="cb5-389"><a href="#cb5-389" aria-hidden="true" tabindex="-1"></a>tree_pruned <span class="op">=</span> DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>, ccp_alpha<span class="op">=</span>best_alpha).fit(X_train, y_train)</span>
+<span id="cb5-390"><a href="#cb5-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-391"><a href="#cb5-391" aria-hidden="true" tabindex="-1"></a>acc_full <span class="op">=</span> accuracy_score(y_test, tree_full.predict(X_test))</span>
+<span id="cb5-392"><a href="#cb5-392" aria-hidden="true" tabindex="-1"></a>acc_pruned <span class="op">=</span> accuracy_score(y_test, tree_pruned.predict(X_test))</span>
 <span id="cb5-393"><a href="#cb5-393" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-394"><a href="#cb5-394" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb5-395"><a href="#cb5-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-396"><a href="#cb5-396" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**手刻簡易迴歸樹演算法（From-Scratch Regression Tree）**：</span>
-<span id="cb5-397"><a href="#cb5-397" aria-hidden="true" tabindex="-1"></a>   不依賴第三方機器學習庫，僅使用 NumPy 實作一個最大深度為 2 的單變量迴歸樹，完整包含最佳切分點搜尋與預測邏輯。</span>
-<span id="cb5-398"><a href="#cb5-398" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**分類樹可視化與特徵重要性計算（MDI）**：</span>
-<span id="cb5-399"><a href="#cb5-399" aria-hidden="true" tabindex="-1"></a>   使用 R <span class="in">`rpart.plot`</span> 或 Python <span class="in">`plot_tree`</span> 視覺化對 Iris 或 Wine 資料集擬合的決策樹，並撰寫程式自底向上統計各特徵在所有內部節點所產生的吉尼不純度下降總和（Mean Decrease Impurity, MDI），輸出特徵重要性長條圖。</span>
-<span id="cb5-400"><a href="#cb5-400" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**代理切分（Surrogate Splits）處理缺失值實證**：</span>
-<span id="cb5-401"><a href="#cb5-401" aria-hidden="true" tabindex="-1"></a>   在訓練集中隨機人工注入 20% 的特徵缺失值。比較支援代理切分的 R <span class="in">`rpart`</span> 與直接填充均值的 Python <span class="in">`DecisionTreeClassifier`</span> 在測試集上的預測穩定性。</span>
-<span id="cb5-402"><a href="#cb5-402" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**樹深度（Max Depth）與葉節點最小樣本數（Min Samples Leaf）之網格搜尋**：</span>
-<span id="cb5-403"><a href="#cb5-403" aria-hidden="true" tabindex="-1"></a>   利用 10-Fold 交叉驗證對決策樹的 <span class="in">`max_depth`</span> $\in <span class="co">[</span><span class="ot">1, 10</span><span class="co">]</span>$ 與 <span class="in">`min_samples_leaf`</span> $\in <span class="co">[</span><span class="ot">1, 20</span><span class="co">]</span>$ 進行二維網格搜尋（Grid Search），繪製熱力圖（Heatmap）並分析超參數間的交互作用。</span>
-<span id="cb5-404"><a href="#cb5-404" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**不穩定性展示（Tree Instability Demonstration）**：</span>
-<span id="cb5-405"><a href="#cb5-405" aria-hidden="true" tabindex="-1"></a>    撰寫程式對原始訓練集進行 5 次不同的 90% 隨機子抽樣（Subsampling），分別擬合 5 棵決策樹，視覺化輸出每一棵樹根節點與前兩層的切分特徵與閥值，量化展示單一決策樹的高變異性特質。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb5-394"><a href="#cb5-394" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">全樹葉節點數量: </span><span class="sc">{</span>tree_full<span class="sc">.</span>get_n_leaves()<span class="sc">}</span><span class="ss"> | 測試集準確率: </span><span class="sc">{</span>acc_full<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb5-395"><a href="#cb5-395" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"剪枝後葉節點數量: </span><span class="sc">{</span>tree_pruned<span class="sc">.</span>get_n_leaves()<span class="sc">}</span><span class="ss"> | 測試集準確率: </span><span class="sc">{</span>acc_pruned<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb5-396"><a href="#cb5-396" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-397"><a href="#cb5-397" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-398"><a href="#cb5-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-399"><a href="#cb5-399" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-400"><a href="#cb5-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-401"><a href="#cb5-401" aria-hidden="true" tabindex="-1"></a><span class="fu">## 9.8 課後全方位習題庫（10 題）</span></span>
+<span id="cb5-402"><a href="#cb5-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-403"><a href="#cb5-403" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb5-404"><a href="#cb5-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-405"><a href="#cb5-405" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**吉尼係數與交叉熵的凹性與資訊增益非負性**：</span>
+<span id="cb5-406"><a href="#cb5-406" aria-hidden="true" tabindex="-1"></a>   證明二元吉尼不純度函數 $G(p) = 2p(1-p)$ 在 $p \in <span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>$ 上為嚴格凹函數（$\frac{d^2 G}{dp^2} &lt; 0$）。利用 Jensen 不等式證明：任何切分所產生的加權吉尼不純度必小於或等於切分前的母節點不純度（$\Delta G \ge 0$）。</span>
+<span id="cb5-407"><a href="#cb5-407" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**多類別分類中吉尼指數的幾何含義**：</span>
+<span id="cb5-408"><a href="#cb5-408" aria-hidden="true" tabindex="-1"></a>   設類別向量以 one-hot 編碼表示，證明節點內所有樣本兩兩之間歐氏距離平方的均值，恰好等於該節點吉尼係數的 2 倍：$\frac{1}{N^2} \sum_{i=1}^N \sum_{j=1}^N \frac{1}{2}<span class="sc">\|</span>\boldsymbol{y}_i - \boldsymbol{y}_j<span class="sc">\|</span>^2 = G$。</span>
+<span id="cb5-409"><a href="#cb5-409" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**連續特徵切分點數量的上限分析**：</span>
+<span id="cb5-410"><a href="#cb5-410" aria-hidden="true" tabindex="-1"></a>   若某連續特徵包含 $N$ 筆觀測值，證明最多只需檢驗 $N-1$ 個候選切分點。若特徵值全部相異，說明如何利用排序演算法在 $\mathcal{O}(N \log N)$ 時間複雜度內完成最佳切分點搜尋。</span>
+<span id="cb5-411"><a href="#cb5-411" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**弱連接剪枝的嵌套性證明（Nested Subtrees）**：</span>
+<span id="cb5-412"><a href="#cb5-412" aria-hidden="true" tabindex="-1"></a>   證明在成本-複雜度剪枝式 (<span class="co">[</span><span class="ot">-@eq-ch09-cost-complexity</span><span class="co">]</span>) 中，若 $\alpha_1 &lt; \alpha_2$，則對應的最優子樹必滿足 $T_{\alpha_2} \subseteq T_{\alpha_1}$。</span>
+<span id="cb5-413"><a href="#cb5-413" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**對角線邊界逼近的階梯效應（Staircase Effect）**：</span>
+<span id="cb5-414"><a href="#cb5-414" aria-hidden="true" tabindex="-1"></a>   設二維特徵空間中的真實決策邊界為 $x_1 + x_2 = 1$。證明單一軸向對齊的決策樹若要達到 $\epsilon$ 的逼近誤差，所需的葉節點數量至少隨 $1/\epsilon$ 呈線性或多項式增長。</span>
+<span id="cb5-415"><a href="#cb5-415" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-416"><a href="#cb5-416" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb5-417"><a href="#cb5-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-418"><a href="#cb5-418" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**手刻簡易迴歸樹演算法（From-Scratch Regression Tree）**：</span>
+<span id="cb5-419"><a href="#cb5-419" aria-hidden="true" tabindex="-1"></a>   不依賴第三方機器學習庫，僅使用 NumPy 實作一個最大深度為 2 的單變量迴歸樹，完整包含最佳切分點搜尋與預測邏輯。</span>
+<span id="cb5-420"><a href="#cb5-420" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**分類樹可視化與特徵重要性計算（MDI）**：</span>
+<span id="cb5-421"><a href="#cb5-421" aria-hidden="true" tabindex="-1"></a>   使用 R <span class="in">`rpart.plot`</span> 或 Python <span class="in">`plot_tree`</span> 視覺化對 Iris 或 Wine 資料集擬合的決策樹，並撰寫程式自底向上統計各特徵在所有內部節點所產生的吉尼不純度下降總和（Mean Decrease Impurity, MDI），輸出特徵重要性長條圖。</span>
+<span id="cb5-422"><a href="#cb5-422" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**代理切分（Surrogate Splits）處理缺失值實證**：</span>
+<span id="cb5-423"><a href="#cb5-423" aria-hidden="true" tabindex="-1"></a>   在訓練集中隨機人工注入 20% 的特徵缺失值。比較支援代理切分的 R <span class="in">`rpart`</span> 與直接填充均值的 Python <span class="in">`DecisionTreeClassifier`</span> 在測試集上的預測穩定性。</span>
+<span id="cb5-424"><a href="#cb5-424" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**樹深度（Max Depth）與葉節點最小樣本數（Min Samples Leaf）之網格搜尋**：</span>
+<span id="cb5-425"><a href="#cb5-425" aria-hidden="true" tabindex="-1"></a>   利用 10-Fold 交叉驗證對決策樹的 <span class="in">`max_depth`</span> $\in <span class="co">[</span><span class="ot">1, 10</span><span class="co">]</span>$ 與 <span class="in">`min_samples_leaf`</span> $\in <span class="co">[</span><span class="ot">1, 20</span><span class="co">]</span>$ 進行二維網格搜尋（Grid Search），繪製熱力圖（Heatmap）並分析超參數間的交互作用。</span>
+<span id="cb5-426"><a href="#cb5-426" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**不穩定性展示（Tree Instability Demonstration）**：</span>
+<span id="cb5-427"><a href="#cb5-427" aria-hidden="true" tabindex="-1"></a>    撰寫程式對原始訓練集進行 5 次不同的 90% 隨機子抽樣（Subsampling），分別擬合 5 棵決策樹，視覺化輸出每一棵樹根節點與前兩層的切分特徵與閥值，量化展示單一決策樹的高變異性特質。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

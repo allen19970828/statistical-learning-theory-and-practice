@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">10.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">10.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀全球串流影音平台高價值會員流失預警大賽" id="toc-開篇實務案例導讀全球串流影音平台高價值會員流失預警大賽" class="nav-link" data-scroll-target="#開篇實務案例導讀全球串流影音平台高價值會員流失預警大賽"><span class="header-section-number">10.1.1</span> 💡 開篇實務案例導讀：全球串流影音平台高價值會員流失預警大賽</a></li>
+  <li><a href="#概念直覺與幾何啟發獨立專家多數表決-vs-專題錯題本的螺旋式訂正" id="toc-概念直覺與幾何啟發獨立專家多數表決-vs-專題錯題本的螺旋式訂正" class="nav-link" data-scroll-target="#概念直覺與幾何啟發獨立專家多數表決-vs-專題錯題本的螺旋式訂正"><span class="header-section-number">10.1.2</span> 🎯 概念直覺與幾何啟發：獨立專家多數表決 vs 專題錯題本的螺旋式訂正</a></li>
+  </ul></li>
   <li><a href="#集成學習哲學與-condorcet-陪審團定理" id="toc-集成學習哲學與-condorcet-陪審團定理" class="nav-link" data-scroll-target="#集成學習哲學與-condorcet-陪審團定理"><span class="header-section-number">10.2</span> 10.1 集成學習哲學與 Condorcet 陪審團定理</a>
   <ul class="collapse">
   <li><a href="#數學原理condorcet-陪審團定理" id="toc-數學原理condorcet-陪審團定理" class="nav-link" data-scroll-target="#數學原理condorcet-陪審團定理"><span class="header-section-number">10.2.1</span> 數學原理：Condorcet 陪審團定理</a></li>
@@ -594,7 +598,30 @@ window.Quarto = {
 <p>單一決策樹雖然具備直觀、非參數與不依賴特徵尺度的優勢，但其致命的「高變異數」（High Variance）使其在複雜資料集上的預測性能往往遜於支援向量機。然而，若我們將數百棵甚至數千棵決策樹組合在一起，是否能創造出奇蹟？</p>
 <p>答案催生了現代統計學習中最強大的家族——<strong>集成學習（Ensemble Learning）</strong>。 Leo Breiman (1996, 2001) 與 Jerome Friedman (2001) 開創的兩大體系徹底改變了應用資料科學的面貌： 1. <strong>Bagging 與隨機森林（Random Forest）</strong>：基於並行獨立隨機抽樣，核心在於<strong>大幅消減方差（Variance Reduction）</strong>。 2. <strong>Boosting 與 GBDT / XGBoost</strong>：基於循序相加模型與梯度下降，核心在於<strong>大幅消減偏誤（Bias Reduction）</strong>。</p>
 <p>本章將給出 Bagging 方差分解公式的嚴格推導；解密隨機森林特徵子空間隨機性打破相關度的數學機理；提供 <strong>AdaBoost 樣本權重動態更新的手工逐步演算範例</strong>；給出 <strong>XGBoost 二階泰勒展開式與葉權重封閉解</strong>的現代推導；最後於 R 與 Python 雙環境中實戰並提供全套習題庫。</p>
+<section id="開篇實務案例導讀全球串流影音平台高價值會員流失預警大賽" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="開篇實務案例導讀全球串流影音平台高價值會員流失預警大賽"><span class="header-section-number">10.1.1</span> 💡 開篇實務案例導讀：全球串流影音平台高價值會員流失預警大賽</h3>
+<p>在 Netflix、Spotify 或 Disney+ 等跨國訂閱制商業體系中，精準預測「哪些高終身價值（LTV）會員將在下個月取消訂閱」是維繫千億營收的生死防線。業務特徵龐雜交錯：過去 30 天播放總時長衰減率、跳過歌曲頻率、播放清單更新間隔、登入設備多樣性、客訴工單紀錄以及信用卡授權扣款失敗歷史。</p>
+<p>若僅仰賴單一決策樹模型，樹會因為少數幾筆異常長尾資料而發生結構劇烈翻轉（極高的模型變異數），這週訓練的規則與上週完全脫節，行銷團隊難以制定穩定的自動化挽留策略。</p>
+<p>而在全球各類頂級 Kaggle 與工業級表格資料（Tabular Data）應用中，長期統治榜首的工業巨獸永遠不是計算成本昂貴的深層神經網路，而是<strong>隨機森林（Random Forest）與極限梯度提升（XGBoost / LightGBM）</strong>！ 為什麼「把數百棵簡陋的決策樹組織起來」，能爆發出橫掃各種複雜結構化數據的驚人泛化威力？這正是集成學習在統計理論上最精彩的篇章。</p>
+</section>
+<section id="概念直覺與幾何啟發獨立專家多數表決-vs-專題錯題本的螺旋式訂正" class="level3" data-number="10.1.2">
+<h3 data-number="10.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發獨立專家多數表決-vs-專題錯題本的螺旋式訂正"><span class="header-section-number">10.1.2</span> 🎯 概念直覺與幾何啟發：獨立專家多數表決 vs 專題錯題本的螺旋式訂正</h3>
+<p>自修者在剖析集成學習的兩大流派時，請在心智中並列對比以下兩種本質迥異的集體智慧模型：</p>
+<ul>
+<li><strong>隨機森林（專家民主投票 / 消減變異數 Variance）</strong>： 想像由 500 位受過基礎醫學訓練、但各自具有知識盲點的醫師組成一個大型會診委員會：
+<ul>
+<li>為了防止所有醫師受到相同偏見的干擾，我們讓每位醫師只查閱隨機抽樣的部分病歷（Bootstrap 樣本），並且在每次診斷決策時只允許參考隨機挑選的少數指標（特徵子空間隨機化，<span class="math inline">\sqrt{p}</span> 個特徵）；</li>
+<li>這種刻意引入的隨機性，徹底打破了樹與樹之間的相關度（去相關化 Decorrelation）。個別醫師可能會看走眼，但當 500 位相互獨立的醫師同時舉手表決取眾數或平均時，個人的隨機錯誤在平均過程中被完美抵消，診斷委員會的預測方差呈現斷崖式下降！</li>
+</ul></li>
+<li><strong>梯度提升（優等生反覆訂正錯題本 / 消減偏誤 Bias）</strong>： 想像一位頂尖學生正在攻克高難度聯考。第一次做模擬考卷，得了 60 分（初始弱學習器 <span class="math inline">f_1</span>）：
+<ul>
+<li>他絕不重頭盲目刷整份題目，而是把被扣掉的 40 分所有做錯的題目單獨抄在一本「錯題筆記本」上（對應計算損失函數的一階負梯度或殘差）；</li>
+<li>第二個學習器 <span class="math inline">f_2</span> 被指派唯一的任務：全力攻克這本錯題筆記；</li>
+<li>第三個學習器 <span class="math inline">f_3</span> 再去攻克前兩位學習器依舊做錯的剩餘微小失分點… 如此一棒接著一棒、後者專為前者的殘差而生，在函數空間中一步一步沿著負梯度方向前進，最終將原本堅硬的系統性偏誤（Bias）碾碎殆盡！</li>
+</ul></li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="集成學習哲學與-condorcet-陪審團定理" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="集成學習哲學與-condorcet-陪審團定理"><span class="header-section-number">10.2</span> 10.1 集成學習哲學與 Condorcet 陪審團定理</h2>
@@ -1466,387 +1493,411 @@ G_j + (H_j + \lambda) w_j = 0 \implies w_j^* = -\frac{G_j}{H_j + \lambda}
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>本章將給出 Bagging 方差分解公式的嚴格推導；解密隨機森林特徵子空間隨機性打破相關度的數學機理；提供 **AdaBoost 樣本權重動態更新的手工逐步演算範例**；給出 **XGBoost 二階泰勒展開式與葉權重封閉解**的現代推導；最後於 R 與 Python 雙環境中實戰並提供全套習題庫。</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：全球串流影音平台高價值會員流失預警大賽</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.1 集成學習哲學與 Condorcet 陪審團定理</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>在 Netflix、Spotify 或 Disney+ 等跨國訂閱制商業體系中，精準預測「哪些高終身價值（LTV）會員將在下個月取消訂閱」是維繫千億營收的生死防線。業務特徵龐雜交錯：過去 30 天播放總時長衰減率、跳過歌曲頻率、播放清單更新間隔、登入設備多樣性、客訴工單紀錄以及信用卡授權扣款失敗歷史。</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>集成學習的哲學是**「群體智慧（Wisdom of Crowds）」**：將多個個別表現僅略優於隨機猜測的**弱學習器（Weak Learners）**，組合成一個具備極高預測精度的**強學習器（Strong Learner）**。</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>若僅仰賴單一決策樹模型，樹會因為少數幾筆異常長尾資料而發生結構劇烈翻轉（極高的模型變異數），這週訓練的規則與上週完全脫節，行銷團隊難以制定穩定的自動化挽留策略。</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 數學原理：Condorcet 陪審團定理</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>假設有 $T$ 個二元分類器 $h_1, h_2, \dots, h_T$，其分類正確率皆為 $p &gt; 0.5$。假設各分類器之間的錯誤**完全統計獨立**。</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>若透過**多數決投票（Majority Voting）**決定最終預測，當 $T$ 為奇數時，集成模型犯錯的機率為超過半數分類器同時犯錯的機率：</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>P(\text{集成模型錯誤}) = \sum_{k=\lfloor T/2 \rfloor + 1}^T \binom{T}{k} (1 - p)^k p^{T - k}</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>由 Hoeffding 不等式，當 $T \to \infty$ 時：</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>P(\text{集成模型錯誤}) \le \exp\left( -2 T \left(p - \frac{1}{2}\right)^2 \right) \xrightarrow{T \to \infty} 0</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>集成系統的錯誤率隨基學習器數量 $T$ 呈**指數級衰減**！</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>然而，該定理成立的關鍵核心前提是：**基學習器之間必須相互獨立**。在現實資料集中，所有模型都訓練自同一個總體，如何創造出「既準確、又彼此獨立不相關」的基學習器？這正是 Bagging 與隨機森林的精髓所在。</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>而在全球各類頂級 Kaggle 與工業級表格資料（Tabular Data）應用中，長期統治榜首的工業巨獸永遠不是計算成本昂貴的深層神經網路，而是**隨機森林（Random Forest）與極限梯度提升（XGBoost / LightGBM）**！</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>為什麼「把數百棵簡陋的決策樹組織起來」，能爆發出橫掃各種複雜結構化數據的驚人泛化威力？這正是集成學習在統計理論上最精彩的篇章。</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：獨立專家多數表決 vs 專題錯題本的螺旋式訂正</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>自修者在剖析集成學習的兩大流派時，請在心智中並列對比以下兩種本質迥異的集體智慧模型：</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**隨機森林（專家民主投票 / 消減變異數 Variance）**：</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  想像由 500 位受過基礎醫學訓練、但各自具有知識盲點的醫師組成一個大型會診委員會：</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>為了防止所有醫師受到相同偏見的干擾，我們讓每位醫師只查閱隨機抽樣的部分病歷（Bootstrap 樣本），並且在每次診斷決策時只允許參考隨機挑選的少數指標（特徵子空間隨機化，$\sqrt{p}$ 個特徵）；</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>這種刻意引入的隨機性，徹底打破了樹與樹之間的相關度（去相關化 Decorrelation）。個別醫師可能會看走眼，但當 500 位相互獨立的醫師同時舉手表決取眾數或平均時，個人的隨機錯誤在平均過程中被完美抵消，診斷委員會的預測方差呈現斷崖式下降！</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**梯度提升（優等生反覆訂正錯題本 / 消減偏誤 Bias）**：</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  想像一位頂尖學生正在攻克高難度聯考。第一次做模擬考卷，得了 60 分（初始弱學習器 $f_1$）：</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>他絕不重頭盲目刷整份題目，而是把被扣掉的 40 分所有做錯的題目單獨抄在一本「錯題筆記本」上（對應計算損失函數的一階負梯度或殘差）；</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>第二個學習器 $f_2$ 被指派唯一的任務：全力攻克這本錯題筆記；</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>第三個學習器 $f_3$ 再去攻克前兩位學習器依舊做錯的剩餘微小失分點...</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  如此一棒接著一棒、後者專為前者的殘差而生，在函數空間中一步一步沿著負梯度方向前進，最終將原本堅硬的系統性偏誤（Bias）碾碎殆盡！</span>
 <span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.2 Bagging 與方差消減原理</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>**Bagging（Bootstrap Aggregating, Breiman 1996）**利用自助法抽樣構建差異化模型。</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.1 集成學習哲學與 Condorcet 陪審團定理</span></span>
 <span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.2.1 方差分解定理推導</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>集成學習的哲學是**「群體智慧（Wisdom of Crowds）」**：將多個個別表現僅略優於隨機猜測的**弱學習器（Weak Learners）**，組合成一個具備極高預測精度的**強學習器（Strong Learner）**。</span>
 <span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>設我們自訓練集透過 Bootstrap 獨立抽取 $B$ 個樣本集，分別訓練出 $B$ 棵未剪枝的大決策樹 $\hat{f}_1(\boldsymbol{x}), \dots, \hat{f}_B(\boldsymbol{x})$。</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>每棵樹的方差為 $\mathrm{Var}(\hat{f}_b(\boldsymbol{x})) = \sigma^2$。由於它們來自同一個原始資料集，任意兩棵樹之間存在非零的正相關係數 $\rho = \mathrm{Corr}(\hat{f}_b, \hat{f}_{b'})$。</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>Bagging 的集成預測值為平均值：</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="fu">### 數學原理：Condorcet 陪審團定理</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>假設有 $T$ 個二元分類器 $h_1, h_2, \dots, h_T$，其分類正確率皆為 $p &gt; 0.5$。假設各分類器之間的錯誤**完全統計獨立**。</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>若透過**多數決投票（Majority Voting）**決定最終預測，當 $T$ 為奇數時，集成模型犯錯的機率為超過半數分類器同時犯錯的機率：</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>\hat{f}_{\text{bag}}(\boldsymbol{x}) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(\boldsymbol{x})</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>P(\text{集成模型錯誤}) = \sum_{k=\lfloor T/2 \rfloor + 1}^T \binom{T}{k} (1 - p)^k p^{T - k}</span>
 <span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>其集成方差為：</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>由 Hoeffding 不等式，當 $T \to \infty$ 時：</span>
 <span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>\mathrm{Var}\left( \hat{f}_{\text{bag}}(\boldsymbol{x}) \right) &amp;= \mathrm{Var}\left( \frac{1}{B}\sum_{b=1}^B \hat{f}_b(\boldsymbol{x}) \right) <span class="sc">\\</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{B^2} \left<span class="co">[</span><span class="ot"> \sum_{b=1}^B \mathrm{Var}(\hat{f}_b) + \sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'}) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{B^2} \left<span class="co">[</span><span class="ot"> B \sigma^2 + B(B - 1)\rho \sigma^2 \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>&amp;= \rho \sigma^2 + \frac{1 - \rho}{B} \sigma^2</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-bagging-variance}</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>P(\text{集成模型錯誤}) \le \exp\left( -2 T \left(p - \frac{1}{2}\right)^2 \right) \xrightarrow{T \to \infty} 0</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>集成系統的錯誤率隨基學習器數量 $T$ 呈**指數級衰減**！</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>然而，該定理成立的關鍵核心前提是：**基學習器之間必須相互獨立**。在現實資料集中，所有模型都訓練自同一個總體，如何創造出「既準確、又彼此獨立不相關」的基學習器？這正是 Bagging 與隨機森林的精髓所在。</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>當樹的數量 $B$ 足夠大（$B \to \infty$）時，第二項 $\frac{1 - \rho}{B}\sigma^2 \to 0$。</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>然而，**極限方差被第一項 $\rho \sigma^2$ 牢牢鎖死**！</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>若各樹之間的相關性 $\rho$ 很高（例如資料中存在少數幾個壓倒性的極強特徵，導致所有 Bootstrap 樹在頂層都選擇同一個特徵進行切分），則 Bagging 無法進一步消減方差。</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.3 隨機森林（Random Forest）</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.2 Bagging 與方差消減原理</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>**Bagging（Bootstrap Aggregating, Breiman 1996）**利用自助法抽樣構建差異化模型。</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.2.1 方差分解定理推導</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>設我們自訓練集透過 Bootstrap 獨立抽取 $B$ 個樣本集，分別訓練出 $B$ 棵未剪枝的大決策樹 $\hat{f}_1(\boldsymbol{x}), \dots, \hat{f}_B(\boldsymbol{x})$。</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>每棵樹的方差為 $\mathrm{Var}(\hat{f}_b(\boldsymbol{x})) = \sigma^2$。由於它們來自同一個原始資料集，任意兩棵樹之間存在非零的正相關係數 $\rho = \mathrm{Corr}(\hat{f}_b, \hat{f}_{b'})$。</span>
 <span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>Leo Breiman (2001) 提出了**隨機森林（Random Forest）**，其革命性的突破在於：**強行解偶，降低樹之間的相關係數 $\rho$！**</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.3.1 特徵子空間隨機取樣（Feature Subsampling）</span></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>在生長每一棵決策樹的**每一個內部節點分裂處**：</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>不是從全體 $p$ 個特徵中尋求最優切分點。</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>而是**隨機無放回挑選 $m$ 個特徵候選子集**（分類問題慣例取 $m \approx \sqrt{p}$；迴歸問題取 $m \approx p/3$）。</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅在這 $m$ 個候選特徵中尋找最佳切分。</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 幾何機理：</span></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>特徵子空間取樣剝奪了最強特徵在每個節點的壟斷權，迫使各棵樹去探索其他次強特徵。這使得成百上千棵樹的形態截然不同，**大幅壓低了樹之間的平均相關係數 $\rho$**！由式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>)，$\rho$ 的下降使全體集成方差達到斷崖式暴跌。</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.3.2 袋外誤差（Out-of-Bag, OOB）估計</span></span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>由第 2 章證明的極限定理，每棵樹平均有約 $36.8\%$ 的樣本未參與訓練（OOB 樣本）。</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>對於樣本點 $i$，我們僅收集那些**在訓練時未包含樣本 $i$ 的樹**（平均約 $B/3$ 棵樹）進行集成投票與預測。將所有樣本的 OOB 預測誤差平均，即可獲得**無偏的泛化誤差估計**，完全無須額外劃分獨立驗證集或耗時執行交叉驗證！</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.4 經典微型數據：AdaBoost 逐步手工演算範例</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>Bagging 的集成預測值為平均值：</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>\hat{f}_{\text{bag}}(\boldsymbol{x}) = \frac{1}{B} \sum_{b=1}^B \hat{f}_b(\boldsymbol{x})</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>其集成方差為：</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>\mathrm{Var}\left( \hat{f}_{\text{bag}}(\boldsymbol{x}) \right) &amp;= \mathrm{Var}\left( \frac{1}{B}\sum_{b=1}^B \hat{f}_b(\boldsymbol{x}) \right) <span class="sc">\\</span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{B^2} \left<span class="co">[</span><span class="ot"> \sum_{b=1}^B \mathrm{Var}(\hat{f}_b) + \sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'}) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{B^2} \left<span class="co">[</span><span class="ot"> B \sigma^2 + B(B - 1)\rho \sigma^2 \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>&amp;= \rho \sigma^2 + \frac{1 - \rho}{B} \sigma^2</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-bagging-variance}</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>當樹的數量 $B$ 足夠大（$B \to \infty$）時，第二項 $\frac{1 - \rho}{B}\sigma^2 \to 0$。</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>然而，**極限方差被第一項 $\rho \sigma^2$ 牢牢鎖死**！</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>若各樹之間的相關性 $\rho$ 很高（例如資料中存在少數幾個壓倒性的極強特徵，導致所有 Bootstrap 樹在頂層都選擇同一個特徵進行切分），則 Bagging 無法進一步消減方差。</span>
 <span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>為了完全透視 Boosting 的動態樣本加權過程，我們採用李航《統計學習方法》第 8 章的經典一維 10 樣本數值範例，純手工演算兩輪迭代。</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.1 數據設定</span></span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>考慮一維輸入特徵 $x \in <span class="sc">\{</span>0, 1, 2, 3, 4, 5, 6, 7, 8, 9<span class="sc">\}</span>$ 與標籤 $y \in <span class="sc">\{</span>-1, +1<span class="sc">\}</span>$：</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本 $i$ <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 7 <span class="pp">|</span> 8 <span class="pp">|</span> 9 <span class="pp">|</span> 10 <span class="pp">|</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $x_i$ <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 7 <span class="pp">|</span> 8 <span class="pp">|</span> 9 <span class="pp">|</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $y_i$ <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> -1 <span class="pp">|</span> -1 <span class="pp">|</span> -1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> -1 <span class="pp">|</span></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>初始樣本權重均勻分佈：</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>D_1 = (w_{1,1}, \dots, w_{1,10}), \quad w_{1,i} = 0.1, \quad \forall i</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>基分類器採用最簡單的**決策樹樁（Decision Stump）**：形如 $G(x) = \mathrm{sign}(x - v)$ 或 $\mathrm{sign}(v - x)$。</span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.2 第 1 輪迭代（Iteration 1）</span></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**尋找最優切分點**：</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>   在所有可能閾值 $v \in <span class="sc">\{</span>0.5, 1.5, \dots, 8.5<span class="sc">\}</span>$ 中，評估加權分類錯誤率：</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>   若選取閾值 $v = 2.5$，分類器為：</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>   G_1(x) = \begin{cases} 1 &amp; x &lt; 2.5 <span class="sc">\\</span> -1 &amp; x &gt; 2.5 \end{cases}</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>在樣本點 7, 8, 9 處（$x=6, 7, 8$），真實標籤為 $y=1$，但 $G_1(x) = -1$，分類錯誤！</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>錯誤率為分錯樣本的權重和：</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>     \epsilon_1 = P(G_1(x_i) \neq y_i) = 0.1 + 0.1 + 0.1 = 0.30</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**計算分類器權重係數 $\alpha_1$**：</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>   \alpha_1 = \frac{1}{2} \ln\left( \frac{1 - \epsilon_1}{\epsilon_1} \right) = \frac{1}{2} \ln\left( \frac{0.70}{0.30} \right) = \frac{1}{2} \ln(2.333) \approx 0.4236</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**更新樣本權重分佈 $D_2$**：</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>   公式為 $w_{2,i} = \frac{w_{1,i}}{Z_1} \exp(-\alpha_1 y_i G_1(x_i))$。</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分類正確的樣本（1~6, 10）：$w_{1,i} e^{-0.4236} = 0.1 \times 0.6547 = 0.06547$。</span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分類錯誤的樣本（7, 8, 9）：$w_{1,i} e^{+0.4236} = 0.1 \times 1.5275 = 0.15275$。</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算規範化因子：</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>     Z_1 = 7 \times 0.06547 + 3 \times 0.15275 = 0.4583 + 0.4583 = 0.9166</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>新權重向量為：</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>     w_{2,i} = \begin{cases} \frac{0.06547}{0.9166} \approx \mathbf{0.0714} &amp; (i = 1, \dots, 6, 10) <span class="sc">\\</span> \frac{0.15275}{0.9166} \approx \mathbf{0.1666} &amp; (i = 7, 8, 9) \end{cases}</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>     $$</span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**觀察**：分錯樣本的權重從 $0.1$ 暴增至 $0.1666$（翻倍！），迫使下一輪分類器重點關注。</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.3 第 2 輪迭代（Iteration 2）</span></span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>在權重分佈 $D_2$ 下，若選取閾值 $v = 8.5$：</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>G_2(x) = \begin{cases} 1 &amp; x &lt; 8.5 <span class="sc">\\</span> -1 &amp; x &gt; 8.5 \end{cases}</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>在樣本 4, 5, 6 處（真實為 -1），$G_2$ 預測為 1，分類錯誤。</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>其加權錯誤率為：</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>  \epsilon_2 = 0.0714 + 0.0714 + 0.0714 = 0.2142</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>計算分類器權重 $\alpha_2$：</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>  \alpha_2 = \frac{1}{2} \ln\left( \frac{1 - 0.2142}{0.2142} \right) = \frac{1}{2} \ln(3.668) \approx 0.6496</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>當前集成模型為：</span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>f_2(x) = \mathrm{sign}\left( 0.4236 \, G_1(x) + 0.6496 \, G_2(x) \right)</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>此時全體 10 個樣本上的誤分類數已經從 3 個迅速下降，展現了 Boosting 循序降低偏誤的強大威力！</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.3 隨機森林（Random Forest）</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>Leo Breiman (2001) 提出了**隨機森林（Random Forest）**，其革命性的突破在於：**強行解偶，降低樹之間的相關係數 $\rho$！**</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.3.1 特徵子空間隨機取樣（Feature Subsampling）</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>在生長每一棵決策樹的**每一個內部節點分裂處**：</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>不是從全體 $p$ 個特徵中尋求最優切分點。</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>而是**隨機無放回挑選 $m$ 個特徵候選子集**（分類問題慣例取 $m \approx \sqrt{p}$；迴歸問題取 $m \approx p/3$）。</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅在這 $m$ 個候選特徵中尋找最佳切分。</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 幾何機理：</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>特徵子空間取樣剝奪了最強特徵在每個節點的壟斷權，迫使各棵樹去探索其他次強特徵。這使得成百上千棵樹的形態截然不同，**大幅壓低了樹之間的平均相關係數 $\rho$**！由式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>)，$\rho$ 的下降使全體集成方差達到斷崖式暴跌。</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.3.2 袋外誤差（Out-of-Bag, OOB）估計</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>由第 2 章證明的極限定理，每棵樹平均有約 $36.8\%$ 的樣本未參與訓練（OOB 樣本）。</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>對於樣本點 $i$，我們僅收集那些**在訓練時未包含樣本 $i$ 的樹**（平均約 $B/3$ 棵樹）進行集成投票與預測。將所有樣本的 OOB 預測誤差平均，即可獲得**無偏的泛化誤差估計**，完全無須額外劃分獨立驗證集或耗時執行交叉驗證！</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.4 經典微型數據：AdaBoost 逐步手工演算範例</span></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>為了完全透視 Boosting 的動態樣本加權過程，我們採用李航《統計學習方法》第 8 章的經典一維 10 樣本數值範例，純手工演算兩輪迭代。</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.1 數據設定</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>考慮一維輸入特徵 $x \in <span class="sc">\{</span>0, 1, 2, 3, 4, 5, 6, 7, 8, 9<span class="sc">\}</span>$ 與標籤 $y \in <span class="sc">\{</span>-1, +1<span class="sc">\}</span>$：</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本 $i$ <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 7 <span class="pp">|</span> 8 <span class="pp">|</span> 9 <span class="pp">|</span> 10 <span class="pp">|</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $x_i$ <span class="pp">|</span> 0 <span class="pp">|</span> 1 <span class="pp">|</span> 2 <span class="pp">|</span> 3 <span class="pp">|</span> 4 <span class="pp">|</span> 5 <span class="pp">|</span> 6 <span class="pp">|</span> 7 <span class="pp">|</span> 8 <span class="pp">|</span> 9 <span class="pp">|</span></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> $y_i$ <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> -1 <span class="pp">|</span> -1 <span class="pp">|</span> -1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> 1 <span class="pp">|</span> -1 <span class="pp">|</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>初始樣本權重均勻分佈：</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>D_1 = (w_{1,1}, \dots, w_{1,10}), \quad w_{1,i} = 0.1, \quad \forall i</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>基分類器採用最簡單的**決策樹樁（Decision Stump）**：形如 $G(x) = \mathrm{sign}(x - v)$ 或 $\mathrm{sign}(v - x)$。</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.2 第 1 輪迭代（Iteration 1）</span></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**尋找最優切分點**：</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>   在所有可能閾值 $v \in <span class="sc">\{</span>0.5, 1.5, \dots, 8.5<span class="sc">\}</span>$ 中，評估加權分類錯誤率：</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>   若選取閾值 $v = 2.5$，分類器為：</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>   G_1(x) = \begin{cases} 1 &amp; x &lt; 2.5 <span class="sc">\\</span> -1 &amp; x &gt; 2.5 \end{cases}</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>在樣本點 7, 8, 9 處（$x=6, 7, 8$），真實標籤為 $y=1$，但 $G_1(x) = -1$，分類錯誤！</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>錯誤率為分錯樣本的權重和：</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>     \epsilon_1 = P(G_1(x_i) \neq y_i) = 0.1 + 0.1 + 0.1 = 0.30</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**計算分類器權重係數 $\alpha_1$**：</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>   \alpha_1 = \frac{1}{2} \ln\left( \frac{1 - \epsilon_1}{\epsilon_1} \right) = \frac{1}{2} \ln\left( \frac{0.70}{0.30} \right) = \frac{1}{2} \ln(2.333) \approx 0.4236</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**更新樣本權重分佈 $D_2$**：</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>   公式為 $w_{2,i} = \frac{w_{1,i}}{Z_1} \exp(-\alpha_1 y_i G_1(x_i))$。</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分類正確的樣本（1~6, 10）：$w_{1,i} e^{-0.4236} = 0.1 \times 0.6547 = 0.06547$。</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分類錯誤的樣本（7, 8, 9）：$w_{1,i} e^{+0.4236} = 0.1 \times 1.5275 = 0.15275$。</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算規範化因子：</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>     Z_1 = 7 \times 0.06547 + 3 \times 0.15275 = 0.4583 + 0.4583 = 0.9166</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>新權重向量為：</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>     w_{2,i} = \begin{cases} \frac{0.06547}{0.9166} \approx \mathbf{0.0714} &amp; (i = 1, \dots, 6, 10) <span class="sc">\\</span> \frac{0.15275}{0.9166} \approx \mathbf{0.1666} &amp; (i = 7, 8, 9) \end{cases}</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>     $$</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>**觀察**：分錯樣本的權重從 $0.1$ 暴增至 $0.1666$（翻倍！），迫使下一輪分類器重點關注。</span>
 <span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.5 梯度提升（GBDT）與極限梯度提升（XGBoost）</span></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.4.3 第 2 輪迭代（Iteration 2）</span></span>
 <span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>Jerome Friedman (2001) 指出：Boosting 本質上是**在無限維函數空間中，沿著損失函數的負梯度方向進行梯度下降（Gradient Descent in Function Space）**！</span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.5.1 XGBoost 之二階泰勒展開推導（Chen &amp; Guestrin 2016）</span></span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>陳天奇於 2016 年提出的 **XGBoost**，進一步將目標函數在當前預測值 $\hat{y}_i^{(t-1)}$ 處進行**二階泰勒展開（Second-Order Taylor Expansion）**，同時在目標函數中顯式引入樹的結構複雜度正則化。</span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>設目標損失函數為 $l(y_i, \hat{y}_i)$。在第 $t$ 輪迭代中，欲加入一棵新樹 $f_t(\boldsymbol{x})$：</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>\mathcal{L}^{(t)} = \sum_{i=1}^n l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) + \Omega(f_t)</span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>二階展開：</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) \approx l\left(y_i, \, \hat{y}_i^{(t-1)}\right) + g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i)</span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>其中一階梯度（Gradient）與二階 Hessian 導數定義為：</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>在權重分佈 $D_2$ 下，若選取閾值 $v = 8.5$：</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>G_2(x) = \begin{cases} 1 &amp; x &lt; 8.5 <span class="sc">\\</span> -1 &amp; x &gt; 8.5 \end{cases}</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>在樣本 4, 5, 6 處（真實為 -1），$G_2$ 預測為 1，分類錯誤。</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>其加權錯誤率為：</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>  \epsilon_2 = 0.0714 + 0.0714 + 0.0714 = 0.2142</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>計算分類器權重 $\alpha_2$：</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>  \alpha_2 = \frac{1}{2} \ln\left( \frac{1 - 0.2142}{0.2142} \right) = \frac{1}{2} \ln(3.668) \approx 0.6496</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>當前集成模型為：</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>f_2(x) = \mathrm{sign}\left( 0.4236 \, G_1(x) + 0.6496 \, G_2(x) \right)</span>
 <span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>g_i \triangleq \left. \frac{\partial l(y_i, \hat{y})}{\partial \hat{y}} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}, \quad h_i \triangleq \left. \frac{\partial^2 l(y_i, \hat{y})}{\partial \hat{y}^2} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}</span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>樹的結構複雜度懲罰項定義為：</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>\Omega(f_t) \triangleq \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2</span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>其中 $T$ 為終端葉節點總數，$w_j$ 為第 $j$ 個葉節點的預測權重值，$\gamma$ 與 $\lambda$ 為正則化超參數。</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>移除常數項 $l(y_i, \hat{y}_i^{(t-1)})$，第 $t$ 步的目標泛函轉化為：</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i) \right</span><span class="co">]</span> + \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2</span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>將所有樣本依據其最終落入的葉節點集合 $I_j = <span class="sc">\{</span>i \mid q(\boldsymbol{x}_i) = j<span class="sc">\}</span>$ 重新分組求和：</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>此時全體 10 個樣本上的誤分類數已經從 3 個迅速下降，展現了 Boosting 循序降低偏誤的強大威力！</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.5 梯度提升（GBDT）與極限梯度提升（XGBoost）</span></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>Jerome Friedman (2001) 指出：Boosting 本質上是**在無限維函數空間中，沿著損失函數的負梯度方向進行梯度下降（Gradient Descent in Function Space）**！</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a><span class="fu">### 10.5.1 XGBoost 之二階泰勒展開推導（Chen &amp; Guestrin 2016）</span></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>陳天奇於 2016 年提出的 **XGBoost**，進一步將目標函數在當前預測值 $\hat{y}_i^{(t-1)}$ 處進行**二階泰勒展開（Second-Order Taylor Expansion）**，同時在目標函數中顯式引入樹的結構複雜度正則化。</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>設目標損失函數為 $l(y_i, \hat{y}_i)$。在第 $t$ 輪迭代中，欲加入一棵新樹 $f_t(\boldsymbol{x})$：</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>\mathcal{L}^{(t)} = \sum_{i=1}^n l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) + \Omega(f_t)</span>
 <span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left<span class="co">[</span><span class="ot"> \left(\sum_{i \in I_j} g_i\right) w_j + \frac{1}{2}\left(\sum_{i \in I_j} h_i + \lambda\right) w_j^2 \right</span><span class="co">]</span> + \gamma T</span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>定義葉節點樣本的一階梯度和與二階梯度和：</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>二階展開：</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>l\left(y_i, \, \hat{y}_i^{(t-1)} + f_t(\boldsymbol{x}_i)\right) \approx l\left(y_i, \, \hat{y}_i^{(t-1)}\right) + g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i)</span>
 <span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>G_j \triangleq \sum_{i \in I_j} g_i, \quad H_j \triangleq \sum_{i \in I_j} h_i</span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>目標函數化為關於葉權重 $w_j$ 的一元二次方程求和：</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>其中一階梯度（Gradient）與二階 Hessian 導數定義為：</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>g_i \triangleq \left. \frac{\partial l(y_i, \hat{y})}{\partial \hat{y}} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}, \quad h_i \triangleq \left. \frac{\partial^2 l(y_i, \hat{y})}{\partial \hat{y}^2} \right|_{\hat{y} = \hat{y}_i^{(t-1)}}</span>
 <span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left<span class="co">[</span><span class="ot"> G_j w_j + \frac{1}{2}(H_j + \lambda) w_j^2 \right</span><span class="co">]</span> + \gamma T</span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>對各葉權重 $w_j$ 求導並令其為零：</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>樹的結構複雜度懲罰項定義為：</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>\Omega(f_t) \triangleq \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2</span>
 <span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>G_j + (H_j + \lambda) w_j = 0 \implies w_j^* = -\frac{G_j}{H_j + \lambda}</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-weight}</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>將最優權重 $w_j^*$ 代回目標函數，得到衡量該樹結構優劣的**評分函數（Scoring Function）**：</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)}(q) = -\frac{1}{2} \sum_{j=1}^T \frac{G_j^2}{H_j + \lambda} + \gamma T</span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-score}</span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 樹節點切分增益（Split Gain）：</span></span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>在考慮是否將一個葉節點切分為左子樹 $L$ 與右子樹 $R$ 時，分裂帶來的目標函數減少量（Gain）為：</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>其中 $T$ 為終端葉節點總數，$w_j$ 為第 $j$ 個葉節點的預測權重值，$\gamma$ 與 $\lambda$ 為正則化超參數。</span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>移除常數項 $l(y_i, \hat{y}_i^{(t-1)})$，第 $t$ 步的目標泛函轉化為：</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> g_i f_t(\boldsymbol{x}_i) + \frac{1}{2} h_i f_t^2(\boldsymbol{x}_i) \right</span><span class="co">]</span> + \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>將所有樣本依據其最終落入的葉節點集合 $I_j = <span class="sc">\{</span>i \mid q(\boldsymbol{x}_i) = j<span class="sc">\}</span>$ 重新分組求和：</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left<span class="co">[</span><span class="ot"> \left(\sum_{i \in I_j} g_i\right) w_j + \frac{1}{2}\left(\sum_{i \in I_j} h_i + \lambda\right) w_j^2 \right</span><span class="co">]</span> + \gamma T</span>
 <span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>\mathrm{Gain} = \frac{1}{2} \left<span class="co">[</span><span class="ot"> \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda} \right</span><span class="co">]</span> - \gamma</span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-gain}</span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>若 $\mathrm{Gain} \le 0$，說明切分帶來的純度提升不足以抵消增加一個葉節點的懲罰 $\gamma$，演算法自動停止分裂（前向自動剪枝）！</span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.6 雙軌實務實驗室：隨機森林與 XGBoost 實戰</span></span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：randomForest 隨機森林與 xgboost 極限梯度提升分類</span></span>
-<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：randomForest, xgboost, ISLR2</span></span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span>
-<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
-<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 載入心臟病 Heart 資料集 (或 Boston 資料集迴歸實戰)</span></span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Boston)</span>
-<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Boston), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(Boston))</span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>boston_train <span class="ot">&lt;-</span> Boston[train_idx, ]</span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>boston_test <span class="ot">&lt;-</span> Boston[<span class="sc">-</span>train_idx, ]</span>
-<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合隨機森林迴歸模型 (預測房價中位數 medv)</span></span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="co"># mtry 設定為 p/3 = 12/3 = 4 (特徵子空間維度)</span></span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>rf_boston <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> boston_train, </span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>                          <span class="at">mtry =</span> <span class="dv">4</span>, <span class="at">ntree =</span> <span class="dv">500</span>, <span class="at">importance =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="co"># 輸出隨機森林模型摘要與 OOB 誤差</span></span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rf_boston)</span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢視特徵重要性 (Permutation %IncMSE 與 IncNodePurity)</span></span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>importance_df <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">importance</span>(rf_boston), <span class="dv">2</span>)</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">各變數特徵重要性分析:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(importance_df[<span class="fu">order</span>(importance_df[, <span class="dv">1</span>], <span class="at">decreasing =</span> <span class="cn">TRUE</span>), ]))</span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 XGBoost 迴歸</span></span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>X_train_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(boston_train[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(boston_train) <span class="sc">==</span> <span class="st">"medv"</span>)])</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>y_train_vec <span class="ot">&lt;-</span> boston_train<span class="sc">$</span>medv</span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>X_test_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(boston_test[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(boston_test) <span class="sc">==</span> <span class="st">"medv"</span>)])</span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>y_test_vec <span class="ot">&lt;-</span> boston_test<span class="sc">$</span>medv</span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>定義葉節點樣本的一階梯度和與二階梯度和：</span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>G_j \triangleq \sum_{i \in I_j} g_i, \quad H_j \triangleq \sum_{i \in I_j} h_i</span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>目標函數化為關於葉權重 $w_j$ 的一元二次方程求和：</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)} = \sum_{j=1}^T \left<span class="co">[</span><span class="ot"> G_j w_j + \frac{1}{2}(H_j + \lambda) w_j^2 \right</span><span class="co">]</span> + \gamma T</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>對各葉權重 $w_j$ 求導並令其為零：</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>G_j + (H_j + \lambda) w_j = 0 \implies w_j^* = -\frac{G_j}{H_j + \lambda}</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-weight}</span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>將最優權重 $w_j^*$ 代回目標函數，得到衡量該樹結構優劣的**評分函數（Scoring Function）**：</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>\tilde{\mathcal{L}}^{(t)}(q) = -\frac{1}{2} \sum_{j=1}^T \frac{G_j^2}{H_j + \lambda} + \gamma T</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-score}</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 樹節點切分增益（Split Gain）：</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>在考慮是否將一個葉節點切分為左子樹 $L$ 與右子樹 $R$ 時，分裂帶來的目標函數減少量（Gain）為：</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>\mathrm{Gain} = \frac{1}{2} \left<span class="co">[</span><span class="ot"> \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda} \right</span><span class="co">]</span> - \gamma</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch10-xgboost-gain}</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>若 $\mathrm{Gain} \le 0$，說明切分帶來的純度提升不足以抵消增加一個葉節點的懲罰 $\gamma$，演算法自動停止分裂（前向自動剪枝）！</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.6 雙軌實務實驗室：隨機森林與 XGBoost 實戰</span></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：randomForest 隨機森林與 xgboost 極限梯度提升分類</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：randomForest, xgboost, ISLR2</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(xgboost)</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 載入心臟病 Heart 資料集 (或 Boston 資料集迴歸實戰)</span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Boston)</span>
 <span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>dtrain <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data =</span> X_train_mat, <span class="at">label =</span> y_train_vec)</span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>dtest <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data =</span> X_test_mat, <span class="at">label =</span> y_test_vec)</span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>xgb_params <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">booster =</span> <span class="st">"gbtree"</span>, <span class="at">objective =</span> <span class="st">"reg:squarederror"</span>,</span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>                   <span class="at">eta =</span> <span class="fl">0.05</span>, <span class="at">max_depth =</span> <span class="dv">4</span>, <span class="at">subsample =</span> <span class="fl">0.8</span>)</span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>xgb_model <span class="ot">&lt;-</span> <span class="fu">xgb.train</span>(<span class="at">params =</span> xgb_params, <span class="at">data =</span> dtrain, <span class="at">nrounds =</span> <span class="dv">150</span>, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 測試集 MSE 比較</span></span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>pred_rf <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_boston, <span class="at">newdata =</span> boston_test)</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a>pred_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb_model, <span class="at">newdata =</span> dtest)</span>
-<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">隨機森林測試集 MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>((pred_rf <span class="sc">-</span> y_test_vec)<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"XGBoost 測試集 MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>((pred_xgb <span class="sc">-</span> y_test_vec)<span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>train_idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Boston), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> <span class="fu">nrow</span>(Boston))</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>boston_train <span class="ot">&lt;-</span> Boston[train_idx, ]</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>boston_test <span class="ot">&lt;-</span> Boston[<span class="sc">-</span>train_idx, ]</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合隨機森林迴歸模型 (預測房價中位數 medv)</span></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="co"># mtry 設定為 p/3 = 12/3 = 4 (特徵子空間維度)</span></span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>rf_boston <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(medv <span class="sc">~</span> ., <span class="at">data =</span> boston_train, </span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>                          <span class="at">mtry =</span> <span class="dv">4</span>, <span class="at">ntree =</span> <span class="dv">500</span>, <span class="at">importance =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="co"># 輸出隨機森林模型摘要與 OOB 誤差</span></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rf_boston)</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢視特徵重要性 (Permutation %IncMSE 與 IncNodePurity)</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>importance_df <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">importance</span>(rf_boston), <span class="dv">2</span>)</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">各變數特徵重要性分析:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(importance_df[<span class="fu">order</span>(importance_df[, <span class="dv">1</span>], <span class="at">decreasing =</span> <span class="cn">TRUE</span>), ]))</span>
 <span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：RandomForestClassifier 與 XGBClassifier 競賽級模型實戰</span></span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost</span></span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 XGBoost 迴歸</span></span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>X_train_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(boston_train[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(boston_train) <span class="sc">==</span> <span class="st">"medv"</span>)])</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>y_train_vec <span class="ot">&lt;-</span> boston_train<span class="sc">$</span>medv</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a>X_test_mat <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(boston_test[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(boston_test) <span class="sc">==</span> <span class="st">"medv"</span>)])</span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>y_test_vec <span class="ot">&lt;-</span> boston_test<span class="sc">$</span>medv</span>
 <span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBClassifier</span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, roc_auc_score</span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬非線性複雜分類資料 (n=600, p=15)</span></span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">600</span>, <span class="dv">15</span></span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, p))</span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="co"># 非線性邊界且具備特徵交互作用</span></span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a>logits <span class="op">=</span> <span class="fl">1.5</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">-</span> <span class="fl">2.0</span> <span class="op">*</span> X[:, <span class="dv">1</span>] <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> (X[:, <span class="dv">2</span>] <span class="op">*</span> X[:, <span class="dv">3</span>]) <span class="op">-</span> <span class="fl">1.0</span> <span class="op">*</span> (X[:, <span class="dv">4</span>]<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>logits))</span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, prob, size<span class="op">=</span>n)</span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>dtrain <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data =</span> X_train_mat, <span class="at">label =</span> y_train_vec)</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a>dtest <span class="ot">&lt;-</span> <span class="fu">xgb.DMatrix</span>(<span class="at">data =</span> X_test_mat, <span class="at">label =</span> y_test_vec)</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a>xgb_params <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">booster =</span> <span class="st">"gbtree"</span>, <span class="at">objective =</span> <span class="st">"reg:squarederror"</span>,</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a>                   <span class="at">eta =</span> <span class="fl">0.05</span>, <span class="at">max_depth =</span> <span class="dv">4</span>, <span class="at">subsample =</span> <span class="fl">0.8</span>)</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>xgb_model <span class="ot">&lt;-</span> <span class="fu">xgb.train</span>(<span class="at">params =</span> xgb_params, <span class="at">data =</span> dtrain, <span class="at">nrounds =</span> <span class="dv">150</span>, <span class="at">verbose =</span> <span class="dv">0</span>)</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 測試集 MSE 比較</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>pred_rf <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf_boston, <span class="at">newdata =</span> boston_test)</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>pred_xgb <span class="ot">&lt;-</span> <span class="fu">predict</span>(xgb_model, <span class="at">newdata =</span> dtest)</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">隨機森林測試集 MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>((pred_rf <span class="sc">-</span> y_test_vec)<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"XGBoost 測試集 MSE: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">mean</span>((pred_xgb <span class="sc">-</span> y_test_vec)<span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
 <span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 隨機森林分類器 (開啟 oob_score)</span></span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">300</span>, max_features<span class="op">=</span><span class="st">'sqrt'</span>, oob_score<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a>rf.fit(X_train, y_train)</span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. XGBoost 分類器 (含正則化項)</span></span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>xgb <span class="op">=</span> XGBClassifier(n_estimators<span class="op">=</span><span class="dv">150</span>, learning_rate<span class="op">=</span><span class="fl">0.05</span>, max_depth<span class="op">=</span><span class="dv">4</span>, reg_lambda<span class="op">=</span><span class="fl">1.0</span>, random_state<span class="op">=</span><span class="dv">42</span>, eval_metric<span class="op">=</span><span class="st">'logloss'</span>)</span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>xgb.fit(X_train, y_train)</span>
-<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 評估與指標比較</span></span>
-<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a>y_pred_rf <span class="op">=</span> rf.predict(X_test)</span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>y_prob_rf <span class="op">=</span> rf.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>y_pred_xgb <span class="op">=</span> xgb.predict(X_test)</span>
-<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a>y_prob_xgb <span class="op">=</span> xgb.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"隨機森林 OOB 準確率估計: </span><span class="sc">{</span>rf<span class="sc">.</span>oob_score_<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"隨機森林 測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred_rf)<span class="sc">:.4f}</span><span class="ss"> | AUC: </span><span class="sc">{</span>roc_auc_score(y_test, y_prob_rf)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"XGBoost 測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred_xgb)<span class="sc">:.4f}</span><span class="ss"> | AUC: </span><span class="sc">{</span>roc_auc_score(y_test, y_prob_xgb)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 前 4 項重要特徵比較</span></span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">隨機森林 特徵重要性 (前 4 名):"</span>)</span>
-<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a>top4_rf <span class="op">=</span> np.argsort(rf.feature_importances_)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">4</span>]</span>
-<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> top4_rf:</span>
-<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 X</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>rf<span class="sc">.</span>feature_importances_[idx]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.7 本章全套習題庫（Exercises）</span></span>
-<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第一部分：觀念與數學推導題（Conceptual Exercises）</span></span>
-<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Bagging 變異數消減極限的嚴格證明**：</span>
-<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>   請從式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>) 出發，完整展開雙重求和 $\sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'})$，證明其項數為 $B(B-1)$。由此說明為什麼在極限情況下，單純增加樹的數量 $B$ 無法消除由於樹之間相關性 $\rho$ 所帶來的方差下界。</span>
-<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**AdaBoost 訓練誤差指數界定理證明**：</span>
-<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>   Freund &amp; Schapire (1997) 證明 AdaBoost 的訓練分類錯誤率滿足上界：</span>
-<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a>   \frac{1}{n} \sum_{i=1}^n \mathbb{I}(H(\boldsymbol{x}_i) \neq y_i) \le \prod_{m=1}^M Z_m = \prod_{m=1}^M 2 \sqrt{\epsilon_m (1 - \epsilon_m)}</span>
-<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請利用不等式 $\mathbb{I}(H(\boldsymbol{x}) \neq y) \le \exp(-y f(\boldsymbol{x}))$ 證明此結論。</span>
-<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>證明若每個基分類器的錯誤率均略優於隨機猜測（$\epsilon_m \le \frac{1}{2} - \gamma$，$\gamma &gt; 0$），則訓練誤差隨迭代輪數 $M$ 呈指數級趨向於 0。</span>
-<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**GBDT 偽殘差（Pseudo-residuals）的負梯度推導**：</span>
-<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a>   在平方誤差損失 $L(y, f) = \frac{1}{2}(y - f)^2$ 下，負梯度 $-\frac{\partial L}{\partial f} = y - f$ 恰為標準殘差。</span>
-<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導二元分類羅吉斯損失函數（Logistic Loss / Cross-Entropy）下的負梯度表達式，證明其形式為真實標籤與預測機率之差 $y_i - p(\boldsymbol{x}_i)$。</span>
-<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導絕對值損失 $L(y, f) = |y - f|$ 下的負梯度，說明其為何能實現穩健迴歸（Robust Regression）。</span>
-<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**XGBoost 最優切分增益公式推導**：</span>
-<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a>   請從目標函數 (<span class="co">[</span><span class="ot">-@eq-ch10-xgboost-score</span><span class="co">]</span>) 出發，詳細推導式 (<span class="co">[</span><span class="ot">-@eq-ch10-xgboost-gain</span><span class="co">]</span>) 中葉節點分裂增益 $\mathrm{Gain}$ 的代數展開過程，並解釋正則化參數 $\gamma$ 如何起到類似 CART 剪枝的數學作用。</span>
-<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**隨機森林之置換特徵重要性（Permutation Importance）原理**：</span>
-<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>   說明為什麼將袋外（OOB）樣本的某個特徵 $X_j$ 隨機重排（Permute）後計算的預測誤差增加量，能客觀反映該特徵的非線性重要性？這種方法相比基於 Gini 不純度減少量（MDI）的方法有何顯著優勢？</span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：RandomForestClassifier 與 XGBClassifier 競賽級模型實戰</span></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn, xgboost</span></span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBClassifier</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, roc_auc_score</span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬非線性複雜分類資料 (n=600, p=15)</span></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">600</span>, <span class="dv">15</span></span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, p))</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="co"># 非線性邊界且具備特徵交互作用</span></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>logits <span class="op">=</span> <span class="fl">1.5</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">-</span> <span class="fl">2.0</span> <span class="op">*</span> X[:, <span class="dv">1</span>] <span class="op">+</span> <span class="fl">1.2</span> <span class="op">*</span> (X[:, <span class="dv">2</span>] <span class="op">*</span> X[:, <span class="dv">3</span>]) <span class="op">-</span> <span class="fl">1.0</span> <span class="op">*</span> (X[:, <span class="dv">4</span>]<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>logits))</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, prob, size<span class="op">=</span>n)</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 隨機森林分類器 (開啟 oob_score)</span></span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">300</span>, max_features<span class="op">=</span><span class="st">'sqrt'</span>, oob_score<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a>rf.fit(X_train, y_train)</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. XGBoost 分類器 (含正則化項)</span></span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a>xgb <span class="op">=</span> XGBClassifier(n_estimators<span class="op">=</span><span class="dv">150</span>, learning_rate<span class="op">=</span><span class="fl">0.05</span>, max_depth<span class="op">=</span><span class="dv">4</span>, reg_lambda<span class="op">=</span><span class="fl">1.0</span>, random_state<span class="op">=</span><span class="dv">42</span>, eval_metric<span class="op">=</span><span class="st">'logloss'</span>)</span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>xgb.fit(X_train, y_train)</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 評估與指標比較</span></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a>y_pred_rf <span class="op">=</span> rf.predict(X_test)</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>y_prob_rf <span class="op">=</span> rf.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>y_pred_xgb <span class="op">=</span> xgb.predict(X_test)</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>y_prob_xgb <span class="op">=</span> xgb.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"隨機森林 OOB 準確率估計: </span><span class="sc">{</span>rf<span class="sc">.</span>oob_score_<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"隨機森林 測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred_rf)<span class="sc">:.4f}</span><span class="ss"> | AUC: </span><span class="sc">{</span>roc_auc_score(y_test, y_prob_rf)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"XGBoost 測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred_xgb)<span class="sc">:.4f}</span><span class="ss"> | AUC: </span><span class="sc">{</span>roc_auc_score(y_test, y_prob_xgb)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 前 4 項重要特徵比較</span></span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">隨機森林 特徵重要性 (前 4 名):"</span>)</span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>top4_rf <span class="op">=</span> np.argsort(rf.feature_importances_)[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">4</span>]</span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> top4_rf:</span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"特徵 X</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>rf<span class="sc">.</span>feature_importances_[idx]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第二部分：程式與實戰上機題（Applied Exercises）</span></span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="fu">## 10.7 本章全套習題庫（Exercises）</span></span>
 <span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**AdaBoost 手算數值範例程式碼驗證**：</span>
-<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a>   將 10.4 節中的 10 個一維樣本點輸入 Python 或 R：</span>
-<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>呼叫 <span class="in">`sklearn.ensemble.AdaBoostClassifier(n_estimators=3)`</span> 或 R 套件，驗證前兩輪弱學習器的切分點、加權錯誤率 $\epsilon_m$ 與分類器權重 $\alpha_m$ 是否與手算數值一致。</span>
-<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**隨機森林候選特徵數 $m$ 對測試誤差的敏感度分析**：</span>
-<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a>   載入波士頓房價資料集 <span class="in">`Boston`</span>，固定樹的總數為 $ntree = 500$：</span>
-<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別設定 $mtry \in <span class="sc">\{</span>1, 2, 4, 8, 12<span class="sc">\}</span>$ 擬合隨機森林。</span>
-<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>繪製測試集 MSE 隨樹的數量（1 到 500）變化的收斂曲線，觀察特徵子空間大小對模型收斂速度與最終泛化誤差的影響。</span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**極限梯度提升（XGBoost）超參數微調網格搜尋**：</span>
-<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a>   在 Python 中使用 <span class="in">`GridSearchCV`</span> 或 <span class="in">`RandomizedSearchCV`</span> 對 XGBoost 進行調優：</span>
-<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>搜尋空間：<span class="in">`max_depth`</span> $\in <span class="sc">\{</span>3, 4, 6<span class="sc">\}</span>$，<span class="in">`learning_rate`</span> $\in <span class="sc">\{</span>0.01, 0.05, 0.1<span class="sc">\}</span>$，<span class="in">`subsample`</span> $\in <span class="sc">\{</span>0.7, 0.9<span class="sc">\}</span>$，<span class="in">`reg_lambda`</span> $\in <span class="sc">\{</span>0.1, 1.0, 10.0<span class="sc">\}</span>$。</span>
-<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>輸出最優參數組合，並繪製特徵重要性橫條圖。</span>
-<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**隨機森林與單一決策樹之方差消減對比模擬**：</span>
-<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a>   生成一個高噪聲的非線性迴歸資料集：</span>
-<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>在相同的 100 個 Bootstrap 重抽樣訓練集上，分別擬合單一未剪枝決策樹與隨機森林。</span>
-<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算並比較兩者在固定測試點上的預測值方差，實證檢驗式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>) 的方差消減效果。</span>
-<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**台灣股市台指期或量化金融分類實戰**：</span>
-<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a>    蒐集台灣加權指數歷史日 K 線資料，建構常用技術指標（如 RSI、KD、MACD、布林通道帶寬、5 日均線乖離率等共 15 個特徵）：</span>
-<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>定義二元標籤：隔日收盤價相對於今日是否上漲（1 為上漲，0 為下跌）。</span>
-<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>嚴格劃分時間序列訓練集與測試集（避免未來資訊洩漏）。</span>
-<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>分別訓練隨機森林與 XGBoost 模型，計算測試集 ROC-AUC 與累計交易策略回測淨值曲線。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第一部分：觀念與數學推導題（Conceptual Exercises）</span></span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Bagging 變異數消減極限的嚴格證明**：</span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a>   請從式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>) 出發，完整展開雙重求和 $\sum_{b=1}^B \sum_{b' \neq b} \mathrm{Cov}(\hat{f}_b, \hat{f}_{b'})$，證明其項數為 $B(B-1)$。由此說明為什麼在極限情況下，單純增加樹的數量 $B$ 無法消除由於樹之間相關性 $\rho$ 所帶來的方差下界。</span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**AdaBoost 訓練誤差指數界定理證明**：</span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>   Freund &amp; Schapire (1997) 證明 AdaBoost 的訓練分類錯誤率滿足上界：</span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a>   \frac{1}{n} \sum_{i=1}^n \mathbb{I}(H(\boldsymbol{x}_i) \neq y_i) \le \prod_{m=1}^M Z_m = \prod_{m=1}^M 2 \sqrt{\epsilon_m (1 - \epsilon_m)}</span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請利用不等式 $\mathbb{I}(H(\boldsymbol{x}) \neq y) \le \exp(-y f(\boldsymbol{x}))$ 證明此結論。</span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>證明若每個基分類器的錯誤率均略優於隨機猜測（$\epsilon_m \le \frac{1}{2} - \gamma$，$\gamma &gt; 0$），則訓練誤差隨迭代輪數 $M$ 呈指數級趨向於 0。</span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**GBDT 偽殘差（Pseudo-residuals）的負梯度推導**：</span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a>   在平方誤差損失 $L(y, f) = \frac{1}{2}(y - f)^2$ 下，負梯度 $-\frac{\partial L}{\partial f} = y - f$ 恰為標準殘差。</span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導二元分類羅吉斯損失函數（Logistic Loss / Cross-Entropy）下的負梯度表達式，證明其形式為真實標籤與預測機率之差 $y_i - p(\boldsymbol{x}_i)$。</span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導絕對值損失 $L(y, f) = |y - f|$ 下的負梯度，說明其為何能實現穩健迴歸（Robust Regression）。</span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**XGBoost 最優切分增益公式推導**：</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a>   請從目標函數 (<span class="co">[</span><span class="ot">-@eq-ch10-xgboost-score</span><span class="co">]</span>) 出發，詳細推導式 (<span class="co">[</span><span class="ot">-@eq-ch10-xgboost-gain</span><span class="co">]</span>) 中葉節點分裂增益 $\mathrm{Gain}$ 的代數展開過程，並解釋正則化參數 $\gamma$ 如何起到類似 CART 剪枝的數學作用。</span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**隨機森林之置換特徵重要性（Permutation Importance）原理**：</span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>   說明為什麼將袋外（OOB）樣本的某個特徵 $X_j$ 隨機重排（Permute）後計算的預測誤差增加量，能客觀反映該特徵的非線性重要性？這種方法相比基於 Gini 不純度減少量（MDI）的方法有何顯著優勢？</span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第二部分：程式與實戰上機題（Applied Exercises）</span></span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**AdaBoost 手算數值範例程式碼驗證**：</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a>   將 10.4 節中的 10 個一維樣本點輸入 Python 或 R：</span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>呼叫 <span class="in">`sklearn.ensemble.AdaBoostClassifier(n_estimators=3)`</span> 或 R 套件，驗證前兩輪弱學習器的切分點、加權錯誤率 $\epsilon_m$ 與分類器權重 $\alpha_m$ 是否與手算數值一致。</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**隨機森林候選特徵數 $m$ 對測試誤差的敏感度分析**：</span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a>   載入波士頓房價資料集 <span class="in">`Boston`</span>，固定樹的總數為 $ntree = 500$：</span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別設定 $mtry \in <span class="sc">\{</span>1, 2, 4, 8, 12<span class="sc">\}</span>$ 擬合隨機森林。</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>繪製測試集 MSE 隨樹的數量（1 到 500）變化的收斂曲線，觀察特徵子空間大小對模型收斂速度與最終泛化誤差的影響。</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**極限梯度提升（XGBoost）超參數微調網格搜尋**：</span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a>   在 Python 中使用 <span class="in">`GridSearchCV`</span> 或 <span class="in">`RandomizedSearchCV`</span> 對 XGBoost 進行調優：</span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>搜尋空間：<span class="in">`max_depth`</span> $\in <span class="sc">\{</span>3, 4, 6<span class="sc">\}</span>$，<span class="in">`learning_rate`</span> $\in <span class="sc">\{</span>0.01, 0.05, 0.1<span class="sc">\}</span>$，<span class="in">`subsample`</span> $\in <span class="sc">\{</span>0.7, 0.9<span class="sc">\}</span>$，<span class="in">`reg_lambda`</span> $\in <span class="sc">\{</span>0.1, 1.0, 10.0<span class="sc">\}</span>$。</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>輸出最優參數組合，並繪製特徵重要性橫條圖。</span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**隨機森林與單一決策樹之方差消減對比模擬**：</span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a>   生成一個高噪聲的非線性迴歸資料集：</span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>在相同的 100 個 Bootstrap 重抽樣訓練集上，分別擬合單一未剪枝決策樹與隨機森林。</span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算並比較兩者在固定測試點上的預測值方差，實證檢驗式 (<span class="co">[</span><span class="ot">-@eq-ch10-bagging-variance</span><span class="co">]</span>) 的方差消減效果。</span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**台灣股市台指期或量化金融分類實戰**：</span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>    蒐集台灣加權指數歷史日 K 線資料，建構常用技術指標（如 RSI、KD、MACD、布林通道帶寬、5 日均線乖離率等共 15 個特徵）：</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>定義二元標籤：隔日收盤價相對於今日是否上漲（1 為上漲，0 為下跌）。</span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>嚴格劃分時間序列訓練集與測試集（避免未來資訊洩漏）。</span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>分別訓練隨機森林與 XGBoost 模型，計算測試集 ROC-AUC 與累計交易策略回測淨值曲線。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

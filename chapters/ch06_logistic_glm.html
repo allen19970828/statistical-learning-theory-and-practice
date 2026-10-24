@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">6.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">6.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀純網銀個人信貸審核與授信違約預警" id="toc-開篇實務案例導讀純網銀個人信貸審核與授信違約預警" class="nav-link" data-scroll-target="#開篇實務案例導讀純網銀個人信貸審核與授信違約預警"><span class="header-section-number">6.1.1</span> 💡 開篇實務案例導讀：純網銀個人信貸審核與授信違約預警</a></li>
+  <li><a href="#概念直覺與幾何啟發無界鋼軌橡皮筋阻尼與-s-型邊界壓制" id="toc-概念直覺與幾何啟發無界鋼軌橡皮筋阻尼與-s-型邊界壓制" class="nav-link" data-scroll-target="#概念直覺與幾何啟發無界鋼軌橡皮筋阻尼與-s-型邊界壓制"><span class="header-section-number">6.1.2</span> 🎯 概念直覺與幾何啟發：無界鋼軌、橡皮筋阻尼與 S 型邊界壓制</a></li>
+  </ul></li>
   <li><a href="#為什麼線性迴歸不適用於分類" id="toc-為什麼線性迴歸不適用於分類" class="nav-link" data-scroll-target="#為什麼線性迴歸不適用於分類"><span class="header-section-number">6.2</span> 6.1 為什麼線性迴歸不適用於分類？</a>
   <ul class="collapse">
   <li><a href="#預測機率溢出問題" id="toc-預測機率溢出問題" class="nav-link" data-scroll-target="#預測機率溢出問題"><span class="header-section-number">6.2.1</span> 6.1.1 預測機率溢出問題</a></li>
@@ -604,7 +608,27 @@ window.Quarto = {
 <p>在許多實際應用中，我們感興趣的反應變數並非連續的數值，而是離散的<strong>類別（Category / Class）</strong>。例如：病患是否罹患心臟病（是/否）、金融交易是否為詐欺（真/偽）、客戶次月是否流失。這類問題統稱為<strong>分類問題（Classification）</strong>。</p>
 <p>初學者常見的直覺是：「能否直接對二元類別（<span class="math inline">0</span> 與 <span class="math inline">1</span>）套用線性迴歸？」答案是<strong>不可行且理論上有重大缺陷</strong>。為了將線性模型的優點推廣至非連續目標，統計學家提出了<strong>廣義線性模型（Generalized Linear Models, GLM）</strong>，而其中的皇冠正是<strong>羅吉斯迴歸（Logistic Regression）</strong>。</p>
 <p>本章將剖析線性迴歸應用於分類的內在矛盾；定義勝算（Odds）與 Logit 轉換；嚴格推導基於極大似然估計（MLE）的交叉熵損失函數；給出支撐數值求解的<strong>牛頓-拉夫森法（Newton-Raphson）</strong>與<strong>迭代加權最小平方法（IRLS）</strong>之完整推導；提供一組 4 筆樣本的手把手數值推演；介紹多類別的 <strong>Softmax 迴歸</strong>與偏差（Deviance）模型診斷指標；最後在 R 與 Python 中進行二元分類與模型診斷實戰。</p>
+<section id="開篇實務案例導讀純網銀個人信貸審核與授信違約預警" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="開篇實務案例導讀純網銀個人信貸審核與授信違約預警"><span class="header-section-number">6.1.1</span> 💡 開篇實務案例導讀：純網銀個人信貸審核與授信違約預警</h3>
+<p>在現代純網路銀行（Neo-Bank）的即時徵信風控引擎中，系統必須在申請人點擊送出貸款審查的 3 秒鐘之內，根據其月收入、負債比、近半年信用卡循環信用餘額與信用評分，精準預測其在未來一年內是否發生嚴重違約（逾期 90 天以上，<span class="math inline">Y \in \{0, 1\}</span>）。</p>
+<p>若工程師貪圖方便，直接將 <span class="math inline">0</span> 與 <span class="math inline">1</span> 作為數值丟進多元線性迴歸模型（即所謂線性機率模型 LPM），會立即引發兩大不可容忍的災難： 1. <strong>機率溢出（Probability Overflow）</strong>：對於高負債極端客戶，模型計算出的違約機率常常飆高到 <span class="math inline">1.35</span>（<span class="math inline">135\%</span> 機率）甚至跌到負值（<span class="math inline">-15\%</span> 機率），在邏輯與金管法規上完全無法交付。 2. <strong>邊際效應的非線性現實</strong>：線性模型隱含假設「無論現狀如何，信用分數每提升 10 分，違約機率下降幅度完全相同」。但真實金融世界中，極端優質客戶信用分由 800 提升至 810，違約率幾乎無變動；而徘徊在違約邊緣的客戶（由 520 跌至 510），違約風險將呈現幾何級數急遽飆升（典型的 S 型激增現象）。</p>
+<p>銀行風控委員會更需要嚴格的法規可解釋性——例如「借款人每多增加 1 個單位的負債比，其違約勝算（Odds Ratio）擴大 <span class="math inline">1.85</span> 倍」。這正是羅吉斯迴歸不可撼動的應用基石。</p>
+</section>
+<section id="概念直覺與幾何啟發無界鋼軌橡皮筋阻尼與-s-型邊界壓制" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發無界鋼軌橡皮筋阻尼與-s-型邊界壓制"><span class="header-section-number">6.1.2</span> 🎯 概念直覺與幾何啟發：無界鋼軌、橡皮筋阻尼與 S 型邊界壓制</h3>
+<p>自修者在研讀 Logit 轉換與勝算（Odds）時，可在心智中構想一條「無窮直線鋼軌」如何被彈性阻尼柔順壓縮進「有限機率管道」的過程：</p>
+<ul>
+<li><strong>特徵線性組合 <span class="math inline">\boldsymbol{X}\boldsymbol{\beta}</span>（無界平直鋼軌）</strong>：由預測變數加權構成的預測分數 <span class="math inline">\eta = \beta_0 + \beta_1 x_1 + \dots + \beta_p x_p</span>，其數值可以在 <span class="math inline">(-\infty, +\infty)</span> 之間自由狂飆，毫無邊界拘束。</li>
+<li><strong>真實機率空間 <span class="math inline">p \in (0, 1)</span>（狹窄的透明管道）</strong>：物理機率有著不可跨越的硬性天花板（<span class="math inline">1.0</span>）與地板（<span class="math inline">0.0</span>）。</li>
+<li><strong>Sigmoid 函數的阻尼壓縮機制</strong>：<span class="math inline">\sigma(\eta) = \frac{1}{1 + e^{-\eta}}</span> 就像一根充滿柔性張力的「阻尼橡皮筋」。
+<ul>
+<li>當輸入分數 <span class="math inline">\eta</span> 向右狂飆到 <span class="math inline">+10</span> 或 <span class="math inline">+100</span> 時，橡皮筋柔和地將其拉向 <span class="math inline">0.9999</span> 的天花板下，永遠不會刺破天花板；</li>
+<li>當輸入分數 <span class="math inline">\eta</span> 向左深跌到 <span class="math inline">-10</span> 或 <span class="math inline">-100</span> 時，橡皮筋同樣穩定地將其托在 <span class="math inline">0.0001</span> 之上，永不沉入負數深淵；</li>
+<li>在核心分水嶺 <span class="math inline">\eta = 0</span> 附近，曲線呈現最陡峭的斜率（預測機率恰為 <span class="math inline">0.5</span>），對應到兩類交界處最敏銳的判別臨界線。勝算比 <span class="math inline">\ln \frac{p}{1-p} = \eta</span> 正是連結無窮鋼軌與狹窄機率空間的完美數學橋樑。</li>
+</ul></li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="為什麼線性迴歸不適用於分類" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="為什麼線性迴歸不適用於分類"><span class="header-section-number">6.2</span> 6.1 為什麼線性迴歸不適用於分類？</h2>
@@ -1489,434 +1513,455 @@ P(Y = k \mid \boldsymbol{x}) = \frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}_k
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>本章將剖析線性迴歸應用於分類的內在矛盾；定義勝算（Odds）與 Logit 轉換；嚴格推導基於極大似然估計（MLE）的交叉熵損失函數；給出支撐數值求解的**牛頓-拉夫森法（Newton-Raphson）**與**迭代加權最小平方法（IRLS）**之完整推導；提供一組 4 筆樣本的手把手數值推演；介紹多類別的 **Softmax 迴歸**與偏差（Deviance）模型診斷指標；最後在 R 與 Python 中進行二元分類與模型診斷實戰。</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：純網銀個人信貸審核與授信違約預警</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.1 為什麼線性迴歸不適用於分類？</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>在現代純網路銀行（Neo-Bank）的即時徵信風控引擎中，系統必須在申請人點擊送出貸款審查的 3 秒鐘之內，根據其月收入、負債比、近半年信用卡循環信用餘額與信用評分，精準預測其在未來一年內是否發生嚴重違約（逾期 90 天以上，$Y \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$）。</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.1 預測機率溢出問題</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>若對二元標籤 $Y \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$ 擬合 OLS 模型 $Y = \boldsymbol{X}\boldsymbol{\beta} + \epsilon$，並將預測值 $\hat{Y}$ 視為事件發生的條件機率 $P(Y=1 \mid \boldsymbol{X})$：</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>線性函數 $\boldsymbol{x}^\top \boldsymbol{\beta}$ 的取值範圍為 $(-\infty, \infty)$。</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>當輸入特徵偏向極端值時，預測值將不可避免地**小於 $0$ 或大於 $1$**，嚴重違背機率公理（$0 \le P \le 1$）。</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.2 異變異數性（Heteroscedasticity）</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>對於二元伯努利隨機變數 $Y$，其條件變異數為：</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>\mathrm{Var}(Y \mid \boldsymbol{X}) = p(\boldsymbol{X})\left(1 - p(\boldsymbol{X})\right)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>誤差項的變異數直接取決於輸入特徵 $\boldsymbol{X}$，徹底破壞了 Gauss-Markov 定理中的同變異數假設。</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.3 類別編碼偏置（多類別時）</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>若目標變數有三個類別（例如急診室病患病情：1=輕症, 2=中症, 3=重症），若直接指派數值 $1, 2, 3$，OLS 會隱含「輕症與中症的差距」等於「中症與重症的差距」，甚至認為輕症與重症的平均就是中症，這種人為度量順序會扭曲資料本質。</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>若工程師貪圖方便，直接將 $0$ 與 $1$ 作為數值丟進多元線性迴歸模型（即所謂線性機率模型 LPM），會立即引發兩大不可容忍的災難：</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**機率溢出（Probability Overflow）**：對於高負債極端客戶，模型計算出的違約機率常常飆高到 $1.35$（$135\%$ 機率）甚至跌到負值（$-15\%$ 機率），在邏輯與金管法規上完全無法交付。</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**邊際效應的非線性現實**：線性模型隱含假設「無論現狀如何，信用分數每提升 10 分，違約機率下降幅度完全相同」。但真實金融世界中，極端優質客戶信用分由 800 提升至 810，違約率幾乎無變動；而徘徊在違約邊緣的客戶（由 520 跌至 510），違約風險將呈現幾何級數急遽飆升（典型的 S 型激增現象）。</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>銀行風控委員會更需要嚴格的法規可解釋性——例如「借款人每多增加 1 個單位的負債比，其違約勝算（Odds Ratio）擴大 $1.85$ 倍」。這正是羅吉斯迴歸不可撼動的應用基石。</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：無界鋼軌、橡皮筋阻尼與 S 型邊界壓制</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>自修者在研讀 Logit 轉換與勝算（Odds）時，可在心智中構想一條「無窮直線鋼軌」如何被彈性阻尼柔順壓縮進「有限機率管道」的過程：</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**特徵線性組合 $\boldsymbol{X}\boldsymbol{\beta}$（無界平直鋼軌）**：由預測變數加權構成的預測分數 $\eta = \beta_0 + \beta_1 x_1 + \dots + \beta_p x_p$，其數值可以在 $(-\infty, +\infty)$ 之間自由狂飆，毫無邊界拘束。</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**真實機率空間 $p \in (0, 1)$（狹窄的透明管道）**：物理機率有著不可跨越的硬性天花板（$1.0$）與地板（$0.0$）。</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**Sigmoid 函數的阻尼壓縮機制**：$\sigma(\eta) = \frac{1}{1 + e^{-\eta}}$ 就像一根充滿柔性張力的「阻尼橡皮筋」。</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>當輸入分數 $\eta$ 向右狂飆到 $+10$ 或 $+100$ 時，橡皮筋柔和地將其拉向 $0.9999$ 的天花板下，永遠不會刺破天花板；</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>當輸入分數 $\eta$ 向左深跌到 $-10$ 或 $-100$ 時，橡皮筋同樣穩定地將其托在 $0.0001$ 之上，永不沉入負數深淵；</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>在核心分水嶺 $\eta = 0$ 附近，曲線呈現最陡峭的斜率（預測機率恰為 $0.5$），對應到兩類交界處最敏銳的判別臨界線。勝算比 $\ln \frac{p}{1-p} = \eta$ 正是連結無窮鋼軌與狹窄機率空間的完美數學橋樑。</span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.2 羅吉斯模型設定與勝算比</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.2.1 Sigmoid 函數與 Logit 轉換</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.1 為什麼線性迴歸不適用於分類？</span></span>
 <span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>為了將實數軸 $(-\infty, \infty)$ 嚴格壓縮至機率區間 $(0, 1)$，羅吉斯迴歸採用 **標準羅吉斯函數（Standard Logistic Function / Sigmoid）**：</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>p(\boldsymbol{x}) \triangleq P(Y = 1 \mid \boldsymbol{X} = \boldsymbol{x}) = \sigma(\boldsymbol{x}^\top \boldsymbol{\beta}) \triangleq \frac{1}{1 + e^{-\boldsymbol{x}^\top \boldsymbol{\beta}}} = \frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-sigmoid}</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 核心代數轉換：</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**勝算（Odds）**：事件發生機率與不發生機率的比值：</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>   \mathrm{Odds} \triangleq \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \frac{\frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}}{\frac{1}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}} = e^{\boldsymbol{x}^\top \boldsymbol{\beta}} \in (0, \infty)</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**對數勝算（Log-Odds / Logit）**：對勝算取自然對數：</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>   \ln\left( \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} \right) = \boldsymbol{x}^\top \boldsymbol{\beta} = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch06-logit}</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **統計解釋（勝算比 Odds Ratio, OR）**：</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 當其他特徵固定時，特徵 $x_j$ 每增加 1 個單位，其勝算將乘以 $e^{\beta_j}$ 倍！</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j &gt; 0 \implies e^{\beta_j} &gt; 1$，特徵增加會提升正類別的勝算。</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j = 0 \implies e^{\beta_j} = 1$，該特徵對勝算毫無影響。</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j &lt; 0 \implies e^{\beta_j} &lt; 1$，特徵增加會降低正類別的勝算。</span></span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.3 極大似然估計（MLE）與交叉熵損失</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>因為非線性 Sigmoid 函數的存在，最小平方法無法求得解析解。統計上我們採用**極大似然估計（Maximum Likelihood Estimation, MLE）**。</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.3.1 似然函數推導</span></span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>設樣本獨立同分佈，給定標籤 $y_i \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$，條件機率可統整寫為伯努利形式：</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>P(Y = y_i \mid \boldsymbol{x}_i) = p(\boldsymbol{x}_i)^{y_i} \left(1 - p(\boldsymbol{x}_i)\right)^{1 - y_i}</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>全體 $n$ 筆獨立樣本的**聯合似然函數（Likelihood Function）**為：</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>L(\boldsymbol{\beta}) = \prod_{i=1}^n p(\boldsymbol{x}_i)^{y_i} \left(1 - p(\boldsymbol{x}_i)\right)^{1 - y_i}</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>取自然對數得**對數似然函數（Log-Likelihood）**：</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\beta}) = \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln p(\boldsymbol{x}_i) + (1 - y_i) \ln (1 - p(\boldsymbol{x}_i)) \right</span><span class="co">]</span></span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-log-likelihood}</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.1 預測機率溢出問題</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>若對二元標籤 $Y \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$ 擬合 OLS 模型 $Y = \boldsymbol{X}\boldsymbol{\beta} + \epsilon$，並將預測值 $\hat{Y}$ 視為事件發生的條件機率 $P(Y=1 \mid \boldsymbol{X})$：</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>線性函數 $\boldsymbol{x}^\top \boldsymbol{\beta}$ 的取值範圍為 $(-\infty, \infty)$。</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>當輸入特徵偏向極端值時，預測值將不可避免地**小於 $0$ 或大於 $1$**，嚴重違背機率公理（$0 \le P \le 1$）。</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.2 異變異數性（Heteroscedasticity）</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>對於二元伯努利隨機變數 $Y$，其條件變異數為：</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>\mathrm{Var}(Y \mid \boldsymbol{X}) = p(\boldsymbol{X})\left(1 - p(\boldsymbol{X})\right)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>誤差項的變異數直接取決於輸入特徵 $\boldsymbol{X}$，徹底破壞了 Gauss-Markov 定理中的同變異數假設。</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.1.3 類別編碼偏置（多類別時）</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>若目標變數有三個類別（例如急診室病患病情：1=輕症, 2=中症, 3=重症），若直接指派數值 $1, 2, 3$，OLS 會隱含「輕症與中症的差距」等於「中症與重症的差距」，甚至認為輕症與重症的平均就是中症，這種人為度量順序會扭曲資料本質。</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.2 羅吉斯模型設定與勝算比</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.2.1 Sigmoid 函數與 Logit 轉換</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>為了將實數軸 $(-\infty, \infty)$ 嚴格壓縮至機率區間 $(0, 1)$，羅吉斯迴歸採用 **標準羅吉斯函數（Standard Logistic Function / Sigmoid）**：</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>p(\boldsymbol{x}) \triangleq P(Y = 1 \mid \boldsymbol{X} = \boldsymbol{x}) = \sigma(\boldsymbol{x}^\top \boldsymbol{\beta}) \triangleq \frac{1}{1 + e^{-\boldsymbol{x}^\top \boldsymbol{\beta}}} = \frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-sigmoid}</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 核心代數轉換：</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**勝算（Odds）**：事件發生機率與不發生機率的比值：</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>   \mathrm{Odds} \triangleq \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \frac{\frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}}{\frac{1}{1 + e^{\boldsymbol{x}^\top \boldsymbol{\beta}}}} = e^{\boldsymbol{x}^\top \boldsymbol{\beta}} \in (0, \infty)</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**對數勝算（Log-Odds / Logit）**：對勝算取自然對數：</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>   \ln\left( \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} \right) = \boldsymbol{x}^\top \boldsymbol{\beta} = \beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>   $$ {#eq-ch06-logit}</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **統計解釋（勝算比 Odds Ratio, OR）**：</span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 當其他特徵固定時，特徵 $x_j$ 每增加 1 個單位，其勝算將乘以 $e^{\beta_j}$ 倍！</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j &gt; 0 \implies e^{\beta_j} &gt; 1$，特徵增加會提升正類別的勝算。</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j = 0 \implies e^{\beta_j} = 1$，該特徵對勝算毫無影響。</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; * 若 $\beta_j &lt; 0 \implies e^{\beta_j} &lt; 1$，特徵增加會降低正類別的勝算。</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>將 $p(\boldsymbol{x}_i) = \frac{e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}$ 代入展開：</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\beta}) &amp;= \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln\left( \frac{p(\boldsymbol{x}_i)}{1 - p(\boldsymbol{x}_i)} \right) + \ln(1 - p(\boldsymbol{x}_i)) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>&amp;= \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i (\boldsymbol{x}_i^\top \boldsymbol{\beta}) - \ln(1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}) \right</span><span class="co">]</span></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-ll-simplified}</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>在機器學習中，我們通常將其乘以 $-1/n$，轉換為最小化**二元交叉熵損失（Binary Cross-Entropy Loss）**：</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.3 極大似然估計（MLE）與交叉熵損失</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>因為非線性 Sigmoid 函數的存在，最小平方法無法求得解析解。統計上我們採用**極大似然估計（Maximum Likelihood Estimation, MLE）**。</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.3.1 似然函數推導</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>設樣本獨立同分佈，給定標籤 $y_i \in <span class="sc">\{</span>0, 1<span class="sc">\}</span>$，條件機率可統整寫為伯努利形式：</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>P(Y = y_i \mid \boldsymbol{x}_i) = p(\boldsymbol{x}_i)^{y_i} \left(1 - p(\boldsymbol{x}_i)\right)^{1 - y_i}</span>
 <span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\boldsymbol{\beta}) = -\frac{1}{n}\ell(\boldsymbol{\beta}) = -\frac{1}{n}\sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln p_i + (1 - y_i)\ln(1 - p_i) \right</span><span class="co">]</span></span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.4 數值最佳化：牛頓-拉夫森法與 IRLS</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.4.1 一階梯度向量與二階 Hessian 矩陣推導</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>首先計算 Sigmoid 函數的導數性質：</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>\frac{d\sigma(z)}{dz} = \sigma(z)(1 - \sigma(z))</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>全體 $n$ 筆獨立樣本的**聯合似然函數（Likelihood Function）**為：</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>L(\boldsymbol{\beta}) = \prod_{i=1}^n p(\boldsymbol{x}_i)^{y_i} \left(1 - p(\boldsymbol{x}_i)\right)^{1 - y_i}</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>取自然對數得**對數似然函數（Log-Likelihood）**：</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\beta}) = \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln p(\boldsymbol{x}_i) + (1 - y_i) \ln (1 - p(\boldsymbol{x}_i)) \right</span><span class="co">]</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-log-likelihood}</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>將 $p(\boldsymbol{x}_i) = \frac{e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}$ 代入展開：</span>
 <span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>故 $\frac{\partial p_i}{\partial \boldsymbol{\beta}} = p_i (1 - p_i) \boldsymbol{x}_i$。</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. 一階梯度（Gradient Vector）：</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>對式 (<span class="co">[</span><span class="ot">-@eq-ch06-ll-simplified</span><span class="co">]</span>) 的 $\boldsymbol{\beta}$ 求一階偏導：</span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>\nabla_{\boldsymbol{\beta}} \ell(\boldsymbol{\beta}) = \sum_{i=1}^n \left( y_i \boldsymbol{x}_i - \frac{e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}} \boldsymbol{x}_i \right) = \sum_{i=1}^n (y_i - p_i)\boldsymbol{x}_i = \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p})</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-gradient}</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>其中 $\boldsymbol{p} = (p_1, p_2, \dots, p_n)^\top \in \mathbb{R}^n$。</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. 二階 Hessian 矩陣：</span></span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>對梯度再次求導：</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>\nabla^2_{\boldsymbol{\beta}} \ell(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}^\top} \left( \sum_{i=1}^n (y_i - p_i)\boldsymbol{x}_i \right) = -\sum_{i=1}^n \boldsymbol{x}_i \left( \frac{\partial p_i}{\partial \boldsymbol{\beta}^\top} \right) = -\sum_{i=1}^n p_i (1 - p_i) \boldsymbol{x}_i \boldsymbol{x}_i^\top</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>定義對角權重矩陣 $\boldsymbol{W} \in \mathbb{R}^{n \times n}$：</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>\boldsymbol{W} = \mathrm{diag}\left( p_1(1 - p_1), \, p_2(1 - p_2), \, \dots, \, p_n(1 - p_n) \right)</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>則 Hessian 矩陣以簡潔的矩陣形式表示為：</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>\boldsymbol{H} = \nabla^2 \ell(\boldsymbol{\beta}) = -\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X}</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-hessian}</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 凸性分析（全域最優解保證）：</span></span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>由於 $0 &lt; p_i &lt; 1$，權重矩陣 $\boldsymbol{W}$ 的對角元素恆為正數（$p_i(1-p_i) &gt; 0$），故 $\boldsymbol{W}$ 為正定對角矩陣。</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>對於任意非零向量 $\boldsymbol{v} \in \mathbb{R}^{p+1}$：</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>\boldsymbol{v}^\top \boldsymbol{H} \boldsymbol{v} = -\boldsymbol{v}^\top (\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X})\boldsymbol{v} = -(\boldsymbol{X}\boldsymbol{v})^\top \boldsymbol{W} (\boldsymbol{X}\boldsymbol{v}) \le 0</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>Hessian 矩陣**恆為半負定（Negative Semi-Definite）**，證明對數似然函數 $\ell(\boldsymbol{\beta})$ 是**嚴格凹函數（Concave Function）**，沒有任何局部極大值的陷阱，保證數值最佳化必收斂至全域唯一極值點！</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.4.2 迭代加權最小平方法（IRLS）推導</span></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>\ell(\boldsymbol{\beta}) &amp;= \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln\left( \frac{p(\boldsymbol{x}_i)}{1 - p(\boldsymbol{x}_i)} \right) + \ln(1 - p(\boldsymbol{x}_i)) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>&amp;= \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i (\boldsymbol{x}_i^\top \boldsymbol{\beta}) - \ln(1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}) \right</span><span class="co">]</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-ll-simplified}</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>在機器學習中，我們通常將其乘以 $-1/n$，轉換為最小化**二元交叉熵損失（Binary Cross-Entropy Loss）**：</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\boldsymbol{\beta}) = -\frac{1}{n}\ell(\boldsymbol{\beta}) = -\frac{1}{n}\sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln p_i + (1 - y_i)\ln(1 - p_i) \right</span><span class="co">]</span></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.4 數值最佳化：牛頓-拉夫森法與 IRLS</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.4.1 一階梯度向量與二階 Hessian 矩陣推導</span></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>首先計算 Sigmoid 函數的導數性質：</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>\frac{d\sigma(z)}{dz} = \sigma(z)(1 - \sigma(z))</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>故 $\frac{\partial p_i}{\partial \boldsymbol{\beta}} = p_i (1 - p_i) \boldsymbol{x}_i$。</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 1. 一階梯度（Gradient Vector）：</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>對式 (<span class="co">[</span><span class="ot">-@eq-ch06-ll-simplified</span><span class="co">]</span>) 的 $\boldsymbol{\beta}$ 求一階偏導：</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>\nabla_{\boldsymbol{\beta}} \ell(\boldsymbol{\beta}) = \sum_{i=1}^n \left( y_i \boldsymbol{x}_i - \frac{e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}}{1 + e^{\boldsymbol{x}_i^\top \boldsymbol{\beta}}} \boldsymbol{x}_i \right) = \sum_{i=1}^n (y_i - p_i)\boldsymbol{x}_i = \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p})</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-gradient}</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>其中 $\boldsymbol{p} = (p_1, p_2, \dots, p_n)^\top \in \mathbb{R}^n$。</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 2. 二階 Hessian 矩陣：</span></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>對梯度再次求導：</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>\nabla^2_{\boldsymbol{\beta}} \ell(\boldsymbol{\beta}) = \frac{\partial}{\partial \boldsymbol{\beta}^\top} \left( \sum_{i=1}^n (y_i - p_i)\boldsymbol{x}_i \right) = -\sum_{i=1}^n \boldsymbol{x}_i \left( \frac{\partial p_i}{\partial \boldsymbol{\beta}^\top} \right) = -\sum_{i=1}^n p_i (1 - p_i) \boldsymbol{x}_i \boldsymbol{x}_i^\top</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>利用多變數牛頓-拉夫森法（Newton-Raphson Update）：</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>定義對角權重矩陣 $\boldsymbol{W} \in \mathbb{R}^{n \times n}$：</span>
 <span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} = \boldsymbol{\beta}^{(t)} - \left<span class="co">[</span><span class="ot"> \nabla^2 \ell(\boldsymbol{\beta}^{(t)}) \right</span><span class="co">]</span>^{-1} \nabla \ell(\boldsymbol{\beta}^{(t)})</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>\boldsymbol{W} = \mathrm{diag}\left( p_1(1 - p_1), \, p_2(1 - p_2), \, \dots, \, p_n(1 - p_n) \right)</span>
 <span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>代入式 (<span class="co">[</span><span class="ot">-@eq-ch06-gradient</span><span class="co">]</span>) 與式 (<span class="co">[</span><span class="ot">-@eq-ch06-hessian</span><span class="co">]</span>)：</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} &amp;= \boldsymbol{\beta}^{(t)} - \left<span class="co">[</span><span class="ot"> -\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X} \right</span><span class="co">]</span>^{-1} \left<span class="co">[</span><span class="ot"> \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>&amp;= \boldsymbol{\beta}^{(t)} + (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) <span class="sc">\\</span></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>&amp;= (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \left<span class="co">[</span><span class="ot"> (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})\boldsymbol{\beta}^{(t)} + \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>&amp;= (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top \boldsymbol{W}_t \left<span class="co">[</span><span class="ot"> \boldsymbol{X}\boldsymbol{\beta}^{(t)} + \boldsymbol{W}_t^{-1}(\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span></span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>定義**調整後工作反應變數（Adjusted Working Response）** $\boldsymbol{z}_t \in \mathbb{R}^n$：</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>\boldsymbol{z}_t \triangleq \boldsymbol{X}\boldsymbol{\beta}^{(t)} + \boldsymbol{W}_t^{-1}(\boldsymbol{y} - \boldsymbol{p}_t)</span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-working-response}</span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>此時牛頓法更新式完美化為：</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} = (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{z}_t</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-irls-update}</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>式 (<span class="co">[</span><span class="ot">-@eq-ch06-irls-update</span><span class="co">]</span>) 正好是以 $\boldsymbol{W}_t$ 為權重矩陣、對響應變數 $\boldsymbol{z}_t$ 進行的**加權最小平方法（Weighted Least Squares, WLS）**！</span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>這項精妙的代數等價性，使統計學家將求解 GLM 的演算法命名為**迭代加權最小平方法（Iteratively Reweighted Least Squares, IRLS）**。</span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.5 手把手數值推演：4 筆資料之 IRLS 首步手算</span></span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>為了使讀者直觀感受 IRLS 的內部運作機制，我們構造一組 4 筆樣本的 1D 分類資料：</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> 真實標籤 $y_i$ <span class="pp">|</span></span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span></span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span></span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 3 <span class="pp">|</span> 1 <span class="pp">|</span></span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>設計矩陣（含截距項）與標籤向量為：</span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X} = \begin{bmatrix} 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 <span class="sc">\\</span> 1 &amp; 2 <span class="sc">\\</span> 1 &amp; 3 \end{bmatrix}, \quad \boldsymbol{y} = \begin{bmatrix} 0 <span class="sc">\\</span> 0 <span class="sc">\\</span> 1 <span class="sc">\\</span> 1 \end{bmatrix}</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：初始設定</span></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>設初始參數向量為零向量：</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(0)} = \begin{bmatrix} \beta_0^{(0)} <span class="sc">\\</span> \beta_1^{(0)} \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 0 \end{bmatrix}</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各點預測機率與權重</span></span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>對各樣本計算線性得分 $\eta_i = \boldsymbol{x}_i^\top \boldsymbol{\beta}^{(0)} = 0$：</span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>p_i = \sigma(0) = \frac{1}{1 + e^0} = 0.5, \quad \forall i \in <span class="sc">\{</span>1, 2, 3, 4<span class="sc">\}</span></span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>預測機率向量為 $\boldsymbol{p}_0 = <span class="co">[</span><span class="ot">0.5, 0.5, 0.5, 0.5</span><span class="co">]</span>^\top$。</span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>殘差項 $\boldsymbol{y} - \boldsymbol{p}_0$：</span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>\boldsymbol{y} - \boldsymbol{p}_0 = \begin{bmatrix} 0 - 0.5 <span class="sc">\\</span> 0 - 0.5 <span class="sc">\\</span> 1 - 0.5 <span class="sc">\\</span> 1 - 0.5 \end{bmatrix} = \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 <span class="sc">\\</span> +0.5 <span class="sc">\\</span> +0.5 \end{bmatrix}</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>對角權重矩陣元素：$w_i = p_i(1 - p_i) = 0.5 \times 0.5 = 0.25$：</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>則 Hessian 矩陣以簡潔的矩陣形式表示為：</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>\boldsymbol{H} = \nabla^2 \ell(\boldsymbol{\beta}) = -\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X}</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-hessian}</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 凸性分析（全域最優解保證）：</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>由於 $0 &lt; p_i &lt; 1$，權重矩陣 $\boldsymbol{W}$ 的對角元素恆為正數（$p_i(1-p_i) &gt; 0$），故 $\boldsymbol{W}$ 為正定對角矩陣。</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>對於任意非零向量 $\boldsymbol{v} \in \mathbb{R}^{p+1}$：</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>\boldsymbol{v}^\top \boldsymbol{H} \boldsymbol{v} = -\boldsymbol{v}^\top (\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X})\boldsymbol{v} = -(\boldsymbol{X}\boldsymbol{v})^\top \boldsymbol{W} (\boldsymbol{X}\boldsymbol{v}) \le 0</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>Hessian 矩陣**恆為半負定（Negative Semi-Definite）**，證明對數似然函數 $\ell(\boldsymbol{\beta})$ 是**嚴格凹函數（Concave Function）**，沒有任何局部極大值的陷阱，保證數值最佳化必收斂至全域唯一極值點！</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.4.2 迭代加權最小平方法（IRLS）推導</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>利用多變數牛頓-拉夫森法（Newton-Raphson Update）：</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} = \boldsymbol{\beta}^{(t)} - \left<span class="co">[</span><span class="ot"> \nabla^2 \ell(\boldsymbol{\beta}^{(t)}) \right</span><span class="co">]</span>^{-1} \nabla \ell(\boldsymbol{\beta}^{(t)})</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>代入式 (<span class="co">[</span><span class="ot">-@eq-ch06-gradient</span><span class="co">]</span>) 與式 (<span class="co">[</span><span class="ot">-@eq-ch06-hessian</span><span class="co">]</span>)：</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} &amp;= \boldsymbol{\beta}^{(t)} - \left<span class="co">[</span><span class="ot"> -\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X} \right</span><span class="co">]</span>^{-1} \left<span class="co">[</span><span class="ot"> \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>&amp;= \boldsymbol{\beta}^{(t)} + (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) <span class="sc">\\</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>&amp;= (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \left<span class="co">[</span><span class="ot"> (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})\boldsymbol{\beta}^{(t)} + \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>&amp;= (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top \boldsymbol{W}_t \left<span class="co">[</span><span class="ot"> \boldsymbol{X}\boldsymbol{\beta}^{(t)} + \boldsymbol{W}_t^{-1}(\boldsymbol{y} - \boldsymbol{p}_t) \right</span><span class="co">]</span></span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>定義**調整後工作反應變數（Adjusted Working Response）** $\boldsymbol{z}_t \in \mathbb{R}^n$：</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>\boldsymbol{z}_t \triangleq \boldsymbol{X}\boldsymbol{\beta}^{(t)} + \boldsymbol{W}_t^{-1}(\boldsymbol{y} - \boldsymbol{p}_t)</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-working-response}</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>此時牛頓法更新式完美化為：</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(t+1)} = (\boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{X})^{-1} \boldsymbol{X}^\top \boldsymbol{W}_t \boldsymbol{z}_t</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-irls-update}</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 深刻結論：</span></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>式 (<span class="co">[</span><span class="ot">-@eq-ch06-irls-update</span><span class="co">]</span>) 正好是以 $\boldsymbol{W}_t$ 為權重矩陣、對響應變數 $\boldsymbol{z}_t$ 進行的**加權最小平方法（Weighted Least Squares, WLS）**！</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>這項精妙的代數等價性，使統計學家將求解 GLM 的演算法命名為**迭代加權最小平方法（Iteratively Reweighted Least Squares, IRLS）**。</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.5 手把手數值推演：4 筆資料之 IRLS 首步手算</span></span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>為了使讀者直觀感受 IRLS 的內部運作機制，我們構造一組 4 筆樣本的 1D 分類資料：</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> 真實標籤 $y_i$ <span class="pp">|</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span> 0 <span class="pp">|</span></span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 2 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 3 <span class="pp">|</span> 1 <span class="pp">|</span></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>設計矩陣（含截距項）與標籤向量為：</span>
 <span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>\boldsymbol{W}_0 = \mathrm{diag}(0.25, 0.25, 0.25, 0.25) = 0.25 \, \boldsymbol{I}_4</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X} = \begin{bmatrix} 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 <span class="sc">\\</span> 1 &amp; 2 <span class="sc">\\</span> 1 &amp; 3 \end{bmatrix}, \quad \boldsymbol{y} = \begin{bmatrix} 0 <span class="sc">\\</span> 0 <span class="sc">\\</span> 1 <span class="sc">\\</span> 1 \end{bmatrix}</span>
 <span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：計算一階梯度與 Hessian 矩陣</span></span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**梯度向量**：</span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>  \nabla \ell(\boldsymbol{\beta}^{(0)}) = \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_0) = \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 <span class="sc">\\</span> 0.5 <span class="sc">\\</span> 0.5 \end{bmatrix} = \begin{bmatrix} -0.5 - 0.5 + 0.5 + 0.5 <span class="sc">\\</span> 0(-0.5) + 1(-0.5) + 2(0.5) + 3(0.5) \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 2.0 \end{bmatrix}</span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**加權散佈矩陣 $\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X}$**：</span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X} = 0.25 \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 <span class="sc">\\</span> 1 &amp; 2 <span class="sc">\\</span> 1 &amp; 3 \end{bmatrix} = 0.25 \begin{bmatrix} 4 &amp; 6 <span class="sc">\\</span> 6 &amp; 14 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 3.5 \end{bmatrix}</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**求逆矩陣 $(\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1}$**：</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>  行列式 $\det = (1.0)(3.5) - (1.5)^2 = 3.5 - 2.25 = 1.25 = \frac{5}{4}$。</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>  (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} = \frac{1}{1.25} \begin{bmatrix} 3.5 &amp; -1.5 <span class="sc">\\</span> -1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix}</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：執行參數更新</span></span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>由牛頓法：</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：初始設定</span></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>設初始參數向量為零向量：</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(0)} = \begin{bmatrix} \beta_0^{(0)} <span class="sc">\\</span> \beta_1^{(0)} \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 0 \end{bmatrix}</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算各點預測機率與權重</span></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>對各樣本計算線性得分 $\eta_i = \boldsymbol{x}_i^\top \boldsymbol{\beta}^{(0)} = 0$：</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>p_i = \sigma(0) = \frac{1}{1 + e^0} = 0.5, \quad \forall i \in <span class="sc">\{</span>1, 2, 3, 4<span class="sc">\}</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>預測機率向量為 $\boldsymbol{p}_0 = <span class="co">[</span><span class="ot">0.5, 0.5, 0.5, 0.5</span><span class="co">]</span>^\top$。</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>殘差項 $\boldsymbol{y} - \boldsymbol{p}_0$：</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>\boldsymbol{y} - \boldsymbol{p}_0 = \begin{bmatrix} 0 - 0.5 <span class="sc">\\</span> 0 - 0.5 <span class="sc">\\</span> 1 - 0.5 <span class="sc">\\</span> 1 - 0.5 \end{bmatrix} = \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 <span class="sc">\\</span> +0.5 <span class="sc">\\</span> +0.5 \end{bmatrix}</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>對角權重矩陣元素：$w_i = p_i(1 - p_i) = 0.5 \times 0.5 = 0.25$：</span>
 <span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(1)} = \boldsymbol{\beta}^{(0)} + (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} \nabla \ell(\boldsymbol{\beta}^{(0)}) = \begin{bmatrix} 0 <span class="sc">\\</span> 0 \end{bmatrix} + \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix} \begin{bmatrix} 0 <span class="sc">\\</span> 2.0 \end{bmatrix} = \begin{bmatrix} -2.4 <span class="sc">\\</span> 1.6 \end{bmatrix}</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>\boldsymbol{W}_0 = \mathrm{diag}(0.25, 0.25, 0.25, 0.25) = 0.25 \, \boldsymbol{I}_4</span>
 <span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：加權最小平方 WLS 視角驗證</span></span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>計算工作反應變數 $\boldsymbol{z}_0 = \boldsymbol{X}\boldsymbol{\beta}^{(0)} + \boldsymbol{W}_0^{-1}(\boldsymbol{y} - \boldsymbol{p}_0) = \boldsymbol{0} + \frac{1}{0.25}(\boldsymbol{y} - \boldsymbol{p}_0) = 4(\boldsymbol{y} - \boldsymbol{p}_0)$：</span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>\boldsymbol{z}_0 = \begin{bmatrix} 4(-0.5) <span class="sc">\\</span> 4(-0.5) <span class="sc">\\</span> 4(0.5) <span class="sc">\\</span> 4(0.5) \end{bmatrix} = \begin{bmatrix} -2 <span class="sc">\\</span> -2 <span class="sc">\\</span> 2 <span class="sc">\\</span> 2 \end{bmatrix}</span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>計算 $\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0$：</span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0 = 0.25 \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} -2 <span class="sc">\\</span> -2 <span class="sc">\\</span> 2 <span class="sc">\\</span> 2 \end{bmatrix} = 0.25 \begin{bmatrix} 0 <span class="sc">\\</span> 8 \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 2 \end{bmatrix}</span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>套用 WLS 解：</span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(1)} = (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0) = \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix} \begin{bmatrix} 0 <span class="sc">\\</span> 2 \end{bmatrix} = \begin{bmatrix} -2.4 <span class="sc">\\</span> 1.6 \end{bmatrix}</span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>牛頓步與 WLS 閉式解**完美一致**！</span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：計算一階梯度與 Hessian 矩陣</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**梯度向量**：</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>  \nabla \ell(\boldsymbol{\beta}^{(0)}) = \boldsymbol{X}^\top (\boldsymbol{y} - \boldsymbol{p}_0) = \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} -0.5 <span class="sc">\\</span> -0.5 <span class="sc">\\</span> 0.5 <span class="sc">\\</span> 0.5 \end{bmatrix} = \begin{bmatrix} -0.5 - 0.5 + 0.5 + 0.5 <span class="sc">\\</span> 0(-0.5) + 1(-0.5) + 2(0.5) + 3(0.5) \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 2.0 \end{bmatrix}</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**加權散佈矩陣 $\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X}$**：</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X} = 0.25 \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 <span class="sc">\\</span> 1 &amp; 2 <span class="sc">\\</span> 1 &amp; 3 \end{bmatrix} = 0.25 \begin{bmatrix} 4 &amp; 6 <span class="sc">\\</span> 6 &amp; 14 \end{bmatrix} = \begin{bmatrix} 1.0 &amp; 1.5 <span class="sc">\\</span> 1.5 &amp; 3.5 \end{bmatrix}</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**求逆矩陣 $(\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1}$**：</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>  行列式 $\det = (1.0)(3.5) - (1.5)^2 = 3.5 - 2.25 = 1.25 = \frac{5}{4}$。</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>  (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} = \frac{1}{1.25} \begin{bmatrix} 3.5 &amp; -1.5 <span class="sc">\\</span> -1.5 &amp; 1.0 \end{bmatrix} = \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix}</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>  $$</span>
 <span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **幾何意義解讀**：</span></span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 在僅僅第 1 步迭代後，模型的分界決策面為 $-2.4 + 1.6x = 0 \implies x^* = \frac{2.4}{1.6} = 1.5$！</span></span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 決策分界線精準落在類別 0（$x \in </span><span class="sc">\{</span><span class="at">0, 1</span><span class="sc">\}</span><span class="at">$）與類別 1（$x \in </span><span class="sc">\{</span><span class="at">2, 3</span><span class="sc">\}</span><span class="at">$）的中間點 $x=1.5$ 處，展現了二階最佳化極高的收斂效率。</span></span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：執行參數更新</span></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>由牛頓法：</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(1)} = \boldsymbol{\beta}^{(0)} + (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} \nabla \ell(\boldsymbol{\beta}^{(0)}) = \begin{bmatrix} 0 <span class="sc">\\</span> 0 \end{bmatrix} + \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix} \begin{bmatrix} 0 <span class="sc">\\</span> 2.0 \end{bmatrix} = \begin{bmatrix} -2.4 <span class="sc">\\</span> 1.6 \end{bmatrix}</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.6 模型評估與診斷指標：偏差（Deviance）與 AIC</span></span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>在廣義線性模型中，衡量配適度優劣不再使用最小平方法的殘差平方和（$\mathrm{RSS}$），而是使用**偏差（Deviance）**。</span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.6.1 飽和模型與偏差定義</span></span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**飽和模型（Saturated Model）**：假設模型參數個數等於樣本數（$p = n$），能完美配適每一筆資料，其對數似然為 $\ell_{\text{sat}}$。</span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**擬合模型（Fitted Model）**：使用 $p+1$ 個參數估計，其最大對數似然為 $\ell(\hat{\boldsymbol{\beta}})$。</span>
-<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**殘差偏差（Residual Deviance, $D$）**：</span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>  D \triangleq 2 \left<span class="co">[</span><span class="ot"> \ell_{\text{sat}} - \ell(\hat{\boldsymbol{\beta}}) \right</span><span class="co">]</span></span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>  在二元羅吉斯迴歸中，飽和模型的 $\hat{p}_i = y_i$，故 $\ell_{\text{sat}} = 0$。因此：</span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>  D = -2 \ell(\hat{\boldsymbol{\beta}}) = -2 \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln \hat{p}_i + (1 - y_i) \ln(1 - \hat{p}_i) \right</span><span class="co">]</span></span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**虛無偏差（Null Deviance, $D_0$）**：僅包含截距項（所有樣本預測機率皆為 $\bar{y}$）的偏差值。</span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**模型顯著性之似然比檢定（Likelihood Ratio Test, LRT）**：</span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>  \Delta D = D_0 - D = 2\left<span class="co">[</span><span class="ot"> \ell(\hat{\boldsymbol{\beta}}) - \ell(\hat{\beta}_0) \right</span><span class="co">]</span> \sim \chi^2_p</span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a>  若 $p$-value 極小，拒絕虛無假設，證明引入的 $p$ 個特徵整體對模型有顯著解釋力。</span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.6.2 赤池資訊準則（AIC）</span></span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>\mathrm{AIC} = -2\ell(\hat{\boldsymbol{\beta}}) + 2(p + 1) = D + 2(p + 1)</span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>在配適優度與參數懲罰項之間取得平衡，數值越小代表模型越優。</span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.7 多類別推廣：Softmax 迴歸</span></span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>當類別數量 $K &gt; 2$ 時，模型推廣為多項羅吉斯迴歸（Multinomial Logistic Regression / Softmax）：</span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>P(Y = k \mid \boldsymbol{x}) = \frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}_k}}{\sum_{l=1}^K e^{\boldsymbol{x}^\top \boldsymbol{\beta}_l}}, \quad k = 1, 2, \dots, K</span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-softmax}</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>為了保證參數可辨識性，通常固定最後一類作為基準類別（令 $\boldsymbol{\beta}_K = \boldsymbol{0}$）。Softmax 函數是現代深度神經網路輸出層分類任務的標準配置。</span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.8 雙軌實務實驗室：信用卡違約預測與 IRLS 實戰</span></span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：羅吉斯迴歸、勝算比解讀、Deviance 診斷與混淆矩陣評估</span></span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：ISLR2</span></span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：加權最小平方 WLS 視角驗證</span></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>計算工作反應變數 $\boldsymbol{z}_0 = \boldsymbol{X}\boldsymbol{\beta}^{(0)} + \boldsymbol{W}_0^{-1}(\boldsymbol{y} - \boldsymbol{p}_0) = \boldsymbol{0} + \frac{1}{0.25}(\boldsymbol{y} - \boldsymbol{p}_0) = 4(\boldsymbol{y} - \boldsymbol{p}_0)$：</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>\boldsymbol{z}_0 = \begin{bmatrix} 4(-0.5) <span class="sc">\\</span> 4(-0.5) <span class="sc">\\</span> 4(0.5) <span class="sc">\\</span> 4(0.5) \end{bmatrix} = \begin{bmatrix} -2 <span class="sc">\\</span> -2 <span class="sc">\\</span> 2 <span class="sc">\\</span> 2 \end{bmatrix}</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>計算 $\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0$：</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0 = 0.25 \begin{bmatrix} 1 &amp; 1 &amp; 1 &amp; 1 <span class="sc">\\</span> 0 &amp; 1 &amp; 2 &amp; 3 \end{bmatrix} \begin{bmatrix} -2 <span class="sc">\\</span> -2 <span class="sc">\\</span> 2 <span class="sc">\\</span> 2 \end{bmatrix} = 0.25 \begin{bmatrix} 0 <span class="sc">\\</span> 8 \end{bmatrix} = \begin{bmatrix} 0 <span class="sc">\\</span> 2 \end{bmatrix}</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>套用 WLS 解：</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta}^{(1)} = (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{X})^{-1} (\boldsymbol{X}^\top \boldsymbol{W}_0 \boldsymbol{z}_0) = \begin{bmatrix} 2.8 &amp; -1.2 <span class="sc">\\</span> -1.2 &amp; 0.8 \end{bmatrix} \begin{bmatrix} 0 <span class="sc">\\</span> 2 \end{bmatrix} = \begin{bmatrix} -2.4 <span class="sc">\\</span> 1.6 \end{bmatrix}</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>牛頓步與 WLS 閉式解**完美一致**！</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 💡 **幾何意義解讀**：</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 在僅僅第 1 步迭代後，模型的分界決策面為 $-2.4 + 1.6x = 0 \implies x^* = \frac{2.4}{1.6} = 1.5$！</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; 決策分界線精準落在類別 0（$x \in </span><span class="sc">\{</span><span class="at">0, 1</span><span class="sc">\}</span><span class="at">$）與類別 1（$x \in </span><span class="sc">\{</span><span class="at">2, 3</span><span class="sc">\}</span><span class="at">$）的中間點 $x=1.5$ 處，展現了二階最佳化極高的收斂效率。</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.6 模型評估與診斷指標：偏差（Deviance）與 AIC</span></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>在廣義線性模型中，衡量配適度優劣不再使用最小平方法的殘差平方和（$\mathrm{RSS}$），而是使用**偏差（Deviance）**。</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.6.1 飽和模型與偏差定義</span></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**飽和模型（Saturated Model）**：假設模型參數個數等於樣本數（$p = n$），能完美配適每一筆資料，其對數似然為 $\ell_{\text{sat}}$。</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**擬合模型（Fitted Model）**：使用 $p+1$ 個參數估計，其最大對數似然為 $\ell(\hat{\boldsymbol{\beta}})$。</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**殘差偏差（Residual Deviance, $D$）**：</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>  D \triangleq 2 \left<span class="co">[</span><span class="ot"> \ell_{\text{sat}} - \ell(\hat{\boldsymbol{\beta}}) \right</span><span class="co">]</span></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a>  在二元羅吉斯迴歸中，飽和模型的 $\hat{p}_i = y_i$，故 $\ell_{\text{sat}} = 0$。因此：</span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>  D = -2 \ell(\hat{\boldsymbol{\beta}}) = -2 \sum_{i=1}^n \left<span class="co">[</span><span class="ot"> y_i \ln \hat{p}_i + (1 - y_i) \ln(1 - \hat{p}_i) \right</span><span class="co">]</span></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**虛無偏差（Null Deviance, $D_0$）**：僅包含截距項（所有樣本預測機率皆為 $\bar{y}$）的偏差值。</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**模型顯著性之似然比檢定（Likelihood Ratio Test, LRT）**：</span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>  \Delta D = D_0 - D = 2\left<span class="co">[</span><span class="ot"> \ell(\hat{\boldsymbol{\beta}}) - \ell(\hat{\beta}_0) \right</span><span class="co">]</span> \sim \chi^2_p</span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>  若 $p$-value 極小，拒絕虛無假設，證明引入的 $p$ 個特徵整體對模型有顯著解釋力。</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6.6.2 赤池資訊準則（AIC）</span></span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>\mathrm{AIC} = -2\ell(\hat{\boldsymbol{\beta}}) + 2(p + 1) = D + 2(p + 1)</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a>在配適優度與參數懲罰項之間取得平衡，數值越小代表模型越優。</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.7 多類別推廣：Softmax 迴歸</span></span>
 <span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>當類別數量 $K &gt; 2$ 時，模型推廣為多項羅吉斯迴歸（Multinomial Logistic Regression / Softmax）：</span>
 <span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 載入 Default (信用卡違約) 資料集</span></span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Default)</span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Default)</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>P(Y = k \mid \boldsymbol{x}) = \frac{e^{\boldsymbol{x}^\top \boldsymbol{\beta}_k}}{\sum_{l=1}^K e^{\boldsymbol{x}^\top \boldsymbol{\beta}_l}}, \quad k = 1, 2, \dots, K</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch06-softmax}</span>
 <span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合二元羅吉斯迴歸模型 (GLM family = binomial)</span></span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>fit_logit <span class="ot">&lt;-</span> <span class="fu">glm</span>(default <span class="sc">~</span> balance <span class="sc">+</span> income <span class="sc">+</span> student, <span class="at">data =</span> Default, <span class="at">family =</span> binomial)</span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出詳細係數、Wald 檢定與 Deviance 報表</span></span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_logit)</span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>為了保證參數可辨識性，通常固定最後一類作為基準類別（令 $\boldsymbol{\beta}_K = \boldsymbol{0}$）。Softmax 函數是現代深度神經網路輸出層分類任務的標準配置。</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.8 雙軌實務實驗室：信用卡違約預測與 IRLS 實戰</span></span>
 <span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 轉換為勝算比 (Odds Ratio, exp(coef)) 與 95% 信賴區間</span></span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>odds_ratios <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(fit_logit))</span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>ci_odds <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">confint</span>(fit_logit))</span>
-<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">各特徵之勝算比 (Odds Ratio) 與 95% 信賴區間:</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> odds_ratios, ci_odds))</span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 似然比檢定 (LRT) 檢驗模型整體顯著性</span></span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>null_dev <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>null.deviance</span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>res_dev <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>deviance</span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>df_diff <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>df.null <span class="sc">-</span> fit_logit<span class="sc">$</span>df.residual</span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>p_val_lrt <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(null_dev <span class="sc">-</span> res_dev, <span class="at">df =</span> df_diff, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">似然比檢定卡方統計量: %.2f (自由度: %d), p-value: %e</span><span class="sc">\n</span><span class="st">"</span>, </span>
-<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a>            null_dev <span class="sc">-</span> res_dev, df_diff, p_val_lrt))</span>
-<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. 預測後驗機率與混淆矩陣評估</span></span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_logit, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># 輸出 P(Y=1|X)</span></span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(probs <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>)</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：羅吉斯迴歸、勝算比解讀、Deviance 診斷與混淆矩陣評估</span></span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：ISLR2</span></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 載入 Default (信用卡違約) 資料集</span></span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Default)</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Default)</span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合二元羅吉斯迴歸模型 (GLM family = binomial)</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>fit_logit <span class="ot">&lt;-</span> <span class="fu">glm</span>(default <span class="sc">~</span> balance <span class="sc">+</span> income <span class="sc">+</span> student, <span class="at">data =</span> Default, <span class="at">family =</span> binomial)</span>
 <span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算混淆矩陣</span></span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> preds, 真實 <span class="ot">=</span> Default<span class="sc">$</span>default)</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">混淆矩陣 (閥值 = 0.5):</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">mean</span>(preds <span class="sc">==</span> Default<span class="sc">$</span>default)</span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"整體準確率 (Accuracy): %.4f</span><span class="sc">\n</span><span class="st">"</span>, accuracy))</span>
-<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出詳細係數、Wald 檢定與 Deviance 報表</span></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_logit)</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 轉換為勝算比 (Odds Ratio, exp(coef)) 與 95% 信賴區間</span></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>odds_ratios <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(fit_logit))</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>ci_odds <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">confint</span>(fit_logit))</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">各特徵之勝算比 (Odds Ratio) 與 95% 信賴區間:</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">cbind</span>(<span class="at">OR =</span> odds_ratios, ci_odds))</span>
 <span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
-<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：手刻 IRLS 演算法與 statsmodels Logit 詳細報表驗證</span></span>
-<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, statsmodels, sklearn</span></span>
-<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 似然比檢定 (LRT) 檢驗模型整體顯著性</span></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>null_dev <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>null.deviance</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>res_dev <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>deviance</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a>df_diff <span class="ot">&lt;-</span> fit_logit<span class="sc">$</span>df.null <span class="sc">-</span> fit_logit<span class="sc">$</span>df.residual</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>p_val_lrt <span class="ot">&lt;-</span> <span class="fu">pchisq</span>(null_dev <span class="sc">-</span> res_dev, <span class="at">df =</span> df_diff, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">似然比檢定卡方統計量: %.2f (自由度: %d), p-value: %e</span><span class="sc">\n</span><span class="st">"</span>, </span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a>            null_dev <span class="sc">-</span> res_dev, df_diff, p_val_lrt))</span>
 <span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, roc_auc_score</span>
-<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬二元分類資料集</span></span>
-<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">500</span></span>
-<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
-<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
-<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a>X_design <span class="op">=</span> np.column_stack([np.ones(n), x1, x2])</span>
-<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a>beta_true <span class="op">=</span> np.array([<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.8</span>, <span class="op">-</span><span class="fl">1.2</span>])</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. 預測後驗機率與混淆矩陣評估</span></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a>probs <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_logit, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># 輸出 P(Y=1|X)</span></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a>preds <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(probs <span class="sc">&gt;</span> <span class="fl">0.5</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>)</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="co"># 計算混淆矩陣</span></span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>conf_matrix <span class="ot">&lt;-</span> <span class="fu">table</span>(預測 <span class="ot">=</span> preds, 真實 <span class="ot">=</span> Default<span class="sc">$</span>default)</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">混淆矩陣 (閥值 = 0.5):</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(conf_matrix)</span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a>accuracy <span class="ot">&lt;-</span> <span class="fu">mean</span>(preds <span class="sc">==</span> Default<span class="sc">$</span>default)</span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"整體準確率 (Accuracy): %.4f</span><span class="sc">\n</span><span class="st">"</span>, accuracy))</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a>prob_true <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>X_design <span class="op">@</span> beta_true))</span>
-<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, prob_true, size<span class="op">=</span>n)</span>
-<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 手刻迭代加權最小平方法 (IRLS)</span></span>
-<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fit_irls_logistic(X, y, max_iter<span class="op">=</span><span class="dv">20</span>, tol<span class="op">=</span><span class="fl">1e-6</span>):</span>
-<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a>    n_samples, p_features <span class="op">=</span> X.shape</span>
-<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p_features) <span class="co"># 初始化為零</span></span>
-<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> iteration <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
-<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>X <span class="op">@</span> beta))</span>
-<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> np.clip(p, <span class="fl">1e-15</span>, <span class="dv">1</span> <span class="op">-</span> <span class="fl">1e-15</span>) <span class="co"># 防止數值溢出</span></span>
-<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> p <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">-</span> p)</span>
-<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a>        W <span class="op">=</span> np.diag(w)</span>
-<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 工作反應變數 z</span></span>
-<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> X <span class="op">@</span> beta <span class="op">+</span> (y <span class="op">-</span> p) <span class="op">/</span> w</span>
-<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a>        <span class="co"># WLS 封閉解</span></span>
-<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a>        XtW <span class="op">=</span> X.T <span class="op">@</span> W</span>
-<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>        beta_new <span class="op">=</span> np.linalg.inv(XtW <span class="op">@</span> X) <span class="op">@</span> (XtW <span class="op">@</span> z)</span>
-<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a>        diff <span class="op">=</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(beta_new <span class="op">-</span> beta))</span>
-<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> beta_new</span>
-<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> diff <span class="op">&lt;</span> tol:</span>
-<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"IRLS 演算法在第 </span><span class="sc">{</span>iteration <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> 步成功收斂。"</span>)</span>
-<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta</span>
-<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>beta_manual <span class="op">=</span> fit_irls_logistic(X_design, y)</span>
-<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 使用 statsmodels 驗證</span></span>
-<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> sm.Logit(y, X_design).fit(disp<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== 係數估計對比 ==="</span>)</span>
-<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"真實參數向量:"</span>, beta_true)</span>
-<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"手刻 IRLS 估計值:"</span>, np.<span class="bu">round</span>(beta_manual, <span class="dv">4</span>))</span>
-<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"statsmodels 估計值:"</span>, np.<span class="bu">round</span>(logit_model.params, <span class="dv">4</span>))</span>
-<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 輸出 statsmodels 摘要指標</span></span>
-<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(logit_model.summary())</span>
-<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ROC AUC 分數: </span><span class="sc">{</span>roc_auc_score(y, logit_model.predict(X_design))<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.9 課後全方位習題庫（10 題）</span></span>
-<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Sigmoid 函數的一階導引理證明**：</span>
-<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a>   嚴格推導 $\sigma'(z) = \sigma(z)(1 - \sigma(z))$，並解釋為什麼在反向傳播或梯度下降中，當預測極度確信（$z \to \pm \infty$）時會導致梯度消失（Vanishing Gradient）。</span>
-<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**似然函數嚴格凹性之二次型證明**：</span>
-<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a>   證明式 (<span class="co">[</span><span class="ot">-@eq-ch06-hessian</span><span class="co">]</span>) 的 Hessian 矩陣 $\boldsymbol{H} = -\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X}$ 在特徵矩陣 $\boldsymbol{X}$ 具備行滿秩（Full Column Rank）條件下，恆為嚴格負定（Negative Definite），並論證為什麼羅吉斯迴歸不存在局部極小值。</span>
-<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**勝算比（Odds Ratio）的乘法可加性**：</span>
-<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a>   設羅吉斯迴歸中某特徵 $x_1$ 增加 $\Delta$ 個單位，證明勝算比變化倍率為 $e^{\beta_1 \Delta}$。若 $x_1$ 為連續變數（如年齡），請從流行病學風險角度解釋此性質的臨床價值。</span>
-<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**完全分離（Complete Separation）與 Hauck-Donner 效應**：</span>
-<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a>   當訓練資料存在某個特徵子集使得兩類標籤可以被完全分開（例如 $x &gt; c$ 時標籤全為 1，$x \le c$ 時標籤全為 0），證明此時 MLE 的參數估計值 $\hat{\beta} \to \infty$。請解釋為什麼此時標準統計軟體報告的 Wald $z$-統計量會反常偏小（Hauck-Donner 效應）？</span>
-<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**多項 Softmax 迴歸對二元羅吉斯之退化性證明**：</span>
-<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch06-softmax</span><span class="co">]</span>) 中令類別數 $K=2$，並固定基準類別 $\boldsymbol{\beta}_2 = \boldsymbol{0}$，證明此時的類別機率公式退化為式 (<span class="co">[</span><span class="ot">-@eq-ch06-sigmoid</span><span class="co">]</span>) 的標準二元羅吉斯迴歸。</span>
-<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**正則化羅吉斯迴歸（$L_1$ / $L_2$ Regularized Logistic）實作**：</span>
-<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a>   在羅吉斯迴歸損失函數中加入 $L_1$ 懲罰項（Lasso Logistic Regression），使用 Python <span class="in">`LogisticRegression(penalty='l1', solver='liblinear')`</span> 或 R <span class="in">`glmnet(..., family="binomial", alpha=1)`</span> 擬合高維度模擬數據，繪製係數收縮路徑圖並找出關鍵預測特徵。</span>
-<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**最佳分類閥值之成本敏感搜尋（Cost-Sensitive Threshold Tuning）**：</span>
-<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a>   在癌症診斷中，偽陰性（漏診）的代價是偽陽性（誤診）的 10 倍。撰寫程式繪製不同分類閥值 $\tau \in <span class="co">[</span><span class="ot">0.01, 0.99</span><span class="co">]</span>$ 下的總損失成本曲線，並找出最優預測閥值 $\tau^*$。</span>
-<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**完全分離問題之 Firth 懲罰似然法（Firth's Penalized Likelihood）**：</span>
-<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a>   構造一組完全線性可分的二元資料集。展示普通 <span class="in">`glm()`</span> 產生警告並輸出極端係數；接著使用 R 的 <span class="in">`logistf`</span> 套件或 Python 實作 Jeffreys 先驗懲罰似然估計（Firth Logistic Regression），驗證其如何克服參數發散。</span>
-<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**校準曲線（Calibration Curve / Reliability Diagram）與 Brier Score**：</span>
-<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a>   產生一組二元測試資料，計算模型的 Brier Score：$\mathrm{BS} = \frac{1}{n}\sum_{i=1}^n (\hat{p}_i - y_i)^2$。繪製可靠度圖，評估模型預測機率是否具有良好的經驗校準性（Well-Calibrated）。</span>
-<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**多類別 Softmax 混淆矩陣與宏觀/微觀指標計算（Macro vs Micro F1）**：</span>
-<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a>    利用真實多分類資料集（如 Iris 或 MNIST 子集），擬合多項羅吉斯迴歸模型。手動計算多類別混淆矩陣，並分別編程實現 Micro-$F_1$、Macro-$F_1$ 與 Weighted-$F_1$ 之計算。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：手刻 IRLS 演算法與 statsmodels Logit 詳細報表驗證</span></span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, statsmodels, sklearn</span></span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, roc_auc_score</span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬二元分類資料集</span></span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, n)</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a>X_design <span class="op">=</span> np.column_stack([np.ones(n), x1, x2])</span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a>beta_true <span class="op">=</span> np.array([<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">1.8</span>, <span class="op">-</span><span class="fl">1.2</span>])</span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a>prob_true <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>X_design <span class="op">@</span> beta_true))</span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, prob_true, size<span class="op">=</span>n)</span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 手刻迭代加權最小平方法 (IRLS)</span></span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fit_irls_logistic(X, y, max_iter<span class="op">=</span><span class="dv">20</span>, tol<span class="op">=</span><span class="fl">1e-6</span>):</span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>    n_samples, p_features <span class="op">=</span> X.shape</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p_features) <span class="co"># 初始化為零</span></span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> iteration <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> np.exp(<span class="op">-</span>X <span class="op">@</span> beta))</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>        p <span class="op">=</span> np.clip(p, <span class="fl">1e-15</span>, <span class="dv">1</span> <span class="op">-</span> <span class="fl">1e-15</span>) <span class="co"># 防止數值溢出</span></span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> p <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">-</span> p)</span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a>        W <span class="op">=</span> np.diag(w)</span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 工作反應變數 z</span></span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a>        z <span class="op">=</span> X <span class="op">@</span> beta <span class="op">+</span> (y <span class="op">-</span> p) <span class="op">/</span> w</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a>        <span class="co"># WLS 封閉解</span></span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a>        XtW <span class="op">=</span> X.T <span class="op">@</span> W</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>        beta_new <span class="op">=</span> np.linalg.inv(XtW <span class="op">@</span> X) <span class="op">@</span> (XtW <span class="op">@</span> z)</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a>        diff <span class="op">=</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(beta_new <span class="op">-</span> beta))</span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> beta_new</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> diff <span class="op">&lt;</span> tol:</span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"IRLS 演算法在第 </span><span class="sc">{</span>iteration <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> 步成功收斂。"</span>)</span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta</span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>beta_manual <span class="op">=</span> fit_irls_logistic(X_design, y)</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 使用 statsmodels 驗證</span></span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a>logit_model <span class="op">=</span> sm.Logit(y, X_design).fit(disp<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">=== 係數估計對比 ==="</span>)</span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"真實參數向量:"</span>, beta_true)</span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"手刻 IRLS 估計值:"</span>, np.<span class="bu">round</span>(beta_manual, <span class="dv">4</span>))</span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"statsmodels 估計值:"</span>, np.<span class="bu">round</span>(logit_model.params, <span class="dv">4</span>))</span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 輸出 statsmodels 摘要指標</span></span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(logit_model.summary())</span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"ROC AUC 分數: </span><span class="sc">{</span>roc_auc_score(y, logit_model.predict(X_design))<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="fu">## 6.9 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Sigmoid 函數的一階導引理證明**：</span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a>   嚴格推導 $\sigma'(z) = \sigma(z)(1 - \sigma(z))$，並解釋為什麼在反向傳播或梯度下降中，當預測極度確信（$z \to \pm \infty$）時會導致梯度消失（Vanishing Gradient）。</span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**似然函數嚴格凹性之二次型證明**：</span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a>   證明式 (<span class="co">[</span><span class="ot">-@eq-ch06-hessian</span><span class="co">]</span>) 的 Hessian 矩陣 $\boldsymbol{H} = -\boldsymbol{X}^\top \boldsymbol{W} \boldsymbol{X}$ 在特徵矩陣 $\boldsymbol{X}$ 具備行滿秩（Full Column Rank）條件下，恆為嚴格負定（Negative Definite），並論證為什麼羅吉斯迴歸不存在局部極小值。</span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**勝算比（Odds Ratio）的乘法可加性**：</span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a>   設羅吉斯迴歸中某特徵 $x_1$ 增加 $\Delta$ 個單位，證明勝算比變化倍率為 $e^{\beta_1 \Delta}$。若 $x_1$ 為連續變數（如年齡），請從流行病學風險角度解釋此性質的臨床價值。</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**完全分離（Complete Separation）與 Hauck-Donner 效應**：</span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a>   當訓練資料存在某個特徵子集使得兩類標籤可以被完全分開（例如 $x &gt; c$ 時標籤全為 1，$x \le c$ 時標籤全為 0），證明此時 MLE 的參數估計值 $\hat{\beta} \to \infty$。請解釋為什麼此時標準統計軟體報告的 Wald $z$-統計量會反常偏小（Hauck-Donner 效應）？</span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**多項 Softmax 迴歸對二元羅吉斯之退化性證明**：</span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch06-softmax</span><span class="co">]</span>) 中令類別數 $K=2$，並固定基準類別 $\boldsymbol{\beta}_2 = \boldsymbol{0}$，證明此時的類別機率公式退化為式 (<span class="co">[</span><span class="ot">-@eq-ch06-sigmoid</span><span class="co">]</span>) 的標準二元羅吉斯迴歸。</span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**正則化羅吉斯迴歸（$L_1$ / $L_2$ Regularized Logistic）實作**：</span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a>   在羅吉斯迴歸損失函數中加入 $L_1$ 懲罰項（Lasso Logistic Regression），使用 Python <span class="in">`LogisticRegression(penalty='l1', solver='liblinear')`</span> 或 R <span class="in">`glmnet(..., family="binomial", alpha=1)`</span> 擬合高維度模擬數據，繪製係數收縮路徑圖並找出關鍵預測特徵。</span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**最佳分類閥值之成本敏感搜尋（Cost-Sensitive Threshold Tuning）**：</span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a>   在癌症診斷中，偽陰性（漏診）的代價是偽陽性（誤診）的 10 倍。撰寫程式繪製不同分類閥值 $\tau \in <span class="co">[</span><span class="ot">0.01, 0.99</span><span class="co">]</span>$ 下的總損失成本曲線，並找出最優預測閥值 $\tau^*$。</span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**完全分離問題之 Firth 懲罰似然法（Firth's Penalized Likelihood）**：</span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a>   構造一組完全線性可分的二元資料集。展示普通 <span class="in">`glm()`</span> 產生警告並輸出極端係數；接著使用 R 的 <span class="in">`logistf`</span> 套件或 Python 實作 Jeffreys 先驗懲罰似然估計（Firth Logistic Regression），驗證其如何克服參數發散。</span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**校準曲線（Calibration Curve / Reliability Diagram）與 Brier Score**：</span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a>   產生一組二元測試資料，計算模型的 Brier Score：$\mathrm{BS} = \frac{1}{n}\sum_{i=1}^n (\hat{p}_i - y_i)^2$。繪製可靠度圖，評估模型預測機率是否具有良好的經驗校準性（Well-Calibrated）。</span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**多類別 Softmax 混淆矩陣與宏觀/微觀指標計算（Macro vs Micro F1）**：</span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a>    利用真實多分類資料集（如 Iris 或 MNIST 子集），擬合多項羅吉斯迴歸模型。手動計算多類別混淆矩陣，並分別編程實現 Micro-$F_1$、Macro-$F_1$ 與 Weighted-$F_1$ 之計算。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

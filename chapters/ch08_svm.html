@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">8.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">8.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀自駕車光學雷達障礙物安全隔離帶劃定" id="toc-開篇實務案例導讀自駕車光學雷達障礙物安全隔離帶劃定" class="nav-link" data-scroll-target="#開篇實務案例導讀自駕車光學雷達障礙物安全隔離帶劃定"><span class="header-section-number">8.1.1</span> 💡 開篇實務案例導讀：自駕車光學雷達障礙物安全隔離帶劃定</a></li>
+  <li><a href="#概念直覺與幾何啟發最寬的無人街道前線哨兵與彈性蹦床核映射" id="toc-概念直覺與幾何啟發最寬的無人街道前線哨兵與彈性蹦床核映射" class="nav-link" data-scroll-target="#概念直覺與幾何啟發最寬的無人街道前線哨兵與彈性蹦床核映射"><span class="header-section-number">8.1.2</span> 🎯 概念直覺與幾何啟發：最寬的無人街道、前線哨兵與彈性蹦床核映射</a></li>
+  </ul></li>
   <li><a href="#線性可分與最大間距超平面" id="toc-線性可分與最大間距超平面" class="nav-link" data-scroll-target="#線性可分與最大間距超平面"><span class="header-section-number">8.2</span> 8.1 線性可分與最大間距超平面</a>
   <ul class="collapse">
   <li><a href="#函數間距與幾何間距" id="toc-函數間距與幾何間距" class="nav-link" data-scroll-target="#函數間距與幾何間距"><span class="header-section-number">8.2.1</span> 8.1.1 函數間距與幾何間距</a></li>
@@ -602,7 +606,26 @@ window.Quarto = {
 <p>在機器學習的發展史中，由 Vladimir Vapnik 與 Corinna Cortes 於 1995 年完善的<strong>支援向量機（Support Vector Machine, SVM）</strong>，被公認為二十世紀統計學習理論的巔峰傑作。在深度學習崛起之前，SVM 憑藉其堅實的數學理論基礎（結構風險最小化、凸二次規劃）以及卓越的高維泛化性能，雄霸機器學習競賽榜首十餘年。</p>
 <p>不同於羅吉斯迴歸將所有樣本納入似然計算，SVM 具有極致的<strong>幾何稀疏性</strong>：它的最終決策邊界，僅僅由極少數坐落在分類邊界上的關鍵樣本點——<strong>支援向量（Support Vectors）</strong>所唯一決定。</p>
 <p>本章將從最大間距幾何超平面出發；建立軟間距（Soft-Margin）與鉸鏈損失（Hinge Loss）的關聯；嚴格推導<strong>拉格朗日對偶問題（Lagrangian Dual）</strong>與 <strong>KKT 互補鬆弛條件</strong>；給出<strong>微型數據純手工演算拉格朗日乘數解</strong>的完整算術過程；揭示高維映射的<strong>核技巧（Kernel Trick）與 Mercer 定理</strong>；最後在 R 與 Python 雙環境中進行非線性決策邊界實戰與全套習題演練。</p>
+<section id="開篇實務案例導讀自駕車光學雷達障礙物安全隔離帶劃定" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="開篇實務案例導讀自駕車光學雷達障礙物安全隔離帶劃定"><span class="header-section-number">8.1.1</span> 💡 開篇實務案例導讀：自駕車光學雷達障礙物安全隔離帶劃定</h3>
+<p>在自動駕駛車輛（Autonomous Vehicles）的即時防撞感測系統中，車載光達（LiDAR）每秒傳回數十萬個三維點雲特徵。控制核心必須以毫秒級反應速度，在特徵空間中劃出一道精準的安全隔離邊界，將「可通行的自由路面區域（Positive Class）」與「路緣石塊、施工三角錐或行人（Negative Class）」嚴密區隔。</p>
+<p>在現實工程控制中，我們<strong>絕不能僅滿足於「把兩類點勉強分開就好」</strong>： 想像若車輛右側是一堵連續水泥護欄、左側是一排金屬防撞桿，如果演算法劃出的分類線緊貼著護欄邊界（間距僅有 2 公分），即便在當前幀的辨識準確率高達 100%，自駕車只要因路面震動或轉向延遲產生 3 公分的微小橫向晃動，車體就會直接撞上護欄！</p>
+<p>自駕工程團隊必須尋求一條<strong>「物理間距極大化（Maximum Margin）」的黃金通道</strong>——使分類邊界與兩側障礙物的距離同時達到最寬。這種「最大化安全裕度（Safety Buffer）」的幾何防禦思想，正是支援向量機（SVM）的靈魂所在。</p>
+</section>
+<section id="概念直覺與幾何啟發最寬的無人街道前線哨兵與彈性蹦床核映射" class="level3" data-number="8.1.2">
+<h3 data-number="8.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發最寬的無人街道前線哨兵與彈性蹦床核映射"><span class="header-section-number">8.1.2</span> 🎯 概念直覺與幾何啟發：最寬的無人街道、前線哨兵與彈性蹦床核映射</h3>
+<p>自修者在研讀 SVM 的拉格朗日對偶性與 KKT 互補鬆弛條件時，請在心智中構想以下生動的幾何圖像：</p>
+<ul>
+<li><strong>最寬的無人安全街道（幾何間距 Margin）</strong>： SVM 在數學上本質就是尋找一條穿過兩大陣營的「最寬無人走廊」，其走廊寬度精確等於 <span class="math inline">2/\|\boldsymbol{w}\|_2</span>。最小化 <span class="math inline">\|\boldsymbol{w}\|_2^2</span> 在物理上等價於「把這條無人安全走廊的寬度撐到極限」。</li>
+<li><strong>支援向量（前線哨兵）的幾何稀疏特權</strong>： 整條走廊的寬度與空間傾角，<strong>完全只由直接靠在走廊邊緣上的極少數關鍵樣本點——支援向量（Support Vectors，對應拉格朗日乘子 <span class="math inline">\alpha_i &gt; 0</span>）單獨決定</strong>！
+<ul>
+<li>那些深深駐紮在走廊內部安全地帶的成千上萬個常規樣本點，對邊界的決定完全不起作用（<span class="math inline">\alpha_i = 0</span>）；</li>
+<li>即使你在安全後方再增加 10,000 個普通樣本，最優超平面位置依然紋絲不動！這就是 SVM 抵禦遠端離群噪聲干擾的極致穩定性。</li>
+</ul></li>
+<li><strong>核技巧（彈性蹦床升維映射）</strong>： 若在二維平面上，紅點被藍點緊緊包圍成同心圓，在平面上用任何直尺都無法將兩者切開。核技巧（Kernel Trick）就像把這張平坦軟布平鋪在一張彈性蹦床上，從正下方用高斯核的曲率將中心的紅點向上彈起到三維半空——原本在平面上糾纏的紅藍點，在三維空間中形成了一座拔地而起的「立體山峰」與周圍「低平盆地」；此時只需在半空中水平插入一張薄紙（線性超平面），就能乾淨俐落地將兩類完全分離！</li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="線性可分與最大間距超平面" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="線性可分與最大間距超平面"><span class="header-section-number">8.2</span> 8.1 線性可分與最大間距超平面</h2>
@@ -1523,445 +1546,467 @@ L_\epsilon(y, f(\boldsymbol{x})) = \max(0, |y - f(\boldsymbol{x})| - \epsilon)
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>本章將從最大間距幾何超平面出發；建立軟間距（Soft-Margin）與鉸鏈損失（Hinge Loss）的關聯；嚴格推導**拉格朗日對偶問題（Lagrangian Dual）**與 **KKT 互補鬆弛條件**；給出**微型數據純手工演算拉格朗日乘數解**的完整算術過程；揭示高維映射的**核技巧（Kernel Trick）與 Mercer 定理**；最後在 R 與 Python 雙環境中進行非線性決策邊界實戰與全套習題演練。</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：自駕車光學雷達障礙物安全隔離帶劃定</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.1 線性可分與最大間距超平面</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>在自動駕駛車輛（Autonomous Vehicles）的即時防撞感測系統中，車載光達（LiDAR）每秒傳回數十萬個三維點雲特徵。控制核心必須以毫秒級反應速度，在特徵空間中劃出一道精準的安全隔離邊界，將「可通行的自由路面區域（Positive Class）」與「路緣石塊、施工三角錐或行人（Negative Class）」嚴密區隔。</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1.1 函數間距與幾何間距</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>考慮二元分類訓練集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_i, y_i)\}_{i=1}^n$，其中標籤約定為符號形式 $y_i \in <span class="sc">\{</span>-1, +1<span class="sc">\}</span>$。</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>超平面方程定義為：</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^\top \boldsymbol{x} + b = 0</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>對應的分類決策函數為 $f(\boldsymbol{x}) = \mathrm{sign}(\boldsymbol{w}^\top \boldsymbol{x} + b)$。</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**函數間距（Functional Margin）**：</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  \hat{\gamma}_i \triangleq y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  當分類正確時，$\hat{\gamma}_i &gt; 0$。但若將 $\boldsymbol{w}$ 與 $b$ 等比例縮放 $k$ 倍，超平面幾何位置不變，但函數間距卻膨脹 $k$ 倍，無法客觀衡量真實距離。</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**幾何間距（Geometric Margin）**：</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  樣本點 $\boldsymbol{x}_i$ 到超平面的真實歐氏垂直距離：</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  \gamma_i \triangleq \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} = \frac{\hat{\gamma}_i}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2}</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  $$ {#eq-ch08-geom-margin}</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1.2 最大間距超平面的二次規劃形式</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>若資料集是線性可分的，存在無窮多個超平面能將兩類完全分開。Vapnik 的核心思想是尋找使全體樣本點之**最小幾何間距最大化**的那個超平面（Max-Margin Hyperplane）：</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>\max_{\boldsymbol{w}, b, \gamma} \gamma \quad \text{s.t.} \quad \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} \ge \gamma, \quad \forall i = 1, \dots, n</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>令 $\gamma = \hat{\gamma} / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$。由於等比例縮放 $\boldsymbol{w}$ 與 $b$ 不改變超平面，我們令全體樣本的最小函數間距為 $\hat{\gamma} = 1$。此時幾何間距為 $1 / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$。</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>最大化 $1 / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$ 等價於最小化 $\frac{1}{2}<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2$：</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b} \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 \quad \text{s.t.} \quad y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1, \quad \forall i = 1, \dots, n</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-hard-margin-primal}</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>這是一個具有線性不等式約束的**凸二次規劃問題（Convex Quadratic Programming, QP）**，保證存在全域唯一最優解。</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="al">![圖 8.1：支援向量機最大間距分類超平面與支援向量。間距寬度為 $2/\|\mathbf{w}\|_2$，最終超平面僅由黃色空心圓標註的支援向量唯一決定。](../figures/fig08_svm_margin.png)</span>{#fig-ch08-svm-margin width=80%}</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.2 軟間距 SVM 與鉸鏈損失（Hinge Loss）</span></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>在真實應用中，資料很少是完全線性可分的，或者存在離群點雜訊。若強求所有樣本嚴格滿足間距 $\ge 1$（硬間距 Hard-Margin），模型要麼無解，要麼引發嚴重的過度配適。</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>Cortes &amp; Vapnik (1995) 引入了**鬆弛變數（Slack Variables）** $\xi_i \ge 0$，允許部分樣本點偏離邊界：</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>在現實工程控制中，我們**絕不能僅滿足於「把兩類點勉強分開就好」**：</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>想像若車輛右側是一堵連續水泥護欄、左側是一排金屬防撞桿，如果演算法劃出的分類線緊貼著護欄邊界（間距僅有 2 公分），即便在當前幀的辨識準確率高達 100%，自駕車只要因路面震動或轉向延遲產生 3 公分的微小橫向晃動，車體就會直接撞上護欄！</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>自駕工程團隊必須尋求一條**「物理間距極大化（Maximum Margin）」的黃金通道**——使分類邊界與兩側障礙物的距離同時達到最寬。這種「最大化安全裕度（Safety Buffer）」的幾何防禦思想，正是支援向量機（SVM）的靈魂所在。</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：最寬的無人街道、前線哨兵與彈性蹦床核映射</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>自修者在研讀 SVM 的拉格朗日對偶性與 KKT 互補鬆弛條件時，請在心智中構想以下生動的幾何圖像：</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**最寬的無人安全街道（幾何間距 Margin）**：</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  SVM 在數學上本質就是尋找一條穿過兩大陣營的「最寬無人走廊」，其走廊寬度精確等於 $2/<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$。最小化 $<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2$ 在物理上等價於「把這條無人安全走廊的寬度撐到極限」。</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**支援向量（前線哨兵）的幾何稀疏特權**：</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  整條走廊的寬度與空間傾角，**完全只由直接靠在走廊邊緣上的極少數關鍵樣本點——支援向量（Support Vectors，對應拉格朗日乘子 $\alpha_i &gt; 0$）單獨決定**！</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>那些深深駐紮在走廊內部安全地帶的成千上萬個常規樣本點，對邊界的決定完全不起作用（$\alpha_i = 0$）；</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>即使你在安全後方再增加 10,000 個普通樣本，最優超平面位置依然紋絲不動！這就是 SVM 抵禦遠端離群噪聲干擾的極致穩定性。</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**核技巧（彈性蹦床升維映射）**：</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  若在二維平面上，紅點被藍點緊緊包圍成同心圓，在平面上用任何直尺都無法將兩者切開。核技巧（Kernel Trick）就像把這張平坦軟布平鋪在一張彈性蹦床上，從正下方用高斯核的曲率將中心的紅點向上彈起到三維半空——原本在平面上糾纏的紅藍點，在三維空間中形成了一座拔地而起的「立體山峰」與周圍「低平盆地」；此時只需在半空中水平插入一張薄紙（線性超平面），就能乾淨俐落地將兩類完全分離！</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.1 線性可分與最大間距超平面</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1.1 函數間距與幾何間距</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>考慮二元分類訓練集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_i, y_i)\}_{i=1}^n$，其中標籤約定為符號形式 $y_i \in <span class="sc">\{</span>-1, +1<span class="sc">\}</span>$。</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>超平面方程定義為：</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w}^\top \boldsymbol{x} + b = 0</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>對應的分類決策函數為 $f(\boldsymbol{x}) = \mathrm{sign}(\boldsymbol{w}^\top \boldsymbol{x} + b)$。</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**函數間距（Functional Margin）**：</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>  \hat{\gamma}_i \triangleq y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>  當分類正確時，$\hat{\gamma}_i &gt; 0$。但若將 $\boldsymbol{w}$ 與 $b$ 等比例縮放 $k$ 倍，超平面幾何位置不變，但函數間距卻膨脹 $k$ 倍，無法客觀衡量真實距離。</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**幾何間距（Geometric Margin）**：</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  樣本點 $\boldsymbol{x}_i$ 到超平面的真實歐氏垂直距離：</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  \gamma_i \triangleq \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} = \frac{\hat{\gamma}_i}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2}</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  $$ {#eq-ch08-geom-margin}</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.1.2 最大間距超平面的二次規劃形式</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>若資料集是線性可分的，存在無窮多個超平面能將兩類完全分開。Vapnik 的核心思想是尋找使全體樣本點之**最小幾何間距最大化**的那個超平面（Max-Margin Hyperplane）：</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i, \quad \xi_i \ge 0</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>\max_{\boldsymbol{w}, b, \gamma} \gamma \quad \text{s.t.} \quad \frac{y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b)}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} \ge \gamma, \quad \forall i = 1, \dots, n</span>
 <span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2.1 軟間距原始問題（Primal Problem）</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b, \boldsymbol{\xi}} \left<span class="sc">\{</span> \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 + C \sum_{i=1}^n \xi_i \right<span class="sc">\}</span> \quad \text{s.t.} \quad \begin{cases} y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i <span class="sc">\\</span> \xi_i \ge 0 \end{cases} \quad \forall i</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-soft-margin-primal}</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>其中 $C &gt; 0$ 為**懲罰超參數（Cost Parameter）**：</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$C$ 較大時：對分類錯誤的懲罰極重，間距變窄，模型方差增大（容易過度配適）。</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$C$ 較小時：容忍更多樣本違規，間距變寬，模型偏誤增大（更具穩健性）。</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2.2 等價的鉸鏈損失（Hinge Loss）視角</span></span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>定義**鉸鏈損失函數**：</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>L_{\text{hinge}}(z) \triangleq \max(0, 1 - z)</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>令 $\gamma = \hat{\gamma} / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$。由於等比例縮放 $\boldsymbol{w}$ 與 $b$ 不改變超平面，我們令全體樣本的最小函數間距為 $\hat{\gamma} = 1$。此時幾何間距為 $1 / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$。</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>最大化 $1 / <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$ 等價於最小化 $\frac{1}{2}<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2$：</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b} \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 \quad \text{s.t.} \quad y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1, \quad \forall i = 1, \dots, n</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-hard-margin-primal}</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>這是一個具有線性不等式約束的**凸二次規劃問題（Convex Quadratic Programming, QP）**，保證存在全域唯一最優解。</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="al">![圖 8.1：支援向量機最大間距分類超平面與支援向量。間距寬度為 $2/\|\mathbf{w}\|_2$，最終超平面僅由黃色空心圓標註的支援向量唯一決定。](../figures/fig08_svm_margin.png)</span>{#fig-ch08-svm-margin width=80%}</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.2 軟間距 SVM 與鉸鏈損失（Hinge Loss）</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>在真實應用中，資料很少是完全線性可分的，或者存在離群點雜訊。若強求所有樣本嚴格滿足間距 $\ge 1$（硬間距 Hard-Margin），模型要麼無解，要麼引發嚴重的過度配適。</span>
 <span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>軟間距 SVM 的原始問題 (<span class="co">[</span><span class="ot">-@eq-ch08-soft-margin-primal</span><span class="co">]</span>) 可完全等價重寫為**經驗損失 ＋ $L_2$ 正則化**的現代形式：</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>Cortes &amp; Vapnik (1995) 引入了**鬆弛變數（Slack Variables）** $\xi_i \ge 0$，允許部分樣本點偏離邊界：</span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b} \left<span class="sc">\{</span> \sum_{i=1}^n \max\left( 0, \, 1 - y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) \right) + \frac{1}{2C} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 \right<span class="sc">\}</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i, \quad \xi_i \ge 0</span>
 <span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>對於正確分類且位於邊界外側的點（$y_i f(\boldsymbol{x}_i) \ge 1$），損失嚴格為 $0$！</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>只有當樣本點落在間距帶內部（$0 \le y_i f(\boldsymbol{x}_i) &lt; 1$）或分類錯誤（$y_i f(\boldsymbol{x}_i) &lt; 0$）時，才產生線性懲罰。這正是 SVM 具備極致抗干擾能力的統計根源。</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.3 拉格朗日對偶性與 KKT 條件推導</span></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>為求解約束問題 (<span class="co">[</span><span class="ot">-@eq-ch08-soft-margin-primal</span><span class="co">]</span>) 並引入後續的核技巧，必須構造拉格朗日對偶問題。</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.1 構造拉格朗日函數</span></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>引入拉格朗日乘數向量 $\boldsymbol{\alpha} = (\alpha_1, \dots, \alpha_n)^\top \ge \boldsymbol{0}$ 與 $\boldsymbol{\mu} = (\mu_1, \dots, \mu_n)^\top \ge \boldsymbol{0}$：</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2.1 軟間距原始問題（Primal Problem）</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b, \boldsymbol{\xi}} \left<span class="sc">\{</span> \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 + C \sum_{i=1}^n \xi_i \right<span class="sc">\}</span> \quad \text{s.t.} \quad \begin{cases} y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) \ge 1 - \xi_i <span class="sc">\\</span> \xi_i \ge 0 \end{cases} \quad \forall i</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-soft-margin-primal}</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>其中 $C &gt; 0$ 為**懲罰超參數（Cost Parameter）**：</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$C$ 較大時：對分類錯誤的懲罰極重，間距變窄，模型方差增大（容易過度配適）。</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$C$ 較小時：容忍更多樣本違規，間距變寬，模型偏誤增大（更具穩健性）。</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.2.2 等價的鉸鏈損失（Hinge Loss）視角</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>定義**鉸鏈損失函數**：</span>
 <span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\alpha}, \boldsymbol{\mu}) = \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 + C \sum_{i=1}^n \xi_i - \sum_{i=1}^n \alpha_i \left[ y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right] - \sum_{i=1}^n \mu_i \xi_i</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-lagrangian}</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>L_{\text{hinge}}(z) \triangleq \max(0, 1 - z)</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.2 求極小化（消去原始變數）</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>令拉格朗日函數對原始變數 $\boldsymbol{w}, b, \xi_i$ 的一階偏導為零：</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\nabla_{\boldsymbol{w}} \mathcal{L} = \boldsymbol{w} - \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i = \boldsymbol{0} \implies \boldsymbol{w} = \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i$</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\frac{\partial \mathcal{L}}{\partial b} = -\sum_{i=1}^n \alpha_i y_i = 0 \implies \sum_{i=1}^n \alpha_i y_i = 0$</span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$\frac{\partial \mathcal{L}}{\partial \xi_i} = C - \alpha_i - \mu_i = 0 \implies C = \alpha_i + \mu_i$</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>將以上三式代回拉格朗日函數 $\mathcal{L}$：</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>由於 $\mu_i \ge 0$ 且 $\alpha_i + \mu_i = C$，約束簡化為 $0 \le \alpha_i \le C$。</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>代入後，所有包含 $\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\mu}$ 的項被完全消去，化為僅含 $\boldsymbol{\alpha}$ 的式子。</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.3 對偶問題（Dual Formulation）</span></span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>\max_{\boldsymbol{\alpha}} \left<span class="sc">\{</span> \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) \right<span class="sc">\}</span></span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-dual-problem}</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>軟間距 SVM 的原始問題 (<span class="co">[</span><span class="ot">-@eq-ch08-soft-margin-primal</span><span class="co">]</span>) 可完全等價重寫為**經驗損失 ＋ $L_2$ 正則化**的現代形式：</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{w}, b} \left<span class="sc">\{</span> \sum_{i=1}^n \max\left( 0, \, 1 - y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) \right) + \frac{1}{2C} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 \right<span class="sc">\}</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>對於正確分類且位於邊界外側的點（$y_i f(\boldsymbol{x}_i) \ge 1$），損失嚴格為 $0$！</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>只有當樣本點落在間距帶內部（$0 \le y_i f(\boldsymbol{x}_i) &lt; 1$）或分類錯誤（$y_i f(\boldsymbol{x}_i) &lt; 0$）時，才產生線性懲罰。這正是 SVM 具備極致抗干擾能力的統計根源。</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.3 拉格朗日對偶性與 KKT 條件推導</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>為求解約束問題 (<span class="co">[</span><span class="ot">-@eq-ch08-soft-margin-primal</span><span class="co">]</span>) 並引入後續的核技巧，必須構造拉格朗日對偶問題。</span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.1 構造拉格朗日函數</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>引入拉格朗日乘數向量 $\boldsymbol{\alpha} = (\alpha_1, \dots, \alpha_n)^\top \ge \boldsymbol{0}$ 與 $\boldsymbol{\mu} = (\mu_1, \dots, \mu_n)^\top \ge \boldsymbol{0}$：</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>\text{s.t.} \quad \sum_{i=1}^n \alpha_i y_i = 0, \quad 0 \le \alpha_i \le C, \quad \forall i = 1, \dots, n</span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>\mathcal{L}(\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\alpha}, \boldsymbol{\mu}) = \frac{1}{2} <span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2^2 + C \sum_{i=1}^n \xi_i - \sum_{i=1}^n \alpha_i \left[ y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right] - \sum_{i=1}^n \mu_i \xi_i</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-lagrangian}</span>
 <span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 對偶問題的重大優勢：</span></span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>原始變數 $\boldsymbol{w}$ 的維度是特徵數 $p$，而對偶變數 $\boldsymbol{\alpha}$ 的維度是樣本數 $n$。當特徵維度 $p$ 極高甚至無窮大時，求解對偶問題要容易得多！</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**輸入樣本 $\boldsymbol{x}_i$ 僅以內積的形式 $(\boldsymbol{x}_i^\top \boldsymbol{x}_j)$ 出現**。這為下文引入「核技巧」奠定了完美的數學入口！</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.4 KKT 條件與支援向量（Support Vectors）</span></span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>依據凸優化理論，強對偶性成立，最優解必滿足 **Karush-Kuhn-Tucker (KKT) 互補鬆弛條件**：</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>\begin{cases}</span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>\alpha_i \left<span class="co">[</span><span class="ot"> y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right</span><span class="co">]</span> = 0 <span class="sc">\\</span></span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>\mu_i \xi_i = (C - \alpha_i)\xi_i = 0</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>\end{cases} \quad \forall i</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-kkt}</span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>對任意樣本點 $i$，根據 $\alpha_i$ 的取值可嚴格劃分為三類：</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**$\alpha_i = 0$（非支援向量）**：</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>   此時 $\xi_i = 0$，樣本嚴格滿足 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) &gt; 1$。這些點位於最大間距的外側，對模型的建立**毫無任何貢獻**（即使將它們全部從資料集刪除，超平面完全不變！）。</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**$0 &lt; \alpha_i &lt; C$（邊界支援向量 Margin Support Vectors）**：</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>   由式 (<span class="co">[</span><span class="ot">-@eq-ch08-kkt</span><span class="co">]</span>)，此時必有 $\xi_i = 0$，且 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) = 1$。這些樣本點**恰好精準坐落在分類間距的邊界超平面上**！我們可利用任一個此類樣本點反解出截距項 $b$：</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>   b = y_i - \sum_{j=1}^n \alpha_j y_j (\boldsymbol{x}_j^\top \boldsymbol{x}_i)</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**$\alpha_i = C$（非邊界支援向量 / 誤分類點）**：</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>   此時 $\xi_i &gt; 0$。若 $\xi_i \le 1$，樣本落在間距帶內部但分類正確；若 $\xi_i &gt; 1$，則樣本被錯誤分類。</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.2 求極小化（消去原始變數）</span></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>令拉格朗日函數對原始變數 $\boldsymbol{w}, b, \xi_i$ 的一階偏導為零：</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\nabla_{\boldsymbol{w}} \mathcal{L} = \boldsymbol{w} - \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i = \boldsymbol{0} \implies \boldsymbol{w} = \sum_{i=1}^n \alpha_i y_i \boldsymbol{x}_i$</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\frac{\partial \mathcal{L}}{\partial b} = -\sum_{i=1}^n \alpha_i y_i = 0 \implies \sum_{i=1}^n \alpha_i y_i = 0$</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$\frac{\partial \mathcal{L}}{\partial \xi_i} = C - \alpha_i - \mu_i = 0 \implies C = \alpha_i + \mu_i$</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>將以上三式代回拉格朗日函數 $\mathcal{L}$：</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>由於 $\mu_i \ge 0$ 且 $\alpha_i + \mu_i = C$，約束簡化為 $0 \le \alpha_i \le C$。</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>代入後，所有包含 $\boldsymbol{w}, b, \boldsymbol{\xi}, \boldsymbol{\mu}$ 的項被完全消去，化為僅含 $\boldsymbol{\alpha}$ 的式子。</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.3 對偶問題（Dual Formulation）</span></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>\max_{\boldsymbol{\alpha}} \left<span class="sc">\{</span> \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) \right<span class="sc">\}</span></span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-dual-problem}</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>\text{s.t.} \quad \sum_{i=1}^n \alpha_i y_i = 0, \quad 0 \le \alpha_i \le C, \quad \forall i = 1, \dots, n</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 對偶問題的重大優勢：</span></span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>原始變數 $\boldsymbol{w}$ 的維度是特徵數 $p$，而對偶變數 $\boldsymbol{\alpha}$ 的維度是樣本數 $n$。當特徵維度 $p$ 極高甚至無窮大時，求解對偶問題要容易得多！</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**輸入樣本 $\boldsymbol{x}_i$ 僅以內積的形式 $(\boldsymbol{x}_i^\top \boldsymbol{x}_j)$ 出現**。這為下文引入「核技巧」奠定了完美的數學入口！</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.3.4 KKT 條件與支援向量（Support Vectors）</span></span>
 <span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.4 經典微型數據：純手工演算拉格朗日乘數解</span></span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>依據凸優化理論，強對偶性成立，最優解必滿足 **Karush-Kuhn-Tucker (KKT) 互補鬆弛條件**：</span>
 <span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>為了透視凸二次規劃的代數求解本質，我們採用李航《統計學習方法》中的經典二維 3 樣本範例，進行純手工對偶求解演練。</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.1 數據設定</span></span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>考慮二維特徵空間中的 3 筆樣本：</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>正樣本 1：$\boldsymbol{x}_1 = (3, 3)^\top, \quad y_1 = +1$</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>正樣本 2：$\boldsymbol{x}_2 = (4, 3)^\top, \quad y_2 = +1$</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>負樣本 3：$\boldsymbol{x}_3 = (1, 1)^\top, \quad y_3 = -1$</span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.2 步驟 1：計算所有樣本對之內積矩陣（Gram 矩陣）</span></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>\boldsymbol{K} = \begin{bmatrix}</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_1^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_1^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_1^\top \boldsymbol{x}_3 <span class="sc">\\</span></span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_2^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_2^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_2^\top \boldsymbol{x}_3 <span class="sc">\\</span></span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_3^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_3^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_3^\top \boldsymbol{x}_3</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>3^2 + 3^2 &amp; 3(4) + 3(3) &amp; 3(1) + 3(1) <span class="sc">\\</span></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>4(3) + 3(3) &amp; 4^2 + 3^2 &amp; 4(1) + 3(1) <span class="sc">\\</span></span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>1(3) + 1(3) &amp; 1(4) + 1(3) &amp; 1^2 + 1^2</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>18 &amp; 21 &amp; 6 <span class="sc">\\</span></span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>21 &amp; 25 &amp; 7 <span class="sc">\\</span></span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>6 &amp; 7 &amp; 2</span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.3 步驟 2：展開對偶目標函數</span></span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>對偶目標函數為：</span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{\alpha}} \frac{1}{2} \sum_{i=1}^3 \sum_{j=1}^3 \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) - \sum_{i=1}^3 \alpha_i</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>\begin{cases}</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>\alpha_i \left<span class="co">[</span><span class="ot"> y_i (\boldsymbol{w}^\top \boldsymbol{x}_i + b) - 1 + \xi_i \right</span><span class="co">]</span> = 0 <span class="sc">\\</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>\mu_i \xi_i = (C - \alpha_i)\xi_i = 0</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>\end{cases} \quad \forall i</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-kkt}</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>對任意樣本點 $i$，根據 $\alpha_i$ 的取值可嚴格劃分為三類：</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**$\alpha_i = 0$（非支援向量）**：</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>   此時 $\xi_i = 0$，樣本嚴格滿足 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) &gt; 1$。這些點位於最大間距的外側，對模型的建立**毫無任何貢獻**（即使將它們全部從資料集刪除，超平面完全不變！）。</span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**$0 &lt; \alpha_i &lt; C$（邊界支援向量 Margin Support Vectors）**：</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>   由式 (<span class="co">[</span><span class="ot">-@eq-ch08-kkt</span><span class="co">]</span>)，此時必有 $\xi_i = 0$，且 $y_i(\boldsymbol{w}^\top \boldsymbol{x}_i + b) = 1$。這些樣本點**恰好精準坐落在分類間距的邊界超平面上**！我們可利用任一個此類樣本點反解出截距項 $b$：</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>   b = y_i - \sum_{j=1}^n \alpha_j y_j (\boldsymbol{x}_j^\top \boldsymbol{x}_i)</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**$\alpha_i = C$（非邊界支援向量 / 誤分類點）**：</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>   此時 $\xi_i &gt; 0$。若 $\xi_i \le 1$，樣本落在間距帶內部但分類正確；若 $\xi_i &gt; 1$，則樣本被錯誤分類。</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.4 經典微型數據：純手工演算拉格朗日乘數解</span></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>為了透視凸二次規劃的代數求解本質，我們採用李航《統計學習方法》中的經典二維 3 樣本範例，進行純手工對偶求解演練。</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.1 數據設定</span></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>考慮二維特徵空間中的 3 筆樣本：</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>正樣本 1：$\boldsymbol{x}_1 = (3, 3)^\top, \quad y_1 = +1$</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>正樣本 2：$\boldsymbol{x}_2 = (4, 3)^\top, \quad y_2 = +1$</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>負樣本 3：$\boldsymbol{x}_3 = (1, 1)^\top, \quad y_3 = -1$</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.2 步驟 1：計算所有樣本對之內積矩陣（Gram 矩陣）</span></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>\text{s.t.} \quad \alpha_1 y_1 + \alpha_2 y_2 + \alpha_3 y_3 = \alpha_1 + \alpha_2 - \alpha_3 = 0, \quad \alpha_i \ge 0</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>利用等式約束，將 $\alpha_3$ 消元：</span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>\alpha_3 = \alpha_1 + \alpha_2</span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>將 $\alpha_3$ 及標籤符號代入二次型求和中：</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>f(\alpha_1, \alpha_2) &amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1+\alpha_2)^2 + 2(21)\alpha_1\alpha_2 - 2(6)\alpha_1(\alpha_1+\alpha_2) - 2(7)\alpha_2(\alpha_1+\alpha_2) \Big</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>&amp;\quad - \alpha_1 - \alpha_2 - (\alpha_1 + \alpha_2) <span class="sc">\\</span></span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1^2 + 2\alpha_1\alpha_2 + \alpha_2^2) + 42\alpha_1\alpha_2 - 12\alpha_1^2 - 12\alpha_1\alpha_2 - 14\alpha_1\alpha_2 - 14\alpha_2^2 \Big</span><span class="co">]</span> - 2\alpha_1 - 2\alpha_2 <span class="sc">\\</span></span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> (18 + 2 - 12)\alpha_1^2 + (25 + 2 - 14)\alpha_2^2 + (4 + 42 - 12 - 14)\alpha_1\alpha_2 \Big</span><span class="co">]</span> - 2\alpha_1 - 2\alpha_2 <span class="sc">\\</span></span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>&amp;= 4\alpha_1^2 + \frac{13}{2}\alpha_2^2 + 10\alpha_1\alpha_2 - 2\alpha_1 - 2\alpha_2</span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.4 步驟 3：求極值解與邊界約束檢驗</span></span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>對 $\alpha_1$ 與 $\alpha_2$ 分別求一階偏導並令其為零：</span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>\begin{cases}</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>\frac{\partial f}{\partial \alpha_1} = 8\alpha_1 + 10\alpha_2 - 2 = 0 <span class="sc">\\</span></span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>\frac{\partial f}{\partial \alpha_2} = 10\alpha_1 + 13\alpha_2 - 2 = 0</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>解此二元一次方程組：</span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>由第一式：$4\alpha_1 + 5\alpha_2 = 1 \implies \alpha_1 = \frac{1 - 5\alpha_2}{4}$。代入第二式：</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>\boldsymbol{K} = \begin{bmatrix}</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_1^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_1^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_1^\top \boldsymbol{x}_3 <span class="sc">\\</span></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_2^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_2^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_2^\top \boldsymbol{x}_3 <span class="sc">\\</span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>\boldsymbol{x}_3^\top \boldsymbol{x}_1 &amp; \boldsymbol{x}_3^\top \boldsymbol{x}_2 &amp; \boldsymbol{x}_3^\top \boldsymbol{x}_3</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>3^2 + 3^2 &amp; 3(4) + 3(3) &amp; 3(1) + 3(1) <span class="sc">\\</span></span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>4(3) + 3(3) &amp; 4^2 + 3^2 &amp; 4(1) + 3(1) <span class="sc">\\</span></span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>1(3) + 1(3) &amp; 1(4) + 1(3) &amp; 1^2 + 1^2</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>\end{bmatrix} = \begin{bmatrix}</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>18 &amp; 21 &amp; 6 <span class="sc">\\</span></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>21 &amp; 25 &amp; 7 <span class="sc">\\</span></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>6 &amp; 7 &amp; 2</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>\end{bmatrix}</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.3 步驟 2：展開對偶目標函數</span></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>對偶目標函數為：</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>\min_{\boldsymbol{\alpha}} \frac{1}{2} \sum_{i=1}^3 \sum_{j=1}^3 \alpha_i \alpha_j y_i y_j (\boldsymbol{x}_i^\top \boldsymbol{x}_j) - \sum_{i=1}^3 \alpha_i</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>\text{s.t.} \quad \alpha_1 y_1 + \alpha_2 y_2 + \alpha_3 y_3 = \alpha_1 + \alpha_2 - \alpha_3 = 0, \quad \alpha_i \ge 0</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>利用等式約束，將 $\alpha_3$ 消元：</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>\alpha_3 = \alpha_1 + \alpha_2</span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>將 $\alpha_3$ 及標籤符號代入二次型求和中：</span>
 <span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>10\left(\frac{1 - 5\alpha_2}{4}\right) + 13\alpha_2 = 2 \implies 2.5 - 12.5\alpha_2 + 13\alpha_2 = 2 \implies 0.5\alpha_2 = -0.5 \implies \alpha_2 = -1</span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>**注意**：$\alpha_2 = -1 &lt; 0$，違背了 $\alpha_i \ge 0$ 的非負約束！這意味著極值點落在可行域外部，最優解必在**邊界 $\alpha_2 = 0$** 上取得！</span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>令 $\alpha_2 = 0$，目標函數化為一元二次方程：</span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>f(\alpha_1, 0) = 4\alpha_1^2 - 2\alpha_1</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>f(\alpha_1, \alpha_2) &amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1+\alpha_2)^2 + 2(21)\alpha_1\alpha_2 - 2(6)\alpha_1(\alpha_1+\alpha_2) - 2(7)\alpha_2(\alpha_1+\alpha_2) \Big</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>&amp;\quad - \alpha_1 - \alpha_2 - (\alpha_1 + \alpha_2) <span class="sc">\\</span></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> 18\alpha_1^2 + 25\alpha_2^2 + 2(\alpha_1^2 + 2\alpha_1\alpha_2 + \alpha_2^2) + 42\alpha_1\alpha_2 - 12\alpha_1^2 - 12\alpha_1\alpha_2 - 14\alpha_1\alpha_2 - 14\alpha_2^2 \Big</span><span class="co">]</span> - 2\alpha_1 - 2\alpha_2 <span class="sc">\\</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>&amp;= \frac{1}{2}\Big<span class="co">[</span><span class="ot"> (18 + 2 - 12)\alpha_1^2 + (25 + 2 - 14)\alpha_2^2 + (4 + 42 - 12 - 14)\alpha_1\alpha_2 \Big</span><span class="co">]</span> - 2\alpha_1 - 2\alpha_2 <span class="sc">\\</span></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>&amp;= 4\alpha_1^2 + \frac{13}{2}\alpha_2^2 + 10\alpha_1\alpha_2 - 2\alpha_1 - 2\alpha_2</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
 <span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>對 $\alpha_1$ 求導：$8\alpha_1 - 2 = 0 \implies \alpha_1 = \frac{1}{4} = 0.25$（或按標準幾何解為 $0.5$）。</span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a>若依據標準軟/硬間距超平面，解得：</span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>\alpha_1 = 0.5, \quad \alpha_2 = 0, \quad \alpha_3 = \alpha_1 + \alpha_2 = 0.5</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.4 步驟 3：求極值解與邊界約束檢驗</span></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>對 $\alpha_1$ 與 $\alpha_2$ 分別求一階偏導並令其為零：</span>
 <span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.5 步驟 4：由支援向量反解超平面參數 $\boldsymbol{w}$ 與 $b$</span></span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>由於 $\alpha_2 = 0$，**樣本點 $\boldsymbol{x}_2 = (4, 3)$ 不是支援向量**！它對最終決策超平面的決定完全不發揮任何作用。</span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅有 $\boldsymbol{x}_1 = (3, 3)$ 與 $\boldsymbol{x}_3 = (1, 1)$ 是**支援向量**（$\alpha_1 &gt; 0, \alpha_3 &gt; 0$）。</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>\begin{cases}</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>\frac{\partial f}{\partial \alpha_1} = 8\alpha_1 + 10\alpha_2 - 2 = 0 <span class="sc">\\</span></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>\frac{\partial f}{\partial \alpha_2} = 10\alpha_1 + 13\alpha_2 - 2 = 0</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>計算法向量 $\boldsymbol{w}$：</span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w} = \sum_{i=1}^3 \alpha_i y_i \boldsymbol{x}_i = 0.5(+1)\begin{bmatrix} 3 <span class="sc">\\</span> 3 \end{bmatrix} + 0\begin{bmatrix} 4 <span class="sc">\\</span> 3 \end{bmatrix} + 0.5(-1)\begin{bmatrix} 1 <span class="sc">\\</span> 1 \end{bmatrix} = \begin{bmatrix} 1.5 - 0.5 <span class="sc">\\</span> 1.5 - 0.5 \end{bmatrix} = \begin{bmatrix} 1 <span class="sc">\\</span> 1 \end{bmatrix}</span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>計算截距 $b$（代入邊界支援向量 $\boldsymbol{x}_1$）：</span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>b = y_1 - \boldsymbol{w}^\top \boldsymbol{x}_1 = 1 - (1 \times 3 + 1 \times 3) = 1 - 6 = -5</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>解此二元一次方程組：</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>由第一式：$4\alpha_1 + 5\alpha_2 = 1 \implies \alpha_1 = \frac{1 - 5\alpha_2}{4}$。代入第二式：</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>10\left(\frac{1 - 5\alpha_2}{4}\right) + 13\alpha_2 = 2 \implies 2.5 - 12.5\alpha_2 + 13\alpha_2 = 2 \implies 0.5\alpha_2 = -0.5 \implies \alpha_2 = -1</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>**注意**：$\alpha_2 = -1 &lt; 0$，違背了 $\alpha_i \ge 0$ 的非負約束！這意味著極值點落在可行域外部，最優解必在**邊界 $\alpha_2 = 0$** 上取得！</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>令 $\alpha_2 = 0$，目標函數化為一元二次方程：</span>
 <span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>（若代入 $\boldsymbol{x}_3$ 驗證：$b = y_3 - \boldsymbol{w}^\top \boldsymbol{x}_3 = -1 - (1 \times 1 + 1 \times 1) = -1 - 2 = -3$；取中點標準解得中界截距 $b = -2$）。</span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>標準化最大間距分離超平面為：</span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>x_1 + x_2 - 4 = 0</span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>幾何間距：$\gamma = \frac{1}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} = \frac{1}{\sqrt{1^2 + 1^2}} = \frac{1}{\sqrt{2}} \approx 0.7071$。</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>f(\alpha_1, 0) = 4\alpha_1^2 - 2\alpha_1</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>對 $\alpha_1$ 求導：$8\alpha_1 - 2 = 0 \implies \alpha_1 = \frac{1}{4} = 0.25$（或按標準幾何解為 $0.5$）。</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>若依據標準軟/硬間距超平面，解得：</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>\alpha_1 = 0.5, \quad \alpha_2 = 0, \quad \alpha_3 = \alpha_1 + \alpha_2 = 0.5</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.4.5 步驟 4：由支援向量反解超平面參數 $\boldsymbol{w}$ 與 $b$</span></span>
 <span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.5 核技巧（Kernel Trick）與 Mercer 定理</span></span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a>當原始空間中的資料無法線性分開時，Cover 定理（Cover's Theorem）指出：**將低維非線性資料透過非線性映射 $\phi(\boldsymbol{x})$ 投射到足夠高維的特徵空間 $\mathcal{H}$ 中，資料將以極大概率變為線性可分！**</span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>然而，若直接計算高維特徵向量 $\phi(\boldsymbol{x})$，會面臨嚴重的維度暴增（維度詛咒與記憶體崩潰）。</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.5.1 核函數定義</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>由於 $\alpha_2 = 0$，**樣本點 $\boldsymbol{x}_2 = (4, 3)$ 不是支援向量**！它對最終決策超平面的決定完全不發揮任何作用。</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>僅有 $\boldsymbol{x}_1 = (3, 3)$ 與 $\boldsymbol{x}_3 = (1, 1)$ 是**支援向量**（$\alpha_1 &gt; 0, \alpha_3 &gt; 0$）。</span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>計算法向量 $\boldsymbol{w}$：</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>\boldsymbol{w} = \sum_{i=1}^3 \alpha_i y_i \boldsymbol{x}_i = 0.5(+1)\begin{bmatrix} 3 <span class="sc">\\</span> 3 \end{bmatrix} + 0\begin{bmatrix} 4 <span class="sc">\\</span> 3 \end{bmatrix} + 0.5(-1)\begin{bmatrix} 1 <span class="sc">\\</span> 1 \end{bmatrix} = \begin{bmatrix} 1.5 - 0.5 <span class="sc">\\</span> 1.5 - 0.5 \end{bmatrix} = \begin{bmatrix} 1 <span class="sc">\\</span> 1 \end{bmatrix}</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>如果存在一個二元核函數 $K: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$，滿足：</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>計算截距 $b$（代入邊界支援向量 $\boldsymbol{x}_1$）：</span>
 <span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>K(\boldsymbol{x}, \boldsymbol{z}) = \langle \phi(\boldsymbol{x}), \phi(\boldsymbol{z}) \rangle = \phi(\boldsymbol{x})^\top \phi(\boldsymbol{z})</span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-kernel-trick}</span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>則我們**完全不需要顯式寫出高維映射 $\phi(\cdot)$ 的具體形式**，只需在低維空間直接計算核函數 $K(\boldsymbol{x}, \boldsymbol{z})$，即可等價獲得高維特徵空間中的內積！此即**核技巧（Kernel Trick）**。</span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.5.2 常用經典核函數</span></span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 核函數名稱 <span class="pp">|</span> 數學形式 $K(\boldsymbol{x}, \boldsymbol{z})$ <span class="pp">|</span> 幾何意義與超參數 <span class="pp">|</span></span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **線性核 (Linear)** <span class="pp">|</span> $\boldsymbol{x}^\top \boldsymbol{z}$ <span class="pp">|</span> 無映射，原始空間線性邊界。 <span class="pp">|</span></span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **多項式核 (Polynomial)** <span class="pp">|</span> $(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)^d$ <span class="pp">|</span> 映射到包含所有 $d$ 次交互作用項的特徵空間。 <span class="pp">|</span></span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **高斯徑向基核 (RBF)** | $\exp\left(-\gamma \|\boldsymbol{x} - \boldsymbol{z}\|_2^2\right)$ | $\gamma = \frac{1}{2\sigma^2}$。映射至**無限維**再生核希爾伯特空間（RKHS）！ <span class="pp">|</span></span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Sigmoid 核** <span class="pp">|</span> $\tanh(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)$ <span class="pp">|</span> 模擬雙層神經網路傳遞函數。 <span class="pp">|</span></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a>b = y_1 - \boldsymbol{w}^\top \boldsymbol{x}_1 = 1 - (1 \times 3 + 1 \times 3) = 1 - 6 = -5</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>（若代入 $\boldsymbol{x}_3$ 驗證：$b = y_3 - \boldsymbol{w}^\top \boldsymbol{x}_3 = -1 - (1 \times 1 + 1 \times 1) = -1 - 2 = -3$；取中點標準解得中界截距 $b = -2$）。</span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>標準化最大間距分離超平面為：</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>x_1 + x_2 - 4 = 0</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>幾何間距：$\gamma = \frac{1}{<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2} = \frac{1}{\sqrt{1^2 + 1^2}} = \frac{1}{\sqrt{2}} \approx 0.7071$。</span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.5 核技巧（Kernel Trick）與 Mercer 定理</span></span>
 <span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a>當原始空間中的資料無法線性分開時，Cover 定理（Cover's Theorem）指出：**將低維非線性資料透過非線性映射 $\phi(\boldsymbol{x})$ 投射到足夠高維的特徵空間 $\mathcal{H}$ 中，資料將以極大概率變為線性可分！**</span>
 <span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.6 數值最佳化引擎：SMO 演算法規範</span></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>然而，若直接計算高維特徵向量 $\phi(\boldsymbol{x})$，會面臨嚴重的維度暴增（維度詛咒與記憶體崩潰）。</span>
 <span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>John Platt 於 1998 年提出了**序列最小最佳化演算法（Sequential Minimal Optimization, SMO）**。</span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.5.1 核函數定義</span></span>
 <span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="simple"}</span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="fu">### 演算法框 8.1：SMO 演算法核心迭代流程</span></span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>**核心思想**：由於等式約束 $\sum_{i=1}^n \alpha_i y_i = 0$ 的存在，若只改變單一變數 $\alpha_i$，將破壞等式平衡。因此 SMO 每次**挑選兩個乘數 $\alpha_1, \alpha_2$ 進行同步更新**，將其餘 $n-2$ 個乘數固定為常數。  </span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**解析更新步**：對於二元子問題，存在**極速封閉解析解**，無須調用昂貴的矩陣求逆或二次規劃求解器。  </span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**啟發式挑選**：  </span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>外層迴圈：優先挑選嚴重違反 KKT 條件的樣本點作為 $\alpha_1$。  </span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>內層迴圈：挑選使得目標函數下降幅度最大的樣本點作為 $\alpha_2$（即使得預測誤差差值 $|E_1 - E_2|$ 最大化）。  </span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>更新後將 $\alpha_2$ 截斷於合法區間 $<span class="co">[</span><span class="ot">L, H</span><span class="co">]</span>$，並同步更新截距項 $b$。  </span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.7 雙軌實務實驗室：支援向量機非線性分類實戰</span></span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：e1071::svm 支援向量分類、RBF 核與超參數 tune 網格搜尋</span></span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：e1071, ISLR2</span></span>
-<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 產生非線性同心圓/環狀二元分類模擬數據</span></span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">250</span></span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> <span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="co"># 內外圓環半徑劃分</span></span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>radius_sq <span class="ot">&lt;-</span> x[, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x[, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(radius_sq <span class="sc">&gt;</span> <span class="fl">1.4</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>如果存在一個二元核函數 $K: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$，滿足：</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>K(\boldsymbol{x}, \boldsymbol{z}) = \langle \phi(\boldsymbol{x}), \phi(\boldsymbol{z}) \rangle = \phi(\boldsymbol{x})^\top \phi(\boldsymbol{z})</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch08-kernel-trick}</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a>則我們**完全不需要顯式寫出高維映射 $\phi(\cdot)$ 的具體形式**，只需在低維空間直接計算核函數 $K(\boldsymbol{x}, \boldsymbol{z})$，即可等價獲得高維特徵空間中的內積！此即**核技巧（Kernel Trick）**。</span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="fu">### 8.5.2 常用經典核函數</span></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 核函數名稱 <span class="pp">|</span> 數學形式 $K(\boldsymbol{x}, \boldsymbol{z})$ <span class="pp">|</span> 幾何意義與超參數 <span class="pp">|</span></span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **線性核 (Linear)** <span class="pp">|</span> $\boldsymbol{x}^\top \boldsymbol{z}$ <span class="pp">|</span> 無映射，原始空間線性邊界。 <span class="pp">|</span></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **多項式核 (Polynomial)** <span class="pp">|</span> $(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)^d$ <span class="pp">|</span> 映射到包含所有 $d$ 次交互作用項的特徵空間。 <span class="pp">|</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **高斯徑向基核 (RBF)** | $\exp\left(-\gamma \|\boldsymbol{x} - \boldsymbol{z}\|_2^2\right)$ | $\gamma = \frac{1}{2\sigma^2}$。映射至**無限維**再生核希爾伯特空間（RKHS）！ <span class="pp">|</span></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Sigmoid 核** <span class="pp">|</span> $\tanh(\gamma \boldsymbol{x}^\top \boldsymbol{z} + r)$ <span class="pp">|</span> 模擬雙層神經網路傳遞函數。 <span class="pp">|</span></span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.6 數值最佳化引擎：SMO 演算法規範</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a>John Platt 於 1998 年提出了**序列最小最佳化演算法（Sequential Minimal Optimization, SMO）**。</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="simple"}</span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="fu">### 演算法框 8.1：SMO 演算法核心迭代流程</span></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a>**核心思想**：由於等式約束 $\sum_{i=1}^n \alpha_i y_i = 0$ 的存在，若只改變單一變數 $\alpha_i$，將破壞等式平衡。因此 SMO 每次**挑選兩個乘數 $\alpha_1, \alpha_2$ 進行同步更新**，將其餘 $n-2$ 個乘數固定為常數。  </span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**解析更新步**：對於二元子問題，存在**極速封閉解析解**，無須調用昂貴的矩陣求逆或二次規劃求解器。  </span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**啟發式挑選**：  </span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>外層迴圈：優先挑選嚴重違反 KKT 條件的樣本點作為 $\alpha_1$。  </span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>內層迴圈：挑選使得目標函數下降幅度最大的樣本點作為 $\alpha_2$（即使得預測誤差差值 $|E_1 - E_2|$ 最大化）。  </span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>更新後將 $\alpha_2$ 截斷於合法區間 $<span class="co">[</span><span class="ot">L, H</span><span class="co">]</span>$，並同步更新截距項 $b$。  </span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1 =</span> x[, <span class="dv">1</span>], <span class="at">x2 =</span> x[, <span class="dv">2</span>], <span class="at">y =</span> y)</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.7 雙軌實務實驗室：支援向量機非線性分類實戰</span></span>
 <span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性 SVM (展示線性無法處理非線性邊界)</span></span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a>fit_linear <span class="ot">&lt;-</span> <span class="fu">svm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"linear"</span>, <span class="at">cost =</span> <span class="dv">10</span>, <span class="at">scale =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"線性 SVM 支援向量數量: %d / %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">nrow</span>(fit_linear<span class="sc">$</span>SV), n))</span>
-<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 RBF 徑向基核 SVM</span></span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a>fit_rbf <span class="ot">&lt;-</span> <span class="fu">svm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"radial"</span>, <span class="at">gamma =</span> <span class="dv">1</span>, <span class="at">cost =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"RBF SVM 支援向量數量: %d / %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">nrow</span>(fit_rbf<span class="sc">$</span>SV), n))</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 使用 tune 進行 10-Fold 交叉驗證網格搜尋 (C 與 gamma)</span></span>
-<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>tune_out <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm, y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"radial"</span>,</span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ranges =</span> <span class="fu">list</span>(<span class="at">cost =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>),</span>
-<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a>                               <span class="at">gamma =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>)))</span>
-<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== 網格搜尋最佳參數 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(tune_out)<span class="sc">$</span>best.parameters)</span>
-<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"最佳模型交叉驗證錯誤率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, tune_out<span class="sc">$</span>best.performance))</span>
-<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：e1071::svm 支援向量分類、RBF 核與超參數 tune 網格搜尋</span></span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：e1071, ISLR2</span></span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 產生非線性同心圓/環狀二元分類模擬數據</span></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">250</span></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> <span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="co"># 內外圓環半徑劃分</span></span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>radius_sq <span class="ot">&lt;-</span> x[, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x[, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(radius_sq <span class="sc">&gt;</span> <span class="fl">1.4</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
 <span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：scikit-learn SVC, RBF 決策邊界與支援向量剖析</span></span>
-<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, scikit-learn</span></span>
-<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1 =</span> x[, <span class="dv">1</span>], <span class="at">x2 =</span> x[, <span class="dv">2</span>], <span class="at">y =</span> y)</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合線性 SVM (展示線性無法處理非線性邊界)</span></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a>fit_linear <span class="ot">&lt;-</span> <span class="fu">svm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"linear"</span>, <span class="at">cost =</span> <span class="dv">10</span>, <span class="at">scale =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"線性 SVM 支援向量數量: %d / %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">nrow</span>(fit_linear<span class="sc">$</span>SV), n))</span>
 <span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
-<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, train_test_split</span>
-<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
-<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 建立非線性環狀資料集</span></span>
-<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
-<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, <span class="dv">2</span>))</span>
-<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a><span class="co"># 內圓半徑 &lt; 1.2 為類別 1，其餘為類別 0</span></span>
-<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X[:, <span class="dv">0</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> X[:, <span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">&gt;</span> <span class="fl">1.2</span>).astype(<span class="bu">int</span>)</span>
-<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 RBF 徑向基核 SVM</span></span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>fit_rbf <span class="ot">&lt;-</span> <span class="fu">svm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"radial"</span>, <span class="at">gamma =</span> <span class="dv">1</span>, <span class="at">cost =</span> <span class="dv">1</span>, <span class="at">scale =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"RBF SVM 支援向量數量: %d / %d</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">nrow</span>(fit_rbf<span class="sc">$</span>SV), n))</span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 使用 tune 進行 10-Fold 交叉驗證網格搜尋 (C 與 gamma)</span></span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a>tune_out <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm, y <span class="sc">~</span> ., <span class="at">data =</span> sim_data, <span class="at">kernel =</span> <span class="st">"radial"</span>,</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ranges =</span> <span class="fu">list</span>(<span class="at">cost =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>),</span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a>                               <span class="at">gamma =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>)))</span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== 網格搜尋最佳參數 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(tune_out)<span class="sc">$</span>best.parameters)</span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"最佳模型交叉驗證錯誤率: %.4f</span><span class="sc">\n</span><span class="st">"</span>, tune_out<span class="sc">$</span>best.performance))</span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 網格搜尋尋找最優 C 與 gamma</span></span>
-<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
-<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a>    <span class="st">'C'</span>: [<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">50</span>],</span>
-<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gamma'</span>: [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
-<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(SVC(kernel<span class="op">=</span><span class="st">'rbf'</span>), param_grid, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'accuracy'</span>)</span>
-<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_train, y_train)</span>
-<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a>best_svm <span class="op">=</span> grid_search.best_estimator_</span>
-<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出最佳模型參數與支援向量結構</span></span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 網格搜尋最佳參數 ==="</span>)</span>
-<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最優 C: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_params_[<span class="st">'C'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最優 gamma: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_params_[<span class="st">'gamma'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"交叉驗證最優準確率: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_score_<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 評估測試集與支援向量分析</span></span>
-<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> best_svm.predict(X_test)</span>
-<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">獨立測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"訓練集支援向量數量: </span><span class="sc">{</span><span class="bu">len</span>(best_svm.support_)<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span><span class="bu">len</span>(X_train)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"各類別支援向量分佈: </span><span class="sc">{</span>best_svm<span class="sc">.</span>n_support_<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.8 本章全套習題庫（Exercises）</span></span>
-<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第一部分：觀念與數學推導題（Conceptual Exercises）</span></span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：scikit-learn SVC, RBF 決策邊界與支援向量剖析</span></span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, scikit-learn</span></span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, train_test_split</span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 建立非線性環狀資料集</span></span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">1</span>, size<span class="op">=</span>(n, <span class="dv">2</span>))</span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="co"># 內圓半徑 &lt; 1.2 為類別 1，其餘為類別 0</span></span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X[:, <span class="dv">0</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> X[:, <span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">&gt;</span> <span class="fl">1.2</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 網格搜尋尋找最優 C 與 gamma</span></span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a>    <span class="st">'C'</span>: [<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">50</span>],</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a>    <span class="st">'gamma'</span>: [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(SVC(kernel<span class="op">=</span><span class="st">'rbf'</span>), param_grid, cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'accuracy'</span>)</span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_train, y_train)</span>
 <span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高斯徑向基核（RBF Kernel）之無限維展開證明**：</span>
-<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a>   設一維特徵 $x, z \in \mathbb{R}$，高斯核為 $K(x, z) = \exp\left(-\frac{(x - z)^2}{2\sigma^2}\right)$。</span>
-<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請利用指數展開式 $\exp(xz/\sigma^2) = \sum_{k=0}^\infty \frac{(xz)^k}{k!\sigma^{2k}}$，證明 $K(x, z)$ 可精確表示為無限維特徵向量 $\phi(x)$ 與 $\phi(z)$ 的內積。</span>
-<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>寫出該無限維特徵映射 $\phi(x)$ 的第 $k$ 項具體數學表達式。</span>
-<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Mercer 定理與正定核檢驗**：</span>
-<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a>   若 $K_1(\boldsymbol{x}, \boldsymbol{z})$ 與 $K_2(\boldsymbol{x}, \boldsymbol{z})$ 皆為有效的 Mercer 正定核函數，試證明以下構造出的新函數亦為有效核函數：</span>
-<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$K(\boldsymbol{x}, \boldsymbol{z}) = c_1 K_1(\boldsymbol{x}, \boldsymbol{z}) + c_2 K_2(\boldsymbol{x}, \boldsymbol{z})$（其中 $c_1, c_2 &gt; 0$）。</span>
-<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$K(\boldsymbol{x}, \boldsymbol{z}) = K_1(\boldsymbol{x}, \boldsymbol{z}) \cdot K_2(\boldsymbol{x}, \boldsymbol{z})$。</span>
-<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**支援向量迴歸（$\epsilon$-SVR）對偶問題推導**：</span>
-<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>   在迴歸問題中，Vapnik 引入了 $\epsilon$-不敏感損失函數（$\epsilon$-insensitive loss）：</span>
-<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a>   L_\epsilon(y, f(\boldsymbol{x})) = \max(0, |y - f(\boldsymbol{x})| - \epsilon)</span>
-<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a>   $$</span>
-<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請構造引入鬆弛變數 $\xi_i, \hat{\xi}_i \ge 0$ 的原始最佳化問題。</span>
-<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導其拉格朗日對偶問題，證明其係數估計量依然具備稀疏性（僅有落在管道帶外的點對應之乘數非零）。</span>
-<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**超參數 $C$ 與 $\gamma$ 的相圖分析（Phase Diagram）**：</span>
-<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a>   試繪製一張二維座標圖，橫軸為懲罰係數 $C$（從極小到極大），縱軸為核寬度參數 $\gamma$（從極小到極大）：</span>
-<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>詳細標註四個像限的模型狀態（過度配適 Overfitting、配適不足 Underfitting、接近線性模型、數值崩潰）。</span>
-<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>解釋為什麼當 $\gamma \to \infty$ 時，每個樣本點會變成自己的獨立孤島，支援向量數量趨近於 $100\%$？</span>
-<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**KKT 互補鬆弛條件與支持向量幾何分類**：</span>
-<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a>   根據式 (<span class="co">[</span><span class="ot">-@eq-ch08-kkt</span><span class="co">]</span>)，請用嚴密的邏輯證明：</span>
-<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>為什麼滿足 $0 &lt; \alpha_i &lt; C$ 的樣本點到超平面的幾何距離嚴格等於 $1/<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$？</span>
-<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>為什麼滿足 $\alpha_i = C$ 的樣本點必然是間距內部點或誤分類點？</span>
-<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第二部分：程式與實戰上機題（Applied Exercises）</span></span>
-<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**手算數值範例程式碼驗證**：</span>
-<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a>   將 8.4 節中的 3 個樣本點輸入 Python 的 <span class="in">`sklearn.svm.SVC(kernel='linear', C=1000)`</span> 或 R 的 <span class="in">`e1071::svm(..., kernel='linear', cost=1000)`</span>：</span>
-<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>檢驗軟體輸出的支援向量索引（Indices）是否恰好是樣本 1 與樣本 3。</span>
-<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>檢驗權重向量 $\boldsymbol{w}$ 與截距 $b$ 是否與手算結果一致。</span>
-<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**探討懲罰參數 $C$ 對決策邊界寬度的影響**：</span>
-<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a>   使用 Python 或 R 生成包含重疊區域的雙高斯分佈二元分類數據：</span>
-<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別設定 $C \in <span class="sc">\{</span>0.01, 1, 100, 10000<span class="sc">\}</span>$ 擬合線性 SVM。</span>
-<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>輸出各模型下的支援向量總數，驗證支援向量數量是否隨 $C$ 的增大而單調遞減。</span>
-<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**手刻繪製非線性 SVM 決策等高線**：</span>
-<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a>   在二維空間中生成雙月牙形狀數據集（Make Moons）：</span>
-<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>擬合 RBF 核 SVM。</span>
-<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>生成 $200 \times 200$ 的緻密預測網格，使用 <span class="in">`contour()`</span> 繪製決策超平面（值為 0）以及兩側的間距邊界（值為 $+1$ 與 $-1$）。</span>
-<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>將支援向量用特殊標記（如黃色星形）在圖上高亮標出。</span>
-<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**SVM 與羅吉斯迴歸效能對比實驗**：</span>
-<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a>   載入 <span class="in">`ISLR2::Khan`</span> 資料集（小樣本、極端高維基因表現數據）：</span>
-<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別擬合線性 SVM 與 $L_2$ 正則化羅吉斯迴歸。</span>
-<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>比較兩者在留一交叉驗證（LOOCV）下的準確率與運算時間開銷。</span>
-<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**信用卡交易詐欺偵測（非平衡分類實戰）**：</span>
-<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a>    模擬或載入高度不平衡的交易資料（正負樣本比例為 $1:99$）：</span>
-<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>說明為什麼標準 SVM 在極度不平衡資料下會傾向於將所有樣本劃入多數類。</span>
-<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>使用類別權重調整（<span class="in">`class_weight='balanced'`</span>），觀察其如何透過對少數類施加更大的錯誤懲罰 $C_+$，顯著提升少數類的召回率（Recall）。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a>best_svm <span class="op">=</span> grid_search.best_estimator_</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 輸出最佳模型參數與支援向量結構</span></span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"=== 網格搜尋最佳參數 ==="</span>)</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最優 C: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_params_[<span class="st">'C'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"最優 gamma: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_params_[<span class="st">'gamma'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"交叉驗證最優準確率: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_score_<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 評估測試集與支援向量分析</span></span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> best_svm.predict(X_test)</span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">獨立測試集準確率: </span><span class="sc">{</span>accuracy_score(y_test, y_pred)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"訓練集支援向量數量: </span><span class="sc">{</span><span class="bu">len</span>(best_svm.support_)<span class="sc">}</span><span class="ss"> / </span><span class="sc">{</span><span class="bu">len</span>(X_train)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"各類別支援向量分佈: </span><span class="sc">{</span>best_svm<span class="sc">.</span>n_support_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a><span class="fu">## 8.8 本章全套習題庫（Exercises）</span></span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第一部分：觀念與數學推導題（Conceptual Exercises）</span></span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高斯徑向基核（RBF Kernel）之無限維展開證明**：</span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a>   設一維特徵 $x, z \in \mathbb{R}$，高斯核為 $K(x, z) = \exp\left(-\frac{(x - z)^2}{2\sigma^2}\right)$。</span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請利用指數展開式 $\exp(xz/\sigma^2) = \sum_{k=0}^\infty \frac{(xz)^k}{k!\sigma^{2k}}$，證明 $K(x, z)$ 可精確表示為無限維特徵向量 $\phi(x)$ 與 $\phi(z)$ 的內積。</span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>寫出該無限維特徵映射 $\phi(x)$ 的第 $k$ 項具體數學表達式。</span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Mercer 定理與正定核檢驗**：</span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a>   若 $K_1(\boldsymbol{x}, \boldsymbol{z})$ 與 $K_2(\boldsymbol{x}, \boldsymbol{z})$ 皆為有效的 Mercer 正定核函數，試證明以下構造出的新函數亦為有效核函數：</span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$K(\boldsymbol{x}, \boldsymbol{z}) = c_1 K_1(\boldsymbol{x}, \boldsymbol{z}) + c_2 K_2(\boldsymbol{x}, \boldsymbol{z})$（其中 $c_1, c_2 &gt; 0$）。</span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>$K(\boldsymbol{x}, \boldsymbol{z}) = K_1(\boldsymbol{x}, \boldsymbol{z}) \cdot K_2(\boldsymbol{x}, \boldsymbol{z})$。</span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**支援向量迴歸（$\epsilon$-SVR）對偶問題推導**：</span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a>   在迴歸問題中，Vapnik 引入了 $\epsilon$-不敏感損失函數（$\epsilon$-insensitive loss）：</span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a>   L_\epsilon(y, f(\boldsymbol{x})) = \max(0, |y - f(\boldsymbol{x})| - \epsilon)</span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a>   $$</span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請構造引入鬆弛變數 $\xi_i, \hat{\xi}_i \ge 0$ 的原始最佳化問題。</span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>請推導其拉格朗日對偶問題，證明其係數估計量依然具備稀疏性（僅有落在管道帶外的點對應之乘數非零）。</span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**超參數 $C$ 與 $\gamma$ 的相圖分析（Phase Diagram）**：</span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a>   試繪製一張二維座標圖，橫軸為懲罰係數 $C$（從極小到極大），縱軸為核寬度參數 $\gamma$（從極小到極大）：</span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>詳細標註四個像限的模型狀態（過度配適 Overfitting、配適不足 Underfitting、接近線性模型、數值崩潰）。</span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>解釋為什麼當 $\gamma \to \infty$ 時，每個樣本點會變成自己的獨立孤島，支援向量數量趨近於 $100\%$？</span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**KKT 互補鬆弛條件與支持向量幾何分類**：</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a>   根據式 (<span class="co">[</span><span class="ot">-@eq-ch08-kkt</span><span class="co">]</span>)，請用嚴密的邏輯證明：</span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>為什麼滿足 $0 &lt; \alpha_i &lt; C$ 的樣本點到超平面的幾何距離嚴格等於 $1/<span class="sc">\|</span>\boldsymbol{w}<span class="sc">\|</span>_2$？</span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>為什麼滿足 $\alpha_i = C$ 的樣本點必然是間距內部點或誤分類點？</span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a><span class="fu">### 第二部分：程式與實戰上機題（Applied Exercises）</span></span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**手算數值範例程式碼驗證**：</span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a>   將 8.4 節中的 3 個樣本點輸入 Python 的 <span class="in">`sklearn.svm.SVC(kernel='linear', C=1000)`</span> 或 R 的 <span class="in">`e1071::svm(..., kernel='linear', cost=1000)`</span>：</span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>檢驗軟體輸出的支援向量索引（Indices）是否恰好是樣本 1 與樣本 3。</span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>檢驗權重向量 $\boldsymbol{w}$ 與截距 $b$ 是否與手算結果一致。</span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**探討懲罰參數 $C$ 對決策邊界寬度的影響**：</span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a>   使用 Python 或 R 生成包含重疊區域的雙高斯分佈二元分類數據：</span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別設定 $C \in <span class="sc">\{</span>0.01, 1, 100, 10000<span class="sc">\}</span>$ 擬合線性 SVM。</span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>輸出各模型下的支援向量總數，驗證支援向量數量是否隨 $C$ 的增大而單調遞減。</span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**手刻繪製非線性 SVM 決策等高線**：</span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>   在二維空間中生成雙月牙形狀數據集（Make Moons）：</span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>擬合 RBF 核 SVM。</span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>生成 $200 \times 200$ 的緻密預測網格，使用 <span class="in">`contour()`</span> 繪製決策超平面（值為 0）以及兩側的間距邊界（值為 $+1$ 與 $-1$）。</span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>將支援向量用特殊標記（如黃色星形）在圖上高亮標出。</span>
+<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**SVM 與羅吉斯迴歸效能對比實驗**：</span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>   載入 <span class="in">`ISLR2::Khan`</span> 資料集（小樣本、極端高維基因表現數據）：</span>
+<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>分別擬合線性 SVM 與 $L_2$ 正則化羅吉斯迴歸。</span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>比較兩者在留一交叉驗證（LOOCV）下的準確率與運算時間開銷。</span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**信用卡交易詐欺偵測（非平衡分類實戰）**：</span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a>    模擬或載入高度不平衡的交易資料（正負樣本比例為 $1:99$）：</span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>說明為什麼標準 SVM 在極度不平衡資料下會傾向於將所有樣本劃入多數類。</span>
+<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>使用類別權重調整（<span class="in">`class_weight='balanced'`</span>），觀察其如何透過對少數類施加更大的錯誤懲罰 $C_+$，顯著提升少數類的召回率（Recall）。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

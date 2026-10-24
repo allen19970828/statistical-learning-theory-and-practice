@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">1.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">1.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀加護病房重症預警-vs-量化高頻交易定價" id="toc-開篇實務案例導讀加護病房重症預警-vs-量化高頻交易定價" class="nav-link" data-scroll-target="#開篇實務案例導讀加護病房重症預警-vs-量化高頻交易定價"><span class="header-section-number">1.1.1</span> 💡 開篇實務案例導讀：加護病房重症預警 vs 量化高頻交易定價</a></li>
+  <li><a href="#概念直覺與幾何啟發真實訊號觀測雜訊與函數投影" id="toc-概念直覺與幾何啟發真實訊號觀測雜訊與函數投影" class="nav-link" data-scroll-target="#概念直覺與幾何啟發真實訊號觀測雜訊與函數投影"><span class="header-section-number">1.1.2</span> 🎯 概念直覺與幾何啟發：真實訊號、觀測雜訊與函數投影</a></li>
+  </ul></li>
   <li><a href="#統計學習的數學框架" id="toc-統計學習的數學框架" class="nav-link" data-scroll-target="#統計學習的數學框架"><span class="header-section-number">1.2</span> 1.1 統計學習的數學框架</a></li>
   <li><a href="#預測推論與誤差分解" id="toc-預測推論與誤差分解" class="nav-link" data-scroll-target="#預測推論與誤差分解"><span class="header-section-number">1.3</span> 1.2 預測、推論與誤差分解</a>
   <ul class="collapse">
@@ -581,7 +585,28 @@ window.Quarto = {
 <h2 data-number="1.1" class="anchored" data-anchor-id="本章導讀"><span class="header-section-number">1.1</span> 本章導讀</h2>
 <p>在正式進入各類繁複的演算法之前，我們必須先釐清一個根本性的問題：<strong>何謂「統計學習」（Statistical Learning）？它與傳統統計推論、現代計算機科學主導的「機器學習」有何界限與共融之處？</strong></p>
 <p>本章將從數學形式出發，嚴格定義統計學習的基本框架，剖析「預測」與「推論」的本質差異，並引入統計大師 Leo Breiman 提出的「資料科學雙文化」哲學。我們將系統展示模型彈性與可解釋性之間的權衡光譜，探討機器學習的底層公理——「歸納偏好」（Inductive Bias）與「沒有免費午餐定理」（No Free Lunch Theorem），為全書奠定嚴謹的哲學與認知基礎。</p>
+<section id="開篇實務案例導讀加護病房重症預警-vs-量化高頻交易定價" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="開篇實務案例導讀加護病房重症預警-vs-量化高頻交易定價"><span class="header-section-number">1.1.1</span> 💡 開篇實務案例導讀：加護病房重症預警 vs 量化高頻交易定價</h3>
+<p>在當代資料驅動決策中，我們經常面臨兩類極端場景的抉擇：</p>
+<ol type="1">
+<li><strong>加護病房（ICU）敗血性休克預警</strong>： 重症醫學科醫師需要在病患生理指標（心率、乳酸濃度、血壓變異）異常的數小時前獲得警報。此時，醫師<strong>絕不可能</strong>僅憑一個黑盒子類神經網路吐出的「休克機率 89%」就草率給藥；臨床團隊必須精確獲知：「究竟是哪一項生理指標超出臨界值？其邊際效應有多大？（統計推論與可解釋性優先）」。若模型缺乏因果透明度，醫護人員的信任成本與法規醫療責任將無法承擔。</li>
+<li><strong>避險基金微秒級高頻套利（HFT）</strong>： 在現代電子交易市場中，演算法在數十微秒內對買賣訂單簿（Order Book）的微小價差進行極限套利。此時交易主管毫不關心「總體經濟學利率與股價的白盒因果機制」，唯一目標是在扣除交易手續費後實現最高的預測報酬率與夏普比率（純粹預測效能優先）。</li>
+</ol>
+<p>這兩個真實案例直指統計學習的核心命題：<strong>世界上不存在「放之四海皆準的最優模型」，模型的選擇永遠取決於真實問題的「效用函數」與「責任邊界」</strong>。</p>
+</section>
+<section id="概念直覺與幾何啟發真實訊號觀測雜訊與函數投影" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發真實訊號觀測雜訊與函數投影"><span class="header-section-number">1.1.2</span> 🎯 概念直覺與幾何啟發：真實訊號、觀測雜訊與函數投影</h3>
+<p>在展開嚴密的代數符號之前，自修者可透過以下心智模型（Mental Model）建立直覺：</p>
+<ul>
+<li><strong>深海礁石與表面浪花</strong>： 自然界生成資料的真實規律 <span class="math inline">f(\boldsymbol{X})</span>，如同沉浸在海面之下的深海礁石（穩定但不可直接觀測）；我們手中取得的有限觀測樣本 <span class="math inline">(x_i, y_i)</span>，則是海面上受到隨機風暴擾動的起伏浪花（疊加了不可約化雜訊 <span class="math inline">\epsilon</span>）。</li>
+<li><strong>學習演算法的本質</strong>： 所謂「統計學習」，本質上就是「試圖僅憑海面上轉瞬即逝的有限浪花，逆向推估水底深海礁石的幾何輪廓 <span class="math inline">\hat{f}</span>」。
+<ul>
+<li><strong>欠配適（Underfitting / 高偏誤）</strong>：如同粗暴地將所有起伏礁石簡化為一塊平坦的水泥板（如忽視非線性效應的簡單直線）；</li>
+<li><strong>過度配適（Overfitting / 高變異）</strong>：如同誤把每一朵被風吹起的浪花尖端，都刻舟求劍地當成礁石的永久構造。換了一陣風（新的測試數據集），這座過度複雜的模型就會立刻崩潰。</li>
+</ul></li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="統計學習的數學框架" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="統計學習的數學框架"><span class="header-section-number">1.2</span> 1.1 統計學習的數學框架</h2>
@@ -1297,273 +1322,295 @@ Figure&nbsp;1.1: 模型彈性與可解釋性的權衡光譜
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>本章將從數學形式出發，嚴格定義統計學習的基本框架，剖析「預測」與「推論」的本質差異，並引入統計大師 Leo Breiman 提出的「資料科學雙文化」哲學。我們將系統展示模型彈性與可解釋性之間的權衡光譜，探討機器學習的底層公理——「歸納偏好」（Inductive Bias）與「沒有免費午餐定理」（No Free Lunch Theorem），為全書奠定嚴謹的哲學與認知基礎。</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：加護病房重症預警 vs 量化高頻交易定價</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.1 統計學習的數學框架</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>在當代資料驅動決策中，我們經常面臨兩類極端場景的抉擇：</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>在統計學習的標準設定中，我們假設觀測到一組輸入特徵（Features / Predictors / Independent Variables）向量 $\boldsymbol{X} = (X_1, X_2, \dots, X_p)^\top \in \mathbb{R}^p$，以及一個對應的目標變數（Target / Response / Dependent Variable）$Y \in \mathbb{R}$。</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>我們假設自然界生成資料的真實機制可以形式化表示為：</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>Y = f(\boldsymbol{X}) + \epsilon</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-data-generating-process}</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**加護病房（ICU）敗血性休克預警**：</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>   重症醫學科醫師需要在病患生理指標（心率、乳酸濃度、血壓變異）異常的數小時前獲得警報。此時，醫師**絕不可能**僅憑一個黑盒子類神經網路吐出的「休克機率 89%」就草率給藥；臨床團隊必須精確獲知：「究竟是哪一項生理指標超出臨界值？其邊際效應有多大？（統計推論與可解釋性優先）」。若模型缺乏因果透明度，醫護人員的信任成本與法規醫療責任將無法承擔。</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**避險基金微秒級高頻套利（HFT）**：</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>   在現代電子交易市場中，演算法在數十微秒內對買賣訂單簿（Order Book）的微小價差進行極限套利。此時交易主管毫不關心「總體經濟學利率與股價的白盒因果機制」，唯一目標是在扣除交易手續費後實現最高的預測報酬率與夏普比率（純粹預測效能優先）。</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>這兩個真實案例直指統計學習的核心命題：**世界上不存在「放之四海皆準的最優模型」，模型的選擇永遠取決於真實問題的「效用函數」與「責任邊界」**。</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>其中：</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$f: \mathbb{R}^p \to \mathbb{R}$ 為未知的**真實固定函數（Fixed Unknown Function）**，它代表了系統性的規律與知識。</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\epsilon$ 為**隨機誤差項（Random Error Term）**，獨立於 $\boldsymbol{X}$，且滿足期望值為零，即 $\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$，變異數為 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$。</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：真實訊號、觀測雜訊與函數投影</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>在展開嚴密的代數符號之前，自修者可透過以下心智模型（Mental Model）建立直覺：</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>統計學習的核心任務，就是藉由一組觀測到的訓練樣本資料集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_1, y_1), (\boldsymbol{x}_2, y_2), \dots, (\boldsymbol{x}_n, y_n)<span class="sc">\}</span>$，透過特定的統計演算法，估計出一個未知函數 $f$ 的逼近函數，記為 $\hat{f}$。</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.2 預測、推論與誤差分解</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>建構估計函數 $\hat{f}$ 通常服務於兩大目標：**預測（Prediction）** 與 **統計推論（Inference）**。</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1.2.1 可約化誤差與不可約化誤差</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>當我們使用 $\hat{Y} = \hat{f}(\boldsymbol{X})$ 來預測 $Y$ 時，在給定輸入 $\boldsymbol{X}$ 的條件下，預測值的均方誤差（Mean Squared Error, MSE）可以進行精確的數學分解：</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y - \hat{Y})^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> &amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">\left(f(\boldsymbol{X}) + \epsilon - \hat{f}(\boldsymbol{X})\right)^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">\left((f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X})) + \epsilon\right)^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> <span class="sc">\\</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> + 2\,\mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\epsilon \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> + \mathbb{E}\left<span class="co">[</span><span class="ot">\epsilon^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>由於誤差項 $\epsilon$ 與 $\boldsymbol{X}$ 相互獨立，且 $\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$，中間的交叉項期望值為零：</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\epsilon \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> = (f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\,\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0</span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>因此，上式簡化為經典的誤差分解定理：</span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y - \hat{Y})^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> = \underbrace{\left<span class="co">[</span><span class="ot">f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X})\right</span><span class="co">]</span>^2}_{\text{可約化誤差 (Reducible Error)}} + \underbrace{\sigma_\epsilon^2}_{\text{不可約化誤差 (Irreducible Error)}}</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-error-decomposition}</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**深海礁石與表面浪花**：</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  自然界生成資料的真實規律 $f(\boldsymbol{X})$，如同沉浸在海面之下的深海礁石（穩定但不可直接觀測）；我們手中取得的有限觀測樣本 $(x_i, y_i)$，則是海面上受到隨機風暴擾動的起伏浪花（疊加了不可約化雜訊 $\epsilon$）。</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**學習演算法的本質**：</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  所謂「統計學習」，本質上就是「試圖僅憑海面上轉瞬即逝的有限浪花，逆向推估水底深海礁石的幾何輪廓 $\hat{f}$」。</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**欠配適（Underfitting / 高偏誤）**：如同粗暴地將所有起伏礁石簡化為一塊平坦的水泥板（如忽視非線性效應的簡單直線）；</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>**過度配適（Overfitting / 高變異）**：如同誤把每一朵被風吹起的浪花尖端，都刻舟求劍地當成礁石的永久構造。換了一陣風（新的測試數據集），這座過度複雜的模型就會立刻崩潰。</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.1 統計學習的數學框架</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>在統計學習的標準設定中，我們假設觀測到一組輸入特徵（Features / Predictors / Independent Variables）向量 $\boldsymbol{X} = (X_1, X_2, \dots, X_p)^\top \in \mathbb{R}^p$，以及一個對應的目標變數（Target / Response / Dependent Variable）$Y \in \mathbb{R}$。</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>我們假設自然界生成資料的真實機制可以形式化表示為：</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>Y = f(\boldsymbol{X}) + \epsilon</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-data-generating-process}</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>其中：</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$f: \mathbb{R}^p \to \mathbb{R}$ 為未知的**真實固定函數（Fixed Unknown Function）**，它代表了系統性的規律與知識。</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\epsilon$ 為**隨機誤差項（Random Error Term）**，獨立於 $\boldsymbol{X}$，且滿足期望值為零，即 $\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$，變異數為 $\mathrm{Var}(\epsilon) = \sigma_\epsilon^2$。</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>統計學習的核心任務，就是藉由一組觀測到的訓練樣本資料集 $\mathcal{D} = <span class="sc">\{</span>(\boldsymbol{x}_1, y_1), (\boldsymbol{x}_2, y_2), \dots, (\boldsymbol{x}_n, y_n)<span class="sc">\}</span>$，透過特定的統計演算法，估計出一個未知函數 $f$ 的逼近函數，記為 $\hat{f}$。</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.2 預測、推論與誤差分解</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>建構估計函數 $\hat{f}$ 通常服務於兩大目標：**預測（Prediction）** 與 **統計推論（Inference）**。</span>
 <span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**可約化誤差（Reducible Error）**：源於估計函數 $\hat{f}$ 與真實函數 $f$ 之間的偏離。這項誤差可透過挑選更優良的模型、採納更強的演算法、或是增加樣本量來不斷壓低。</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**不可約化誤差（Irreducible Error）**：源自隨機擾動 $\epsilon$，例如未被記錄的隱藏變數、量測儀器的固有雜訊或系統隨機性。$\sigma_\epsilon^2$ 是任何預測模型均無法突破的**理論誤差下限（Theoretical Lower Bound）**。</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1.2.2 模型彈性與可解釋性的權衡</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>在機器學習與統計建模中，不存在一個在所有情境下全面勝出的「萬能模型」。模型的**彈性（Flexibility / Capacity）**與其**可解釋性（Interpretability）**往往呈現不可調和的反比關係，如 @fig-ch01-flexibility 所示：</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="al">![模型彈性與可解釋性的權衡光譜](../figures/fig01_flexibility_tradeoff.png)</span>{#fig-ch01-flexibility width=85%}</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>從 @fig-ch01-flexibility 可以清晰地梳理出統計學習演算法的家族光譜：</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高可解釋性、低彈性陣營**（如 Lasso、線性迴歸、單純貝氏）：</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：對函數形態施加了嚴格的線性或獨立性假設。</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>優勢：參數估計具有封閉形式或高度凸性，計算開銷小，參數符號與數值具有明確的物理與經濟學意義，易於進行假設檢定與政策制定。</span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>缺點：若真實系統存在複雜非線性曲率，模型將產生嚴重的系統性欠配適（Underfitting）。</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**中度平衡陣營**（如廣義加法模型 GAM、迴歸樣條 Splines、單一決策樹 CART）：</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：允許特徵呈現非線性平滑形態，同時保留加性結構或直觀的若-則（If-Then）規則。</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**高彈性、低可解釋性陣營**（如隨機森林、XGBoost、支援向量機 SVM、深層神經網路）：</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：幾乎不對函數形狀作人為限制，能自由逼近任意高維非線性超曲面。</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>優勢：預測均方誤差往往逼近理論下界，在各類預測競賽中表現極其優異。</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>缺點：內部數百萬個參數交織成複雜黑盒子（Black-Box），極易在訓練樣本有限時捕捉偶然雜訊而過度配適（Overfitting）。</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.3 資料建模的雙文化（Two Cultures）</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1.2.1 可約化誤差與不可約化誤差</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>當我們使用 $\hat{Y} = \hat{f}(\boldsymbol{X})$ 來預測 $Y$ 時，在給定輸入 $\boldsymbol{X}$ 的條件下，預測值的均方誤差（Mean Squared Error, MSE）可以進行精確的數學分解：</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>\begin{aligned}</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y - \hat{Y})^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> &amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">\left(f(\boldsymbol{X}) + \epsilon - \hat{f}(\boldsymbol{X})\right)^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">\left((f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X})) + \epsilon\right)^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> <span class="sc">\\</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>&amp;= \mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> + 2\,\mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\epsilon \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> + \mathbb{E}\left<span class="co">[</span><span class="ot">\epsilon^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>\end{aligned}</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>由於誤差項 $\epsilon$ 與 $\boldsymbol{X}$ 相互獨立，且 $\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0$，中間的交叉項期望值為零：</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\epsilon \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> = (f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X}))\,\mathbb{E}<span class="co">[</span><span class="ot">\epsilon</span><span class="co">]</span> = 0</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>因此，上式簡化為經典的誤差分解定理：</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>\mathbb{E}\left<span class="co">[</span><span class="ot">(Y - \hat{Y})^2 \;\middle|\; \boldsymbol{X}\right</span><span class="co">]</span> = \underbrace{\left<span class="co">[</span><span class="ot">f(\boldsymbol{X}) - \hat{f}(\boldsymbol{X})\right</span><span class="co">]</span>^2}_{\text{可約化誤差 (Reducible Error)}} + \underbrace{\sigma_\epsilon^2}_{\text{不可約化誤差 (Irreducible Error)}}</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-error-decomposition}</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**可約化誤差（Reducible Error）**：源於估計函數 $\hat{f}$ 與真實函數 $f$ 之間的偏離。這項誤差可透過挑選更優良的模型、採納更強的演算法、或是增加樣本量來不斷壓低。</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**不可約化誤差（Irreducible Error）**：源自隨機擾動 $\epsilon$，例如未被記錄的隱藏變數、量測儀器的固有雜訊或系統隨機性。$\sigma_\epsilon^2$ 是任何預測模型均無法突破的**理論誤差下限（Theoretical Lower Bound）**。</span>
 <span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>統計學家 Leo Breiman 於 2001 年在 *Statistical Science* 發表了劃時代的論文《Statistical Modeling: The Two Cultures》，指出分析資料的學者本質上分裂為兩大文化陣營：</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1.2.2 模型彈性與可解釋性的權衡</span></span>
 <span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="in">                    ┌──────────────────────────────────────────────┐</span></span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="in">                    │            自然界黑盒子 (Nature)             │</span></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="in">                    │         輸入 X ───────────► 輸出 Y           │</span></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="in">                    └──────────────────────┬───────────────────────┘</span></span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="in">                                           │</span></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="in">                   ┌───────────────────────┴───────────────────────┐</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="in">                   ▼                                               ▼</span></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="in">       【第一種：資料建模文化】                        【第二種：演算法建模文化】</span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="in">       (Data Modeling Culture)                     (Algorithmic Modeling Culture)</span></span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="in">       - 代表群體：傳統統計學界                        - 代表群體：計算機科學與機器學習界</span></span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="in">       - 核心信念：自然遵循特定的隨機分佈              - 核心信念：自然是複雜不可知的黑盒子</span></span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="in">       - 代表模型：線性迴歸、Cox模型、GLM              - 代表模型：決策樹、SVM、神經網路</span></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="in">       - 核心追求：檢驗參數、估計信心區間              - 核心追求：未知測試集上的極限預測能力</span></span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>在機器學習與統計建模中，不存在一個在所有情境下全面勝出的「萬能模型」。模型的**彈性（Flexibility / Capacity）**與其**可解釋性（Interpretability）**往往呈現不可調和的反比關係，如 @fig-ch01-flexibility 所示：</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="al">![模型彈性與可解釋性的權衡光譜](../figures/fig01_flexibility_tradeoff.png)</span>{#fig-ch01-flexibility width=85%}</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>從 @fig-ch01-flexibility 可以清晰地梳理出統計學習演算法的家族光譜：</span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**高可解釋性、低彈性陣營**（如 Lasso、線性迴歸、單純貝氏）：</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：對函數形態施加了嚴格的線性或獨立性假設。</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>優勢：參數估計具有封閉形式或高度凸性，計算開銷小，參數符號與數值具有明確的物理與經濟學意義，易於進行假設檢定與政策制定。</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>缺點：若真實系統存在複雜非線性曲率，模型將產生嚴重的系統性欠配適（Underfitting）。</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**中度平衡陣營**（如廣義加法模型 GAM、迴歸樣條 Splines、單一決策樹 CART）：</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：允許特徵呈現非線性平滑形態，同時保留加性結構或直觀的若-則（If-Then）規則。</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**高彈性、低可解釋性陣營**（如隨機森林、XGBoost、支援向量機 SVM、深層神經網路）：</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>特性：幾乎不對函數形狀作人為限制，能自由逼近任意高維非線性超曲面。</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>優勢：預測均方誤差往往逼近理論下界，在各類預測競賽中表現極其優異。</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>缺點：內部數百萬個參數交織成複雜黑盒子（Black-Box），極易在訓練樣本有限時捕捉偶然雜訊而過度配適（Overfitting）。</span>
 <span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>本書的立足點是**雙文化的融合**：我們既尊重資料背後的隨機生成機制與假設檢定，也擁抱演算法對高維非線性結構的強大逼近能力。</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.3 資料建模的雙文化（Two Cultures）</span></span>
 <span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.4 歸納偏好與沒有免費午餐定理（NFL）</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>統計學家 Leo Breiman 於 2001 年在 *Statistical Science* 發表了劃時代的論文《Statistical Modeling: The Two Cultures》，指出分析資料的學者本質上分裂為兩大文化陣營：</span>
 <span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>任何機器學習演算法若要具備從有限訓練樣本推廣至未知樣本的「一般化（Generalization）能力」，就必須具備某種前置假設，這種假設稱為**歸納偏好（Inductive Bias）**。例如：</span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**線性迴歸**的歸納偏好是：特徵與目標之間的關係由超平面主導。</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$K$ 最近鄰（KNN）**的歸納偏好是：在特徵空間中相鄰的樣本具有相似的輸出。</span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>如果完全不給定任何歸納偏好，演算法的表現將受到著名的**沒有免費午餐定理（No Free Lunch Theorem, NFL）**限制。</span>
-<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="fu">### 沒有免費午餐定理（NFL）的精確推導</span></span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>為展示學術嚴謹性，我們依據周志華（2016）的表述，給出離散設定下的 NFL 形式化證明。</span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>假設樣本空間為 $\mathcal{X}$，標籤空間為二元分類 $\mathcal{Y} = <span class="sc">\{</span>0, 1<span class="sc">\}</span>$。真實目標函數為 $f: \mathcal{X} \to \mathcal{Y}$。假設所有可能存在的目標函數集合為 $\mathcal{F}$，其基數為 $|\mathcal{F}| = 2^{|\mathcal{X}|}$。</span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>設有兩個相異的學習演算法 $\mathfrak{A}_a$ 與 $\mathfrak{A}_b$。給定訓練集 $\mathcal{D}$，演算法 $\mathfrak{A}_a$ 輸出的假設函數為 $h_a$。在所有可能的真實函數分佈均勻的前提下（即每個 $f$ 出現的機率均為 $1/|\mathcal{F}|$），演算法在訓練集以外之樣本空間 $\mathcal{X} \setminus \mathcal{D}$ 上的期望泛化誤差為：</span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] = \sum_{f \in \mathcal{F}} \frac{1}{|\mathcal{F}|} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right)</span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="in">                    ┌──────────────────────────────────────────────┐</span></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="in">                    │            自然界黑盒子 (Nature)             │</span></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="in">                    │         輸入 X ───────────► 輸出 Y           │</span></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="in">                    └──────────────────────┬───────────────────────┘</span></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="in">                                           │</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="in">                   ┌───────────────────────┴───────────────────────┐</span></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="in">                   ▼                                               ▼</span></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a><span class="in">       【第一種：資料建模文化】                        【第二種：演算法建模文化】</span></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a><span class="in">       (Data Modeling Culture)                     (Algorithmic Modeling Culture)</span></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a><span class="in">       - 代表群體：傳統統計學界                        - 代表群體：計算機科學與機器學習界</span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="in">       - 核心信念：自然遵循特定的隨機分佈              - 核心信念：自然是複雜不可知的黑盒子</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="in">       - 代表模型：線性迴歸、Cox模型、GLM              - 代表模型：決策樹、SVM、神經網路</span></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="in">       - 核心追求：檢驗參數、估計信心區間              - 核心追求：未知測試集上的極限預測能力</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>本書的立足點是**雙文化的融合**：我們既尊重資料背後的隨機生成機制與假設檢定，也擁抱演算法對高維非線性結構的強大逼近能力。</span>
 <span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>其中 $\mathbb{I}(\cdot)$ 為指示函數。將求和順序交換：</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>\sum_{f \in \mathcal{F}} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right) = \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \sum_{f \in \mathcal{F}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right)</span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>對於任意固定的未見樣本點 $\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}$，在所有可能的 $2^{|\mathcal{X}|}$ 個函數中，恰好有一半的函數使得 $f(\boldsymbol{x}) = 1$，另一半使得 $f(\boldsymbol{x}) = 0$。因此，不論演算法產生的預測值 $h_a(\boldsymbol{x})$ 究竟是 $0$ 還是 $1$，在全體可能函數中，恰好有半數與其預測相異：</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.4 歸納偏好與沒有免費午餐定理（NFL）</span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>任何機器學習演算法若要具備從有限訓練樣本推廣至未知樣本的「一般化（Generalization）能力」，就必須具備某種前置假設，這種假設稱為**歸納偏好（Inductive Bias）**。例如：</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**線性迴歸**的歸納偏好是：特徵與目標之間的關係由超平面主導。</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**$K$ 最近鄰（KNN）**的歸納偏好是：在特徵空間中相鄰的樣本具有相似的輸出。</span>
 <span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>\sum_{f \in \mathcal{F}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right) = \frac{1}{2} |\mathcal{F}| = \frac{1}{2} 2^{|\mathcal{X}|}</span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>如果完全不給定任何歸納偏好，演算法的表現將受到著名的**沒有免費午餐定理（No Free Lunch Theorem, NFL）**限制。</span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a><span class="fu">### 沒有免費午餐定理（NFL）的精確推導</span></span>
 <span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>代回期望誤差式：</span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>為展示學術嚴謹性，我們依據周志華（2016）的表述，給出離散設定下的 NFL 形式化證明。</span>
 <span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] = \frac{1}{|\mathcal{F}|} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \frac{1}{2}|\mathcal{F}| = \frac{1}{2} |\mathcal{X} \setminus \mathcal{D}|</span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-nfl-result}</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>假設樣本空間為 $\mathcal{X}$，標籤空間為二元分類 $\mathcal{Y} = <span class="sc">\{</span>0, 1<span class="sc">\}</span>$。真實目標函數為 $f: \mathcal{X} \to \mathcal{Y}$。假設所有可能存在的目標函數集合為 $\mathcal{F}$，其基數為 $|\mathcal{F}| = 2^{|\mathcal{X}|}$。</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>設有兩個相異的學習演算法 $\mathfrak{A}_a$ 與 $\mathfrak{A}_b$。給定訓練集 $\mathcal{D}$，演算法 $\mathfrak{A}_a$ 輸出的假設函數為 $h_a$。在所有可能的真實函數分佈均勻的前提下（即每個 $f$ 出現的機率均為 $1/|\mathcal{F}|$），演算法在訓練集以外之樣本空間 $\mathcal{X} \setminus \mathcal{D}$ 上的期望泛化誤差為：</span>
 <span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NFL 定理之重大結論：</span></span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>式 (<span class="co">[</span><span class="ot">-@eq-ch01-nfl-result</span><span class="co">]</span>) 清楚表明，**總體期望誤差完全獨立於演算法 $\mathfrak{A}_a$ 的具體結構**！</span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>換言之：</span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] \equiv \mathbb{E}_f\left[E_{ote}(\mathfrak{A}_b \mid \mathcal{D})\right]</span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **💡 核心啟示**：脫離具體問題的先驗領域知識（Domain Knowledge），去空談「哪一種演算法最強」在數學上是毫無意義的。任何優秀演算法的優勢，必然來自其歸納偏好與特定實際問題結構的高度契合。</span></span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.5 雙軌實務實驗室：資料生成與模型彈性探索</span></span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>本節透過合成資料模擬，在 **R 語言** 與 **Python** 雙環境中對照實作資料生成、非線性趨勢擬合與過度配適的初探。</span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] = \sum_{f \in \mathcal{F}} \frac{1}{|\mathcal{F}|} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right)</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>其中 $\mathbb{I}(\cdot)$ 為指示函數。將求和順序交換：</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>\sum_{f \in \mathcal{F}} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right) = \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \sum_{f \in \mathcal{F}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right)</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>對於任意固定的未見樣本點 $\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}$，在所有可能的 $2^{|\mathcal{X}|}$ 個函數中，恰好有一半的函數使得 $f(\boldsymbol{x}) = 1$，另一半使得 $f(\boldsymbol{x}) = 0$。因此，不論演算法產生的預測值 $h_a(\boldsymbol{x})$ 究竟是 $0$ 還是 $1$，在全體可能函數中，恰好有半數與其預測相異：</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>\sum_{f \in \mathcal{F}} \mathbb{I}\left(h_a(\boldsymbol{x}) \neq f(\boldsymbol{x})\right) = \frac{1}{2} |\mathcal{F}| = \frac{1}{2} 2^{|\mathcal{X}|}</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>代回期望誤差式：</span>
 <span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：統計學習初探與資料生成模擬</span></span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, graphics</span></span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 定義真實函數與生成資料</span></span>
-<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">60</span></span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n_samples, <span class="at">min =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
-<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>f_true <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sin</span>(pi <span class="sc">*</span> x) <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x)</span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>noise_sigma <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
-<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">f_true</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(n_samples, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> noise_sigma)</span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] = \frac{1}{|\mathcal{F}|} \sum_{\boldsymbol{x} \in \mathcal{X} \setminus \mathcal{D}} \frac{1}{2}|\mathcal{F}| = \frac{1}{2} |\mathcal{X} \setminus \mathcal{D}|</span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch01-nfl-result}</span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="fu">#### NFL 定理之重大結論：</span></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>式 (<span class="co">[</span><span class="ot">-@eq-ch01-nfl-result</span><span class="co">]</span>) 清楚表明，**總體期望誤差完全獨立於演算法 $\mathfrak{A}_a$ 的具體結構**！</span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>換言之：</span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>\mathbb{E}_f\left[E_{ote}(\mathfrak{A}_a \mid \mathcal{D})\right] \equiv \mathbb{E}_f\left[E_{ote}(\mathfrak{A}_b \mid \mathcal{D})\right]</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **💡 核心啟示**：脫離具體問題的先驗領域知識（Domain Knowledge），去空談「哪一種演算法最強」在數學上是毫無意義的。任何優秀演算法的優勢，必然來自其歸納偏好與特定實際問題結構的高度契合。</span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.5 雙軌實務實驗室：資料生成與模型彈性探索</span></span>
 <span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合不同彈性的模型</span></span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 A: 線性迴歸 (低彈性 / 配適不足 Underfitting)</span></span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>fit_linear <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> sim_data)</span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 B: 3次多項式 (適度彈性 Good Fit)</span></span>
-<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>fit_poly3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">3</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> sim_data)</span>
-<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 C: 15次高階多項式 (過高彈性 / 過度配適 Overfitting)</span></span>
-<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a>fit_poly15 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">15</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> sim_data)</span>
-<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 預測網格</span></span>
-<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>x_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">300</span>)</span>
-<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x_grid,</span>
-<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>  <span class="at">True_f =</span> <span class="fu">f_true</span>(x_grid),</span>
-<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>  <span class="at">Linear =</span> <span class="fu">predict</span>(fit_linear, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid)),</span>
-<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>  <span class="at">Poly3 =</span> <span class="fu">predict</span>(fit_poly3, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid)),</span>
-<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>  <span class="at">Poly15 =</span> <span class="fu">predict</span>(fit_poly15, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid))</span>
-<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>本節透過合成資料模擬，在 **R 語言** 與 **Python** 雙環境中對照實作資料生成、非線性趨勢擬合與過度配適的初探。</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：統計學習初探與資料生成模擬</span></span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：stats, graphics</span></span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 定義真實函數與生成資料</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>n_samples <span class="ot">&lt;-</span> <span class="dv">60</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n_samples, <span class="at">min =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>f_true <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sin</span>(pi <span class="sc">*</span> x) <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x)</span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>noise_sigma <span class="ot">&lt;-</span> <span class="fl">0.3</span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">f_true</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(n_samples, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> noise_sigma)</span>
 <span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 計算訓練樣本殘差平方和 (RSS)</span></span>
-<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>rss_calc <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) <span class="fu">sum</span>(<span class="fu">residuals</span>(fit)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"線性迴歸 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_linear)))</span>
-<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"3階多項式 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_poly3)))</span>
-<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"15階多項式 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_poly15)))</span>
-<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合不同彈性的模型</span></span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 A: 線性迴歸 (低彈性 / 配適不足 Underfitting)</span></span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a>fit_linear <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> sim_data)</span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 B: 3次多項式 (適度彈性 Good Fit)</span></span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>fit_poly3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">3</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> sim_data)</span>
 <span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：統計學習初探與資料生成模擬</span></span>
-<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
-<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
-<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
-<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 定義真實函數與生成資料</span></span>
-<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="dv">60</span></span>
-<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, size<span class="op">=</span>n_samples)</span>
-<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>f_true <span class="op">=</span> <span class="kw">lambda</span> x: np.sin(np.pi <span class="op">*</span> x) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> np.cos(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> x)</span>
-<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>noise_sigma <span class="op">=</span> <span class="fl">0.3</span></span>
-<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> f_true(x) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, noise_sigma, size<span class="op">=</span>n_samples)</span>
-<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> x[:, np.newaxis]</span>
-<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合不同彈性的模型</span></span>
-<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 A: 線性迴歸 (低彈性)</span></span>
-<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a>model_linear <span class="op">=</span> LinearRegression().fit(X_train, y)</span>
-<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 B: 3 次多項式 (適度彈性)</span></span>
-<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>model_poly3 <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span><span class="dv">3</span>), LinearRegression()).fit(X_train, y)</span>
-<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 C: 15 次多項式 (過高彈性 / 過度配適)</span></span>
-<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a>model_poly15 <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span><span class="dv">15</span>), LinearRegression()).fit(X_train, y)</span>
-<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 計算訓練均方誤差 (Train MSE)</span></span>
-<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>mse_linear <span class="op">=</span> np.mean((y <span class="op">-</span> model_linear.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>mse_poly3 <span class="op">=</span> np.mean((y <span class="op">-</span> model_poly3.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a>mse_poly15 <span class="op">=</span> np.mean((y <span class="op">-</span> model_poly15.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性迴歸 訓練 MSE: </span><span class="sc">{</span>mse_linear<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"3階多項式 訓練 MSE: </span><span class="sc">{</span>mse_poly3<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"15階多項式 訓練 MSE: </span><span class="sc">{</span>mse_poly15<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.6 課後全方位習題庫（10 題）</span></span>
-<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**不可約化誤差之條件期望推導**：</span>
-<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch01-error-decomposition</span><span class="co">]</span>) 的推導中，若假設隨機擾動 $\epsilon$ 的條件變異數隨特徵變更（即異變異數性 $\mathrm{Var}(\epsilon \mid \boldsymbol{X}) = \sigma^2(\boldsymbol{X})$），重新展開並推導均方誤差的期望分解式，論證不可約化誤差在特徵空間上的局部異質性。</span>
-<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**奧坎剃刀原則（Occam's Razor）之資訊論解釋**：</span>
-<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a>   統計學習理論常引述「如無必要，勿增實體」。請從最小描述長度原則（Minimum Description Length, MDL）與貝氏模型選擇的角度，論證為什麼在兩個經驗誤差相仿的模型中，結構較簡單的模型往往具備更優的泛化能力。</span>
-<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**沒有免費午餐定理的前提邊界檢討**：</span>
-<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a>   NFL 定理假設所有真實目標函數出現的機率均勻相等。試論證：若現實世界中客觀物理規律滿足「光滑性（Smoothness）」或「稀疏性（Sparsity）」先驗（即某些病態劇烈振盪的函數出現機率為零），NFL 定理是否依然成立？</span>
-<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**監督式 vs 非監督式學習的本質差異**：</span>
-<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a>   證明在非監督式學習中，不存在類似式 (<span class="co">[</span><span class="ot">-@eq-ch01-error-decomposition</span><span class="co">]</span>) 那樣具有唯一客觀「金標準（Ground Truth）」的泛化誤差指標。這對非監督模型的評估帶來了什麼本質上的挑戰？</span>
-<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**維度災難（Curse of Dimensionality）幾何推導**：</span>
-<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a>   設特徵空間為 $p$ 維單位超立方體 $<span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>^p$，樣本均勻分佈其中。欲在一個子超立方體內捕捉全體樣本的 $10\%$，計算該子超立方體的邊長 $e_p(0.1) = 0.1^{1/p}$。當維度分別為 $p=1, 2, 10, 100$ 時，數值是多少？這如何說明高維空間中「局部鄰域」概念的崩塌？</span>
-<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**蒙地卡羅模擬維度災難幾何現象**：</span>
-<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a>   使用 Python 或 R 產生 $n=1000$ 筆均勻分佈在 $p$ 維超球體內的樣本點。計算隨維度 $p \in <span class="co">[</span><span class="ot">1, 50</span><span class="co">]</span>$ 增加時，位於超球體最外層外殼（半徑 $r \in <span class="co">[</span><span class="ot">0.9, 1.0</span><span class="co">]</span>$）的樣本所佔比例，驗證高維空間中「所有數據都集中在邊界」的驚人幾何特性。</span>
-<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**可解釋性與預測力對比實證**：</span>
-<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>   在 Boston 房價或 California Housing 資料集上，分別訓練一個標準線性迴歸與一個深度為 10 的隨機森林模型。比較兩者的測試集 RMSE，並嘗試從隨機森林中直接提取特徵的單調邊際效應，記錄遭遇的黑盒子黑箱障礙。</span>
-<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**不可約化誤差邊界模擬實驗**：</span>
-<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a>   設定真實函數 $f(x) = 2x + 1$，人工疊加高斯雜訊 $\epsilon \sim \mathcal{N}(0, 2^2)$（已知 $\sigma_\epsilon^2 = 4$）。擬合由 1 階到 20 階的多項式模型，在容量為 10,000 的超大獨立測試集上計算測試 MSE，驗證測試 MSE 是否無論如何都無法突破基準線 4.0。</span>
-<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**資料生成之非線性交互作用模擬**：</span>
-<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a>   撰寫程式生成包含兩變數非線性交互項的合成資料：$y = x_1 x_2 + \sin(x_1) + \epsilon$。比較不含交互項的線性模型、包含一階交互項的線性模型以及樹狀模型的擬合殘差分佈。</span>
-<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**探索性資料分析（EDA）標準流程實現**：</span>
-<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a>    利用真實資料集（如 Auto MPG），撰寫包含特徵相關係數矩陣熱力圖、數值型變數分佈直方圖、箱型圖（Boxplot）檢測離群值以及散佈圖矩陣（Pairplot）的完整自動化 EDA 腳本。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 C: 15次高階多項式 (過高彈性 / 過度配適 Overfitting)</span></span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a>fit_poly15 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">15</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> sim_data)</span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 預測網格</span></span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a>x_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">300</span>)</span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x_grid,</span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a>  <span class="at">True_f =</span> <span class="fu">f_true</span>(x_grid),</span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>  <span class="at">Linear =</span> <span class="fu">predict</span>(fit_linear, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid)),</span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a>  <span class="at">Poly3 =</span> <span class="fu">predict</span>(fit_poly3, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid)),</span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>  <span class="at">Poly15 =</span> <span class="fu">predict</span>(fit_poly15, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_grid))</span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 計算訓練樣本殘差平方和 (RSS)</span></span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a>rss_calc <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) <span class="fu">sum</span>(<span class="fu">residuals</span>(fit)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"線性迴歸 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_linear)))</span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"3階多項式 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_poly3)))</span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"15階多項式 RSS: %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">rss_calc</span>(fit_poly15)))</span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：統計學習初探與資料生成模擬</span></span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, scikit-learn</span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 定義真實函數與生成資料</span></span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a>n_samples <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.uniform(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, size<span class="op">=</span>n_samples)</span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a>f_true <span class="op">=</span> <span class="kw">lambda</span> x: np.sin(np.pi <span class="op">*</span> x) <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> np.cos(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> x)</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a>noise_sigma <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> f_true(x) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, noise_sigma, size<span class="op">=</span>n_samples)</span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> x[:, np.newaxis]</span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 擬合不同彈性的模型</span></span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 A: 線性迴歸 (低彈性)</span></span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a>model_linear <span class="op">=</span> LinearRegression().fit(X_train, y)</span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 B: 3 次多項式 (適度彈性)</span></span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a>model_poly3 <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span><span class="dv">3</span>), LinearRegression()).fit(X_train, y)</span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a><span class="co"># 模型 C: 15 次多項式 (過高彈性 / 過度配適)</span></span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a>model_poly15 <span class="op">=</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span><span class="dv">15</span>), LinearRegression()).fit(X_train, y)</span>
+<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 計算訓練均方誤差 (Train MSE)</span></span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a>mse_linear <span class="op">=</span> np.mean((y <span class="op">-</span> model_linear.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a>mse_poly3 <span class="op">=</span> np.mean((y <span class="op">-</span> model_poly3.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a>mse_poly15 <span class="op">=</span> np.mean((y <span class="op">-</span> model_poly15.predict(X_train))<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"線性迴歸 訓練 MSE: </span><span class="sc">{</span>mse_linear<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"3階多項式 訓練 MSE: </span><span class="sc">{</span>mse_poly3<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"15階多項式 訓練 MSE: </span><span class="sc">{</span>mse_poly15<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.6 課後全方位習題庫（10 題）</span></span>
+<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**不可約化誤差之條件期望推導**：</span>
+<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a>   在式 (<span class="co">[</span><span class="ot">-@eq-ch01-error-decomposition</span><span class="co">]</span>) 的推導中，若假設隨機擾動 $\epsilon$ 的條件變異數隨特徵變更（即異變異數性 $\mathrm{Var}(\epsilon \mid \boldsymbol{X}) = \sigma^2(\boldsymbol{X})$），重新展開並推導均方誤差的期望分解式，論證不可約化誤差在特徵空間上的局部異質性。</span>
+<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**奧坎剃刀原則（Occam's Razor）之資訊論解釋**：</span>
+<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a>   統計學習理論常引述「如無必要，勿增實體」。請從最小描述長度原則（Minimum Description Length, MDL）與貝氏模型選擇的角度，論證為什麼在兩個經驗誤差相仿的模型中，結構較簡單的模型往往具備更優的泛化能力。</span>
+<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**沒有免費午餐定理的前提邊界檢討**：</span>
+<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>   NFL 定理假設所有真實目標函數出現的機率均勻相等。試論證：若現實世界中客觀物理規律滿足「光滑性（Smoothness）」或「稀疏性（Sparsity）」先驗（即某些病態劇烈振盪的函數出現機率為零），NFL 定理是否依然成立？</span>
+<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**監督式 vs 非監督式學習的本質差異**：</span>
+<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a>   證明在非監督式學習中，不存在類似式 (<span class="co">[</span><span class="ot">-@eq-ch01-error-decomposition</span><span class="co">]</span>) 那樣具有唯一客觀「金標準（Ground Truth）」的泛化誤差指標。這對非監督模型的評估帶來了什麼本質上的挑戰？</span>
+<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**維度災難（Curse of Dimensionality）幾何推導**：</span>
+<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a>   設特徵空間為 $p$ 維單位超立方體 $<span class="co">[</span><span class="ot">0, 1</span><span class="co">]</span>^p$，樣本均勻分佈其中。欲在一個子超立方體內捕捉全體樣本的 $10\%$，計算該子超立方體的邊長 $e_p(0.1) = 0.1^{1/p}$。當維度分別為 $p=1, 2, 10, 100$ 時，數值是多少？這如何說明高維空間中「局部鄰域」概念的崩塌？</span>
+<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**蒙地卡羅模擬維度災難幾何現象**：</span>
+<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a>   使用 Python 或 R 產生 $n=1000$ 筆均勻分佈在 $p$ 維超球體內的樣本點。計算隨維度 $p \in <span class="co">[</span><span class="ot">1, 50</span><span class="co">]</span>$ 增加時，位於超球體最外層外殼（半徑 $r \in <span class="co">[</span><span class="ot">0.9, 1.0</span><span class="co">]</span>$）的樣本所佔比例，驗證高維空間中「所有數據都集中在邊界」的驚人幾何特性。</span>
+<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**可解釋性與預測力對比實證**：</span>
+<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a>   在 Boston 房價或 California Housing 資料集上，分別訓練一個標準線性迴歸與一個深度為 10 的隨機森林模型。比較兩者的測試集 RMSE，並嘗試從隨機森林中直接提取特徵的單調邊際效應，記錄遭遇的黑盒子黑箱障礙。</span>
+<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**不可約化誤差邊界模擬實驗**：</span>
+<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a>   設定真實函數 $f(x) = 2x + 1$，人工疊加高斯雜訊 $\epsilon \sim \mathcal{N}(0, 2^2)$（已知 $\sigma_\epsilon^2 = 4$）。擬合由 1 階到 20 階的多項式模型，在容量為 10,000 的超大獨立測試集上計算測試 MSE，驗證測試 MSE 是否無論如何都無法突破基準線 4.0。</span>
+<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**資料生成之非線性交互作用模擬**：</span>
+<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a>   撰寫程式生成包含兩變數非線性交互項的合成資料：$y = x_1 x_2 + \sin(x_1) + \epsilon$。比較不含交互項的線性模型、包含一階交互項的線性模型以及樹狀模型的擬合殘差分佈。</span>
+<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**探索性資料分析（EDA）標準流程實現**：</span>
+<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a>    利用真實資料集（如 Auto MPG），撰寫包含特徵相關係數矩陣熱力圖、數值型變數分佈直方圖、箱型圖（Boxplot）檢測離群值以及散佈圖矩陣（Pairplot）的完整自動化 EDA 腳本。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

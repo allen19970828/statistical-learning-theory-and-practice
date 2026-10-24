@@ -533,7 +533,11 @@ window.Quarto = {
     <h2 id="toc-title">本章目錄</h2>
    
   <ul>
-  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">5.1</span> 本章導讀</a></li>
+  <li><a href="#本章導讀" id="toc-本章導讀" class="nav-link active" data-scroll-target="#本章導讀"><span class="header-section-number">5.1</span> 本章導讀</a>
+  <ul class="collapse">
+  <li><a href="#開篇實務案例導讀大都會空氣品質-pm2.5-濃度與極端氣候突變監測" id="toc-開篇實務案例導讀大都會空氣品質-pm2.5-濃度與極端氣候突變監測" class="nav-link" data-scroll-target="#開篇實務案例導讀大都會空氣品質-pm2.5-濃度與極端氣候突變監測"><span class="header-section-number">5.1.1</span> 💡 開篇實務案例導讀：大都會空氣品質 PM2.5 濃度與極端氣候突變監測</a></li>
+  <li><a href="#概念直覺與幾何啟發彈性木條曲率彈性位能與局部分段拼裝" id="toc-概念直覺與幾何啟發彈性木條曲率彈性位能與局部分段拼裝" class="nav-link" data-scroll-target="#概念直覺與幾何啟發彈性木條曲率彈性位能與局部分段拼裝"><span class="header-section-number">5.1.2</span> 🎯 概念直覺與幾何啟發：彈性木條、曲率彈性位能與局部分段拼裝</a></li>
+  </ul></li>
   <li><a href="#多項式之侷限與分段多項式" id="toc-多項式之侷限與分段多項式" class="nav-link" data-scroll-target="#多項式之侷限與分段多項式"><span class="header-section-number">5.2</span> 5.1 多項式之侷限與分段多項式</a>
   <ul class="collapse">
   <li><a href="#runge-現象與全域多項式之缺陷" id="toc-runge-現象與全域多項式之缺陷" class="nav-link" data-scroll-target="#runge-現象與全域多項式之缺陷"><span class="header-section-number">5.2.1</span> 5.1.1 Runge 現象與全域多項式之缺陷</a></li>
@@ -600,7 +604,26 @@ window.Quarto = {
 <p>在真實世界中，特徵與反應變數之間的關係很少是純粹線性的。當真實規律呈現彎曲、飽和（Saturation）或週期性波動時，硬套線性迴歸將導致嚴重的<strong>配適不足（Underfitting）</strong>。然而，若直接引入高階多項式（如 10 階以上），又會在邊界處引發劇烈震盪（著名的 Runge 現象）。</p>
 <p>如何在「維持線性模型的可解釋性」與「捕捉任意平滑非線性曲線」之間取得平衡？統計學給出的優雅答案是<strong>仿樣函數（Splines）</strong>與<strong>廣義加法模型（Generalized Additive Models, GAM）</strong>。</p>
 <p>本章將剖析多項式之侷限，嚴格定義分段多項式與連續性約束；推導<strong>三次仿樣（Cubic Splines）</strong>與<strong>自然三次仿樣（Natural Cubic Splines）</strong>的截斷冪次基底；提供一組 4 筆樣本單節點仿樣手把手數值求解推演；詳解帶有二階導數曲率懲罰的<strong>平滑仿樣（Smoothing Splines）</strong>之變分極值定理；最後引介由 Trevor Hastie 與 Robert Tibshirani 創立的<strong>廣義加法模型（GAM）</strong>與 Backfitting 演算法，並於 R 與 Python 雙環境中實戰。</p>
+<section id="開篇實務案例導讀大都會空氣品質-pm2.5-濃度與極端氣候突變監測" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="開篇實務案例導讀大都會空氣品質-pm2.5-濃度與極端氣候突變監測"><span class="header-section-number">5.1.1</span> 💡 開篇實務案例導讀：大都會空氣品質 PM2.5 濃度與極端氣候突變監測</h3>
+<p>在環境科學與公共衛生監測領域，研究團隊試圖建立大都會區懸浮微粒 PM2.5 濃度（<span class="math inline">Y</span>）與氣象要素（氣溫 <span class="math inline">X_1</span>、風速 <span class="math inline">X_2</span>、大氣壓 <span class="math inline">X_3</span>）的非線性預警系統。</p>
+<p>自然界的物理與化學機制充滿了急遽的非線性轉折： 當氣溫在 15°C 至 25°C 之間時，大氣擴散平緩；但一旦氣溫突破 35°C，強烈日光紫外線催化強烈光化學反應，臭氧與二次氣膠微粒呈指數級暴增；相反地，風速在 0 到 3 級微風時污染物持續沉積，而一旦風速超過 5 級，強對流迅速將微粒吹散，邊際效應呈現顯著的非線性飽和效應。</p>
+<p>若使用傳統多元線性迴歸，只能強行拉出一條毫無解釋力的傾斜平面；若盲目套用 7 次或 8 次全域多項式迴歸，在極低溫（<span class="math inline">-2^\circ\text{C}</span>）或極高溫（<span class="math inline">39^\circ\text{C}</span>）的邊界區間，預測曲線會像脫韁野馬般瘋狂甩盪出荒謬的負數（Runge 現象）。環境學家需要的是：能局部自適應彎曲、在邊界天然保持線性延伸、且能將各氣象因子的非線性貢獻拆解為獨立可視化曲線（GAM 加法分解）的優雅工具。</p>
+</section>
+<section id="概念直覺與幾何啟發彈性木條曲率彈性位能與局部分段拼裝" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="概念直覺與幾何啟發彈性木條曲率彈性位能與局部分段拼裝"><span class="header-section-number">5.1.2</span> 🎯 概念直覺與幾何啟發：彈性木條、曲率彈性位能與局部分段拼裝</h3>
+<p>自修者在研讀平滑樣條（Smoothing Splines）的變分推導前，可聯想造船工程師在電腦輔助設計（CAD）出現前的經典工具——「繪圖員彈性木條（Draughtsman’s Spline）」：</p>
+<ul>
+<li><strong>工匠的彈性木條</strong>：為了在圖紙上畫出阻力最小的船體平滑流線，工程師會在關鍵控制點（Knots / 節點）釘上鐵釘，然後拿一根具備彈性的細長薄木條穿插固定在鐵釘之間。木條在材料力學作用下，自然彎曲形成一條處處光滑、無任何生硬折角的優美曲線。</li>
+<li><strong>平滑樣條的物理能量泛函</strong>：平滑樣條在數學上正是最小化如下泛函： <span class="math display">\min_f \sum_{i=1}^n (y_i - f(x_i))^2 + \lambda \int [f''(t)]^2 \, \mathrm{d}t</span>
+<ul>
+<li>第一項是「木條貼近各個釘子數據點的緊密程度（經驗配適度）」；</li>
+<li>第二項 <span class="math inline">\int [f''(t)]^2 \, \mathrm{d}t</span> 則是「木條被強行彎折時內部所累積的物理彈性應變位能（二階導數 <span class="math inline">f''</span> 代表幾何曲率）」；</li>
+<li>正則化參數 <span class="math inline">\lambda</span> 是<strong>木條的剛性（Stiffness）</strong>：若 <span class="math inline">\lambda \to \infty</span>（木條硬如鋼鐵），木條完全無法彎曲，退化為 OLS 直線；若 <span class="math inline">\lambda \to 0</span>（木條軟如麵條），它會毫無原則地完美穿過每個雜訊點而劇烈扭曲。平滑技術的核心，就是在「數據忠實度」與「材料張力」間尋求能量平衡。</li>
+</ul></li>
+</ul>
 <hr>
+</section>
 </section>
 <section id="多項式之侷限與分段多項式" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="多項式之侷限與分段多項式"><span class="header-section-number">5.2</span> 5.1 多項式之侷限與分段多項式</h2>
@@ -1402,336 +1425,356 @@ y_i = \beta_0 + \sum_{j=1}^p f_j(x_{ij}) + \epsilon_i
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>本章將剖析多項式之侷限，嚴格定義分段多項式與連續性約束；推導**三次仿樣（Cubic Splines）**與**自然三次仿樣（Natural Cubic Splines）**的截斷冪次基底；提供一組 4 筆樣本單節點仿樣手把手數值求解推演；詳解帶有二階導數曲率懲罰的**平滑仿樣（Smoothing Splines）**之變分極值定理；最後引介由 Trevor Hastie 與 Robert Tibshirani 創立的**廣義加法模型（GAM）**與 Backfitting 演算法，並於 R 與 Python 雙環境中實戰。</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 開篇實務案例導讀：大都會空氣品質 PM2.5 濃度與極端氣候突變監測</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.1 多項式之侷限與分段多項式</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>在環境科學與公共衛生監測領域，研究團隊試圖建立大都會區懸浮微粒 PM2.5 濃度（$Y$）與氣象要素（氣溫 $X_1$、風速 $X_2$、大氣壓 $X_3$）的非線性預警系統。</span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.1.1 Runge 現象與全域多項式之缺陷</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>全域多項式迴歸模型為：</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \cdots + \beta_d x_i^d + \epsilon_i</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>自然界的物理與化學機制充滿了急遽的非線性轉折：</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>當氣溫在 15°C 至 25°C 之間時，大氣擴散平緩；但一旦氣溫突破 35°C，強烈日光紫外線催化強烈光化學反應，臭氧與二次氣膠微粒呈指數級暴增；相反地，風速在 0 到 3 級微風時污染物持續沉積，而一旦風速超過 5 級，強對流迅速將微粒吹散，邊際效應呈現顯著的非線性飽和效應。</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>若使用傳統多元線性迴歸，只能強行拉出一條毫無解釋力的傾斜平面；若盲目套用 7 次或 8 次全域多項式迴歸，在極低溫（$-2^\circ\text{C}$）或極高溫（$39^\circ\text{C}$）的邊界區間，預測曲線會像脫韁野馬般瘋狂甩盪出荒謬的負數（Runge 現象）。環境學家需要的是：能局部自適應彎曲、在邊界天然保持線性延伸、且能將各氣象因子的非線性貢獻拆解為獨立可視化曲線（GAM 加法分解）的優雅工具。</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 概念直覺與幾何啟發：彈性木條、曲率彈性位能與局部分段拼裝</span></span>
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>當次數 $d$ 提高時，模型在資料中心區域配適良好，但在資料的兩端邊界區域，高階項 $x^d$ 的權重會導致曲線出現不受控制的劇烈上下震盪，此即數值分析中的 **Runge 現象**。此外，全域多項式的致命弱點在於**缺乏局部性（Locality）**：改變資料集中某一個局部的單一點，會牽動整條全域曲線的形狀。</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>自修者在研讀平滑樣條（Smoothing Splines）的變分推導前，可聯想造船工程師在電腦輔助設計（CAD）出現前的經典工具——「繪圖員彈性木條（Draughtsman's Spline）」：</span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.1.2 局部化解方：分段多項式（Piecewise Polynomials）</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>為克服全域問題，我們在自變數的取值範圍內設定 $K$ 個分割點，稱為**節點（Knots）**：</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>\xi_1 &lt; \xi_2 &lt; \dots &lt; \xi_K</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**工匠的彈性木條**：為了在圖紙上畫出阻力最小的船體平滑流線，工程師會在關鍵控制點（Knots / 節點）釘上鐵釘，然後拿一根具備彈性的細長薄木條穿插固定在鐵釘之間。木條在材料力學作用下，自然彎曲形成一條處處光滑、無任何生硬折角的優美曲線。</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**平滑樣條的物理能量泛函**：平滑樣條在數學上正是最小化如下泛函：</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  $$\min_f \sum_{i=1}^n (y_i - f(x_i))^2 + \lambda \int <span class="co">[</span><span class="ot">f''(t)</span><span class="co">]</span>^2 \, \mathrm{d}t$$</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>第一項是「木條貼近各個釘子數據點的緊密程度（經驗配適度）」；</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>第二項 $\int <span class="co">[</span><span class="ot">f''(t)</span><span class="co">]</span>^2 \, \mathrm{d}t$ 則是「木條被強行彎折時內部所累積的物理彈性應變位能（二階導數 $f''$ 代表幾何曲率）」；</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>正則化參數 $\lambda$ 是**木條的剛性（Stiffness）**：若 $\lambda \to \infty$（木條硬如鋼鐵），木條完全無法彎曲，退化為 OLS 直線；若 $\lambda \to 0$（木條軟如麵條），它會毫無原則地完美穿過每個雜訊點而劇烈扭曲。平滑技術的核心，就是在「數據忠實度」與「材料張力」間尋求能量平衡。</span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>這些節點將實數軸劃分為 $K+1$ 個互斥區間：$(-\infty, \xi_1], (\xi_1, \xi_2], \dots, (\xi_K, \infty)$。在每一個區間內，我們分別擬合一個獨立的低階多項式（例如 3 次多項式）。</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>然而，若完全不對相鄰區間施加銜接約束，曲線將在各節點 $\xi_k$ 處發生**斷裂跳躍（Discontinuity）**，物理上極不合理。</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.1 多項式之侷限與分段多項式</span></span>
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.1.1 Runge 現象與全域多項式之缺陷</span></span>
 <span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.2 迴歸仿樣（Regression Splines）</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.1 連續性與光滑性約束</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>為了使分段多項式銜接平滑，我們在每個節點處施加**光滑性階數約束**。對於一個階數為 $d$ 的仿樣函數 $S(x)$，在每個節點 $\xi_k$ 處要求：</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**函數值連續（$C^0$ 連續）**：$\lim_{x \to \xi_k^-} S(x) = \lim_{x \to \xi_k^+} S(x)$</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**一階導數連續（$C^1$ 連續）**：$\lim_{x \to \xi_k^-} S'(x) = \lim_{x \to \xi_k^+} S'(x)$（斜率無折角）</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**二階導數連續（$C^2$ 連續）**：$\lim_{x \to \xi_k^-} S''(x) = \lim_{x \to \xi_k^+} S''(x)$（曲率平滑銜接）</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>全域多項式迴歸模型為：</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \cdots + \beta_d x_i^d + \epsilon_i</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>當次數 $d$ 提高時，模型在資料中心區域配適良好，但在資料的兩端邊界區域，高階項 $x^d$ 的權重會導致曲線出現不受控制的劇烈上下震盪，此即數值分析中的 **Runge 現象**。此外，全域多項式的致命弱點在於**缺乏局部性（Locality）**：改變資料集中某一個局部的單一點，會牽動整條全域曲線的形狀。</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.1.2 局部化解方：分段多項式（Piecewise Polynomials）</span></span>
 <span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>在統計學中，最常使用的黃金標準是**三次仿樣（Cubic Spline, $d=3$）**。人眼在幾何視覺上無法察覺二階導數連續曲線的微小轉折，因此三次仿樣在外觀上極具自然平滑感。</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.2 自由度精算法則</span></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共有 $K+1$ 個區間，每個區間為 3 次多項式（具有 4 個待估係數 $\beta_0, \beta_1, \beta_2, \beta_3$），原始參數共有 $4(K+1)$ 個。</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共有 $K$ 個內部節點，每個節點處施加 3 個約束條件（$C^0, C^1, C^2$），總約束數為 $3K$。</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**三次仿樣的淨自由度（Degrees of Freedom）**為：</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  \mathrm{df} = 4(K+1) - 3K = K + 4</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.3 截斷冪次基底（Truncated Power Basis）</span></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>為了將三次仿樣化為標準線性迴歸求解，我們定義**截斷冪次函數（Truncated Power Function）**：</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>(x - \xi)_+^3 \triangleq \begin{cases}</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>(x - \xi)^3 &amp; \text{若 } x &gt; \xi <span class="sc">\\</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>0 &amp; \text{若 } x \le \xi</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-truncated-power}</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>為克服全域問題，我們在自變數的取值範圍內設定 $K$ 個分割點，稱為**節點（Knots）**：</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>\xi_1 &lt; \xi_2 &lt; \dots &lt; \xi_K</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>這些節點將實數軸劃分為 $K+1$ 個互斥區間：$(-\infty, \xi_1], (\xi_1, \xi_2], \dots, (\xi_K, \infty)$。在每一個區間內，我們分別擬合一個獨立的低階多項式（例如 3 次多項式）。</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>然而，若完全不對相鄰區間施加銜接約束，曲線將在各節點 $\xi_k$ 處發生**斷裂跳躍（Discontinuity）**，物理上極不合理。</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.2 迴歸仿樣（Regression Splines）</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.1 連續性與光滑性約束</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>為了使分段多項式銜接平滑，我們在每個節點處施加**光滑性階數約束**。對於一個階數為 $d$ 的仿樣函數 $S(x)$，在每個節點 $\xi_k$ 處要求：</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**函數值連續（$C^0$ 連續）**：$\lim_{x \to \xi_k^-} S(x) = \lim_{x \to \xi_k^+} S(x)$</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**一階導數連續（$C^1$ 連續）**：$\lim_{x \to \xi_k^-} S'(x) = \lim_{x \to \xi_k^+} S'(x)$（斜率無折角）</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**二階導數連續（$C^2$ 連續）**：$\lim_{x \to \xi_k^-} S''(x) = \lim_{x \to \xi_k^+} S''(x)$（曲率平滑銜接）</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>在統計學中，最常使用的黃金標準是**三次仿樣（Cubic Spline, $d=3$）**。人眼在幾何視覺上無法察覺二階導數連續曲線的微小轉折，因此三次仿樣在外觀上極具自然平滑感。</span>
 <span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 定理：具有 $K$ 個節點的三次仿樣可唯一表示為基底函數的線性組合：</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>S(x) = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-spline-basis}</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>**證明**：</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>當 $x \le \xi_1$ 時，所有截斷項均為 $0$，$S(x)$ 顯然是標準三次多項式。</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>當 $x$ 越過節點 $\xi_k$ 時，函數增添了 $\theta_k (x - \xi_k)^3$ 項。</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>檢驗其在 $\xi_k$ 處的導數：</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>零階：$(\xi_k - \xi_k)_+^3 = 0$（連續）。</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>一階導數：$\left.\frac{d}{dx}(x - \xi_k)_+^3\right|_{x=\xi_k} = 3(0)^2 = 0$（一階導連續）。</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>二階導數：$\left.\frac{d^2}{dx^2}(x - \xi_k)_+^3\right|_{x=\xi_k} = 6(0) = 0$（二階導連續）。</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>三階導數：在 $\xi_k$ 處從 $0$ 突跳至 $6\theta_k$（允許三階導不連續）。</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>因此式 (<span class="co">[</span><span class="ot">-@eq-ch05-spline-basis</span><span class="co">]</span>) 嚴格滿足三次仿樣的全部定義。待估係數共有 $4 + K$ 個，與自由度精確一致 $\quad \blacksquare$</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.4 自然三次仿樣（Natural Cubic Splines, NCS）</span></span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>一般三次仿樣在最外側節點之外（邊界區域 $x &lt; \xi_1$ 或 $x &gt; \xi_K$）依然是 3 次曲線，估計變異數較大。</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>**自然三次仿樣（NCS）**追加了邊界條件：**在兩個邊界區域強制曲線為線性直線（Linear）**。</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**約束條件**：在 $x \le \xi_1$ 與 $x \ge \xi_K$ 處，其二階與三階導數嚴格為零：</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>  S''(x) = 0, \quad S'''(x) = 0</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>邊界左側節省 2 個自由度，右側節省 2 個自由度，總計節省 4 個參數。</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**自然三次仿樣自由度**：$\mathrm{df} = (K + 4) - 4 = K$。</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>NCS 大幅壓制了邊界處的估計變異數，是實務中最推薦的基底函數形式。</span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.3 手把手數值推演：4 筆樣本單節點分段線性仿樣手算</span></span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>為了直觀理解截斷基底函數如何轉化為線性迴歸求解，我們構造一組 4 筆樣本的玩具資料，擬合在節點 $\xi = 1.5$ 處連續銜接的分段線性仿樣（Piecewise Linear Spline）：</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> $y_i$ <span class="pp">|</span></span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 0.0 <span class="pp">|</span> 1.0 <span class="pp">|</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 1.0 <span class="pp">|</span> 3.0 <span class="pp">|</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 2.0 <span class="pp">|</span> 2.0 <span class="pp">|</span></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 3.0 <span class="pp">|</span> 5.0 <span class="pp">|</span></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>模型設定為：</span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>f(x) = \beta_0 + \beta_1 x + \theta_1 (x - 1.5)_+</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>其中截斷線性基底 $(x - 1.5)_+ = \max(0, x - 1.5)$。</span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：建立設計矩陣 $\boldsymbol{X}$ 與響應向量 $\boldsymbol{y}$</span></span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 1 ($x=0$)：$<span class="co">[</span><span class="ot">1, \, 0, \, 0</span><span class="co">]</span>$</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 2 ($x=1$)：$<span class="co">[</span><span class="ot">1, \, 1, \, 0</span><span class="co">]</span>$</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 3 ($x=2$)：$<span class="co">[</span><span class="ot">1, \, 2, \, (2 - 1.5)_+</span><span class="co">]</span> = <span class="co">[</span><span class="ot">1, \, 2, \, 0.5</span><span class="co">]</span>$</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 4 ($x=3$)：$<span class="co">[</span><span class="ot">1, \, 3, \, (3 - 1.5)_+</span><span class="co">]</span> = <span class="co">[</span><span class="ot">1, \, 3, \, 1.5</span><span class="co">]</span>$</span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X} = \begin{bmatrix} 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 2 &amp; 0.5 <span class="sc">\\</span> 1 &amp; 3 &amp; 1.5 \end{bmatrix}, \quad \boldsymbol{y} = \begin{bmatrix} 1.0 <span class="sc">\\</span> 3.0 <span class="sc">\\</span> 2.0 <span class="sc">\\</span> 5.0 \end{bmatrix}</span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算正規方程矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 與向量 $\boldsymbol{X}^\top \boldsymbol{y}$</span></span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\boldsymbol{X}^\top \boldsymbol{X}$：</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{X} = \begin{bmatrix} </span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>  1+1+1+1 &amp; 0+1+2+3 &amp; 0+0+0.5+1.5 <span class="sc">\\</span> </span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>  0+1+2+3 &amp; 0+1+4+9 &amp; 0+0+1+4.5 <span class="sc">\\</span> </span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>  0+0+0.5+1.5 &amp; 0+0+1+4.5 &amp; 0+0+0.25+2.25 </span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>  \end{bmatrix} = \begin{bmatrix} 4.0 &amp; 6.0 &amp; 2.0 <span class="sc">\\</span> 6.0 &amp; 14.0 &amp; 5.5 <span class="sc">\\</span> 2.0 &amp; 5.5 &amp; 2.5 \end{bmatrix}</span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\boldsymbol{X}^\top \boldsymbol{y}$：</span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{y} = \begin{bmatrix} </span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>  1(1) + 1(3) + 1(2) + 1(5) <span class="sc">\\</span> </span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>  0(1) + 1(3) + 2(2) + 3(5) <span class="sc">\\</span> </span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>  0(1) + 0(3) + 0.5(2) + 1.5(5) </span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>  \end{bmatrix} = \begin{bmatrix} 11.0 <span class="sc">\\</span> 22.0 <span class="sc">\\</span> 8.5 \end{bmatrix}</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：高斯消去求解聯立方程</span></span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>方程組為：</span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$4\beta_0 + 6\beta_1 + 2\theta_1 = 11.0 \implies 2\beta_0 + 3\beta_1 + \theta_1 = 5.5 \implies \theta_1 = 5.5 - 2\beta_0 - 3\beta_1$</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$6\beta_0 + 14\beta_1 + 5.5\theta_1 = 22.0$</span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$2\beta_0 + 5.5\beta_1 + 2.5\theta_1 = 8.5$</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>將 $\theta_1$ 代入第 3 式：</span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>2\beta_0 + 5.5\beta_1 + 2.5(5.5 - 2\beta_0 - 3\beta_1) = 8.5 \implies -3\beta_0 - 2\beta_1 = -5.25 \implies 3\beta_0 + 2\beta_1 = 5.25</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>將 $\theta_1$ 代入第 2 式：</span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>6\beta_0 + 14\beta_1 + 5.5(5.5 - 2\beta_0 - 3\beta_1) = 22.0 \implies -5\beta_0 - 2.5\beta_1 = -8.25 \implies 2\beta_0 + \beta_1 = 3.30 \implies \beta_1 = 3.30 - 2\beta_0</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>代入上一式：</span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>3\beta_0 + 2(3.30 - 2\beta_0) = 5.25 \implies -\beta_0 + 6.60 = 5.25 \implies \boldsymbol{\beta_0 = 1.35}</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>解出其餘係數：</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta_1 = 3.30 - 2(1.35) = 0.60}</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\theta_1 = 5.5 - 2(1.35) - 3(0.60) = 5.5 - 2.7 - 1.8 = 1.00}</span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.2 自由度精算法則</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共有 $K+1$ 個區間，每個區間為 3 次多項式（具有 4 個待估係數 $\beta_0, \beta_1, \beta_2, \beta_3$），原始參數共有 $4(K+1)$ 個。</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>共有 $K$ 個內部節點，每個節點處施加 3 個約束條件（$C^0, C^1, C^2$），總約束數為 $3K$。</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**三次仿樣的淨自由度（Degrees of Freedom）**為：</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>  \mathrm{df} = 4(K+1) - 3K = K + 4</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.3 截斷冪次基底（Truncated Power Basis）</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>為了將三次仿樣化為標準線性迴歸求解，我們定義**截斷冪次函數（Truncated Power Function）**：</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>(x - \xi)_+^3 \triangleq \begin{cases}</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>(x - \xi)^3 &amp; \text{若 } x &gt; \xi <span class="sc">\\</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>0 &amp; \text{若 } x \le \xi</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>\end{cases}</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-truncated-power}</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 定理：具有 $K$ 個節點的三次仿樣可唯一表示為基底函數的線性組合：</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>S(x) = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-spline-basis}</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>**證明**：</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>當 $x \le \xi_1$ 時，所有截斷項均為 $0$，$S(x)$ 顯然是標準三次多項式。</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>當 $x$ 越過節點 $\xi_k$ 時，函數增添了 $\theta_k (x - \xi_k)^3$ 項。</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>檢驗其在 $\xi_k$ 處的導數：</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>零階：$(\xi_k - \xi_k)_+^3 = 0$（連續）。</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>一階導數：$\left.\frac{d}{dx}(x - \xi_k)_+^3\right|_{x=\xi_k} = 3(0)^2 = 0$（一階導連續）。</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>二階導數：$\left.\frac{d^2}{dx^2}(x - \xi_k)_+^3\right|_{x=\xi_k} = 6(0) = 0$（二階導連續）。</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>三階導數：在 $\xi_k$ 處從 $0$ 突跳至 $6\theta_k$（允許三階導不連續）。</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>因此式 (<span class="co">[</span><span class="ot">-@eq-ch05-spline-basis</span><span class="co">]</span>) 嚴格滿足三次仿樣的全部定義。待估係數共有 $4 + K$ 個，與自由度精確一致 $\quad \blacksquare$</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.2.4 自然三次仿樣（Natural Cubic Splines, NCS）</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>一般三次仿樣在最外側節點之外（邊界區域 $x &lt; \xi_1$ 或 $x &gt; \xi_K$）依然是 3 次曲線，估計變異數較大。</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>**自然三次仿樣（NCS）**追加了邊界條件：**在兩個邊界區域強制曲線為線性直線（Linear）**。</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**約束條件**：在 $x \le \xi_1$ 與 $x \ge \xi_K$ 處，其二階與三階導數嚴格為零：</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>  S''(x) = 0, \quad S'''(x) = 0</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>邊界左側節省 2 個自由度，右側節省 2 個自由度，總計節省 4 個參數。</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**自然三次仿樣自由度**：$\mathrm{df} = (K + 4) - 4 = K$。</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>NCS 大幅壓制了邊界處的估計變異數，是實務中最推薦的基底函數形式。</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.3 手把手數值推演：4 筆樣本單節點分段線性仿樣手算</span></span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>為了直觀理解截斷基底函數如何轉化為線性迴歸求解，我們構造一組 4 筆樣本的玩具資料，擬合在節點 $\xi = 1.5$ 處連續銜接的分段線性仿樣（Piecewise Linear Spline）：</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 樣本編號 $i$ <span class="pp">|</span> $x_i$ <span class="pp">|</span> $y_i$ <span class="pp">|</span></span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 1 <span class="pp">|</span> 0.0 <span class="pp">|</span> 1.0 <span class="pp">|</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 2 <span class="pp">|</span> 1.0 <span class="pp">|</span> 3.0 <span class="pp">|</span></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 3 <span class="pp">|</span> 2.0 <span class="pp">|</span> 2.0 <span class="pp">|</span></span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 4 <span class="pp">|</span> 3.0 <span class="pp">|</span> 5.0 <span class="pp">|</span></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>模型設定為：</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>f(x) = \beta_0 + \beta_1 x + \theta_1 (x - 1.5)_+</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>其中截斷線性基底 $(x - 1.5)_+ = \max(0, x - 1.5)$。</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 1：建立設計矩陣 $\boldsymbol{X}$ 與響應向量 $\boldsymbol{y}$</span></span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 1 ($x=0$)：$<span class="co">[</span><span class="ot">1, \, 0, \, 0</span><span class="co">]</span>$</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 2 ($x=1$)：$<span class="co">[</span><span class="ot">1, \, 1, \, 0</span><span class="co">]</span>$</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 3 ($x=2$)：$<span class="co">[</span><span class="ot">1, \, 2, \, (2 - 1.5)_+</span><span class="co">]</span> = <span class="co">[</span><span class="ot">1, \, 2, \, 0.5</span><span class="co">]</span>$</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>樣本 4 ($x=3$)：$<span class="co">[</span><span class="ot">1, \, 3, \, (3 - 1.5)_+</span><span class="co">]</span> = <span class="co">[</span><span class="ot">1, \, 3, \, 1.5</span><span class="co">]</span>$</span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>\boldsymbol{X} = \begin{bmatrix} 1 &amp; 0 &amp; 0 <span class="sc">\\</span> 1 &amp; 1 &amp; 0 <span class="sc">\\</span> 1 &amp; 2 &amp; 0.5 <span class="sc">\\</span> 1 &amp; 3 &amp; 1.5 \end{bmatrix}, \quad \boldsymbol{y} = \begin{bmatrix} 1.0 <span class="sc">\\</span> 3.0 <span class="sc">\\</span> 2.0 <span class="sc">\\</span> 5.0 \end{bmatrix}</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 2：計算正規方程矩陣 $\boldsymbol{X}^\top \boldsymbol{X}$ 與向量 $\boldsymbol{X}^\top \boldsymbol{y}$</span></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\boldsymbol{X}^\top \boldsymbol{X}$：</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{X} = \begin{bmatrix} </span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>  1+1+1+1 &amp; 0+1+2+3 &amp; 0+0+0.5+1.5 <span class="sc">\\</span> </span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>  0+1+2+3 &amp; 0+1+4+9 &amp; 0+0+1+4.5 <span class="sc">\\</span> </span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>  0+0+0.5+1.5 &amp; 0+0+1+4.5 &amp; 0+0+0.25+2.25 </span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>  \end{bmatrix} = \begin{bmatrix} 4.0 &amp; 6.0 &amp; 2.0 <span class="sc">\\</span> 6.0 &amp; 14.0 &amp; 5.5 <span class="sc">\\</span> 2.0 &amp; 5.5 &amp; 2.5 \end{bmatrix}</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\boldsymbol{X}^\top \boldsymbol{y}$：</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>  \boldsymbol{X}^\top \boldsymbol{y} = \begin{bmatrix} </span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>  1(1) + 1(3) + 1(2) + 1(5) <span class="sc">\\</span> </span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>  0(1) + 1(3) + 2(2) + 3(5) <span class="sc">\\</span> </span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>  0(1) + 0(3) + 0.5(2) + 1.5(5) </span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>  \end{bmatrix} = \begin{bmatrix} 11.0 <span class="sc">\\</span> 22.0 <span class="sc">\\</span> 8.5 \end{bmatrix}</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 3：高斯消去求解聯立方程</span></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>方程組為：</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$4\beta_0 + 6\beta_1 + 2\theta_1 = 11.0 \implies 2\beta_0 + 3\beta_1 + \theta_1 = 5.5 \implies \theta_1 = 5.5 - 2\beta_0 - 3\beta_1$</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$6\beta_0 + 14\beta_1 + 5.5\theta_1 = 22.0$</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$2\beta_0 + 5.5\beta_1 + 2.5\theta_1 = 8.5$</span>
 <span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：分段函數解析與連續性檢驗</span></span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>擬合出的仿樣模型為：</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>\hat{f}(x) = 1.35 + 0.60x + 1.00(x - 1.5)_+</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在節點左側（$x \le 1.5$）**：</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>  \hat{f}_L(x) = 1.35 + 0.60x, \quad \text{斜率為 } 0.60</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在節點右側（$x &gt; 1.5$）**：</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>  \hat{f}_R(x) = 1.35 + 0.60x + 1.00(x - 1.5) = -0.15 + 1.60x, \quad \text{斜率躍升至 } 1.60</span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>  $$</span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**節點 $x = 1.5$ 處連續性檢驗**：</span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>左極限：$\hat{f}_L(1.5) = 1.35 + 0.60(1.5) = 1.35 + 0.90 = \mathbf{2.25}$</span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>右極限：$\hat{f}_R(1.5) = -0.15 + 1.60(1.5) = -0.15 + 2.40 = \mathbf{2.25}$</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>  兩側在節點處精準銜接，無縫平滑！</span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：殘差正交性檢驗</span></span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_1 = 1.35 + 0.60(0) = 1.35 \implies e_1 = 1.0 - 1.35 = -0.35$</span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_2 = 1.35 + 0.60(1) = 1.95 \implies e_2 = 3.0 - 1.95 = +1.05$</span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_3 = -0.15 + 1.60(2) = 3.05 \implies e_3 = 2.0 - 3.05 = -1.05$</span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_4 = -0.15 + 1.60(3) = 4.65 \implies e_4 = 5.0 - 4.65 = +0.35$</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>殘差和：$\sum e_i = -0.35 + 1.05 - 1.05 + 0.35 = \mathbf{0.00}$（完全滿足 OLS 性質）。</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.4 平滑仿樣（Smoothing Splines）</span></span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>迴歸仿樣需要人為手動挑選節點的個數與擺放位置。**平滑仿樣（Smoothing Splines）**則跳出參數思維，透過無限維函數空間的變分最佳化來尋求解：</span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>\min_{g \in \mathcal{C}^2} \left<span class="sc">\{</span> \sum_{i=1}^n (y_i - g(x_i))^2 + \lambda \int_{a}^{b} <span class="co">[</span><span class="ot">g''(t)</span><span class="co">]</span>^2 dt \right<span class="sc">\}</span></span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-smoothing-objective}</span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a>其中 $\lambda \ge 0$ 為平滑調節參數：</span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>第一項衡量模型對樣本點的**擬合優度（Fit to Data）**。</span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>第二項衡量函數整體的**粗糙度 / 彎曲度（Roughness Penalty）**。</span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>當 $\lambda \to \infty$ 時，$g(x)$ 被強行壓制為 OLS 線性迴歸直線；當 $\lambda = 0$ 時，$g(x)$ 為插值所有數據點的任意劇烈波動曲線。</span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.4.1 變分極值定理（Reinsch 1967）</span></span>
-<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **定理**：在全體具備二階連續可導的函數空間 $\mathcal{C}^2[a, b]$ 中，式 ([-@eq-ch05-smoothing-objective]) 的唯一全域極小值解，必然是一個**以全體相異樣本觀測點 $x_1, x_2, \dots, x_n$ 為節點的自然三次仿樣（Natural Cubic Spline）**！</span></span>
-<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.4.2 平滑矩陣與有效自由度</span></span>
-<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>平滑仿樣在所有觀測點上的預測值向量 $\hat{\boldsymbol{g}} = \boldsymbol{S}_\lambda \boldsymbol{y}$，其有效自由度定義為：</span>
-<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>\mathrm{df}_\lambda = \mathrm{tr}(\boldsymbol{S}_\lambda)</span>
-<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.5 廣義加法模型（GAM）與 Backfitting</span></span>
-<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>Hastie &amp; Tibshirani (1986) 提出了**廣義加法模型（GAM）**：</span>
-<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>$$</span>
-<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a>y_i = \beta_0 + \sum_{j=1}^p f_j(x_{ij}) + \epsilon_i</span>
-<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-gam-model}</span>
-<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a><span class="fu">### Backfitting 演算法核心步驟：</span></span>
-<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**初始化**：令 $\alpha = \frac{1}{n}\sum_{i=1}^n y_i$，$f_j \equiv 0$。</span>
-<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**循序更新**：遍歷特徵 $j = 1, \dots, p$：</span>
-<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算部分殘差：$\boldsymbol{r}_j = \boldsymbol{y} - \alpha \boldsymbol{1} - \sum_{k \neq j} \boldsymbol{f}_k$</span>
-<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>平滑擬合更新：$\boldsymbol{f}_j \leftarrow \boldsymbol{S}_j \boldsymbol{r}_j$</span>
-<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>中心化約束：$\boldsymbol{f}_j \leftarrow \boldsymbol{f}_j - \frac{1}{n}\sum_{i=1}^n f_j(x_{ij})$</span>
-<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.6 雙軌實務實驗室：仿樣與 GAM 模型實戰</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>將 $\theta_1$ 代入第 3 式：</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>2\beta_0 + 5.5\beta_1 + 2.5(5.5 - 2\beta_0 - 3\beta_1) = 8.5 \implies -3\beta_0 - 2\beta_1 = -5.25 \implies 3\beta_0 + 2\beta_1 = 5.25</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>將 $\theta_1$ 代入第 2 式：</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>6\beta_0 + 14\beta_1 + 5.5(5.5 - 2\beta_0 - 3\beta_1) = 22.0 \implies -5\beta_0 - 2.5\beta_1 = -8.25 \implies 2\beta_0 + \beta_1 = 3.30 \implies \beta_1 = 3.30 - 2\beta_0</span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>代入上一式：</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>3\beta_0 + 2(3.30 - 2\beta_0) = 5.25 \implies -\beta_0 + 6.60 = 5.25 \implies \boldsymbol{\beta_0 = 1.35}</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a>解出其餘係數：</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\beta_1 = 3.30 - 2(1.35) = 0.60}</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>\boldsymbol{\theta_1 = 5.5 - 2(1.35) - 3(0.60) = 5.5 - 2.7 - 1.8 = 1.00}</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 4：分段函數解析與連續性檢驗</span></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>擬合出的仿樣模型為：</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>\hat{f}(x) = 1.35 + 0.60x + 1.00(x - 1.5)_+</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在節點左側（$x \le 1.5$）**：</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a>  \hat{f}_L(x) = 1.35 + 0.60x, \quad \text{斜率為 } 0.60</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**在節點右側（$x &gt; 1.5$）**：</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a>  \hat{f}_R(x) = 1.35 + 0.60x + 1.00(x - 1.5) = -0.15 + 1.60x, \quad \text{斜率躍升至 } 1.60</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a>  $$</span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**節點 $x = 1.5$ 處連續性檢驗**：</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>左極限：$\hat{f}_L(1.5) = 1.35 + 0.60(1.5) = 1.35 + 0.90 = \mathbf{2.25}$</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>右極限：$\hat{f}_R(1.5) = -0.15 + 1.60(1.5) = -0.15 + 2.40 = \mathbf{2.25}$</span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a>  兩側在節點處精準銜接，無縫平滑！</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="fu">### 步驟 5：殘差正交性檢驗</span></span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_1 = 1.35 + 0.60(0) = 1.35 \implies e_1 = 1.0 - 1.35 = -0.35$</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_2 = 1.35 + 0.60(1) = 1.95 \implies e_2 = 3.0 - 1.95 = +1.05$</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_3 = -0.15 + 1.60(2) = 3.05 \implies e_3 = 2.0 - 3.05 = -1.05$</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\hat{y}_4 = -0.15 + 1.60(3) = 4.65 \implies e_4 = 5.0 - 4.65 = +0.35$</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>殘差和：$\sum e_i = -0.35 + 1.05 - 1.05 + 0.35 = \mathbf{0.00}$（完全滿足 OLS 性質）。</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.4 平滑仿樣（Smoothing Splines）</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>迴歸仿樣需要人為手動挑選節點的個數與擺放位置。**平滑仿樣（Smoothing Splines）**則跳出參數思維，透過無限維函數空間的變分最佳化來尋求解：</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a>\min_{g \in \mathcal{C}^2} \left<span class="sc">\{</span> \sum_{i=1}^n (y_i - g(x_i))^2 + \lambda \int_{a}^{b} <span class="co">[</span><span class="ot">g''(t)</span><span class="co">]</span>^2 dt \right<span class="sc">\}</span></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-smoothing-objective}</span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a>其中 $\lambda \ge 0$ 為平滑調節參數：</span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>第一項衡量模型對樣本點的**擬合優度（Fit to Data）**。</span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>第二項衡量函數整體的**粗糙度 / 彎曲度（Roughness Penalty）**。</span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>當 $\lambda \to \infty$ 時，$g(x)$ 被強行壓制為 OLS 線性迴歸直線；當 $\lambda = 0$ 時，$g(x)$ 為插值所有數據點的任意劇烈波動曲線。</span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.4.1 變分極值定理（Reinsch 1967）</span></span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **定理**：在全體具備二階連續可導的函數空間 $\mathcal{C}^2[a, b]$ 中，式 ([-@eq-ch05-smoothing-objective]) 的唯一全域極小值解，必然是一個**以全體相異樣本觀測點 $x_1, x_2, \dots, x_n$ 為節點的自然三次仿樣（Natural Cubic Spline）**！</span></span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5.4.2 平滑矩陣與有效自由度</span></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a>平滑仿樣在所有觀測點上的預測值向量 $\hat{\boldsymbol{g}} = \boldsymbol{S}_\lambda \boldsymbol{y}$，其有效自由度定義為：</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>\mathrm{df}_\lambda = \mathrm{tr}(\boldsymbol{S}_\lambda)</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
-<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
-<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：自然三次仿樣 (ns) 與廣義加法模型 (mgcv::gam)</span></span>
-<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：splines, mgcv, ISLR2</span></span>
-<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.5 廣義加法模型（GAM）與 Backfitting</span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a>Hastie &amp; Tibshirani (1986) 提出了**廣義加法模型（GAM）**：</span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a>y_i = \beta_0 + \sum_{j=1}^p f_j(x_{ij}) + \epsilon_i</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a>$$ {#eq-ch05-gam-model}</span>
 <span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
-<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
-<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Wage)</span>
-<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 自然三次仿樣 (Natural Cubic Splines)</span></span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>fit_ncs <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="at">df =</span> <span class="dv">4</span>), <span class="at">data =</span> Wage)</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="fu">### Backfitting 演算法核心步驟：</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**初始化**：令 $\alpha = \frac{1}{n}\sum_{i=1}^n y_i$，$f_j \equiv 0$。</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**循序更新**：遍歷特徵 $j = 1, \dots, p$：</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>計算部分殘差：$\boldsymbol{r}_j = \boldsymbol{y} - \alpha \boldsymbol{1} - \sum_{k \neq j} \boldsymbol{f}_k$</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>平滑擬合更新：$\boldsymbol{f}_j \leftarrow \boldsymbol{S}_j \boldsymbol{r}_j$</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="ss">   * </span>中心化約束：$\boldsymbol{f}_j \leftarrow \boldsymbol{f}_j - \frac{1}{n}\sum_{i=1}^n f_j(x_{ij})$</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="co"># 預測年齡網格區間</span></span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>age_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(Wage<span class="sc">$</span>age), <span class="fu">max</span>(Wage<span class="sc">$</span>age))</span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>pred_ncs <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ncs, <span class="at">newdata =</span> <span class="fu">list</span>(<span class="at">age =</span> age_grid), <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"自然三次仿樣 (df=4) 擬合完成。</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 廣義加法模型 (GAM) 實戰</span></span>
-<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a>fit_gam <span class="ot">&lt;-</span> mgcv<span class="sc">::</span><span class="fu">gam</span>(wage <span class="sc">~</span> <span class="fu">s</span>(age, <span class="at">bs =</span> <span class="st">"cr"</span>, <span class="at">k =</span> <span class="dv">10</span>) <span class="sc">+</span> <span class="fu">s</span>(year, <span class="at">k =</span> <span class="dv">4</span>) <span class="sc">+</span> education, <span class="at">data =</span> Wage)</span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="co"># 輸出 GAM 模型統計摘要</span></span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_gam)</span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢驗非線性顯著性與有效自由度 (edf)</span></span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a>edf_values <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_gam)<span class="sc">$</span>edf</span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">年齡 (age) 之有效自由度 (EDF): %.2f</span><span class="sc">\n</span><span class="st">"</span>, edf_values[<span class="dv">1</span>]))</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"年份 (year) 之有效自由度 (EDF): %.2f</span><span class="sc">\n</span><span class="st">"</span>, edf_values[<span class="dv">2</span>]))</span>
-<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.6 雙軌實務實驗室：仿樣與 GAM 模型實戰</span></span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟦 R 語言雙軌實作</span></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a><span class="co"># R 實作：自然三次仿樣 (ns) 與廣義加法模型 (mgcv::gam)</span></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：splines, mgcv, ISLR2</span></span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2)</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Wage)</span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 自然三次仿樣 (Natural Cubic Splines)</span></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a>fit_ncs <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="at">df =</span> <span class="dv">4</span>), <span class="at">data =</span> Wage)</span>
 <span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：patsy 生成仿樣基底與非線性曲線配適</span></span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, statsmodels, patsy</span></span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="co"># 預測年齡網格區間</span></span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a>age_grid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(Wage<span class="sc">$</span>age), <span class="fu">max</span>(Wage<span class="sc">$</span>age))</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a>pred_ncs <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit_ncs, <span class="at">newdata =</span> <span class="fu">list</span>(<span class="at">age =</span> age_grid), <span class="at">se.fit =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"自然三次仿樣 (df=4) 擬合完成。</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> patsy <span class="im">import</span> dmatrix</span>
-<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備強烈非線性趨勢的資料</span></span>
-<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
-<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">18</span>, <span class="dv">70</span>, size<span class="op">=</span>n)</span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a>true_wage <span class="op">=</span> <span class="dv">20</span> <span class="op">+</span> <span class="fl">2.5</span> <span class="op">*</span> age <span class="op">-</span> <span class="fl">0.03</span> <span class="op">*</span> (age<span class="op">**</span><span class="dv">2</span>) <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> np.sin(age <span class="op">/</span> <span class="dv">5</span>)</span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a>wage <span class="op">=</span> true_wage <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">15</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 廣義加法模型 (GAM) 實戰</span></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>fit_gam <span class="ot">&lt;-</span> mgcv<span class="sc">::</span><span class="fu">gam</span>(wage <span class="sc">~</span> <span class="fu">s</span>(age, <span class="at">bs =</span> <span class="st">"cr"</span>, <span class="at">k =</span> <span class="dv">10</span>) <span class="sc">+</span> <span class="fu">s</span>(year, <span class="at">k =</span> <span class="dv">4</span>) <span class="sc">+</span> education, <span class="at">data =</span> Wage)</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="co"># 輸出 GAM 模型統計摘要</span></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_gam)</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a><span class="co"># 檢驗非線性顯著性與有效自由度 (edf)</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>edf_values <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_gam)<span class="sc">$</span>edf</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">年齡 (age) 之有效自由度 (EDF): %.2f</span><span class="sc">\n</span><span class="st">"</span>, edf_values[<span class="dv">1</span>]))</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"年份 (year) 之有效自由度 (EDF): %.2f</span><span class="sc">\n</span><span class="st">"</span>, edf_values[<span class="dv">2</span>]))</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'age'</span>: age, <span class="st">'wage'</span>: wage})</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🟨 Python 雙軌實作</span></span>
 <span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 使用 patsy 建立三次 B-仿樣 (B-Splines) 基底</span></span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>knots <span class="op">=</span> np.percentile(age, [<span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">75</span>])</span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a>transformed_x <span class="op">=</span> dmatrix(<span class="st">"bs(age, knots=knots, degree=3, include_intercept=False)"</span>, {<span class="st">"age"</span>: age}, return_type<span class="op">=</span><span class="st">'dataframe'</span>)</span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 OLS 線性迴歸 (基於仿樣基底)</span></span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a>spline_model <span class="op">=</span> sm.OLS(wage, sm.add_constant(transformed_x)).fit()</span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"B-仿樣模型 R-squared: </span><span class="sc">{</span>spline_model<span class="sc">.</span>rsquared<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"內部節點位置: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(knots, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"模型自由度估計數: </span><span class="sc">{</span>spline_model<span class="sc">.</span>df_model<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.7 課後全方位習題庫（10 題）</span></span>
-<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**三次仿樣基底函數的各階導數連續性驗證**：</span>
-<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a>   依據式 (<span class="co">[</span><span class="ot">-@eq-ch05-spline-basis</span><span class="co">]</span>)，逐階計算 $S(x)$ 在節點 $\xi_k$ 處的一階、二階與三階左右導數極限，嚴格證明其二階導連續且三階導發生階梯跳躍。</span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**自然邊界條件之矩陣約束形式**：</span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>   對於三次仿樣 $S(x) = \sum_{j=0}^3 \beta_j x^j + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3$，證明邊界條件 $S''(x) = 0$ 與 $S'''(x) = 0$（在 $x &gt; \xi_K$ 處）等價於兩個線性約束：$\sum_{k=1}^K \theta_k = 0$ 與 $\sum_{k=1}^K \theta_k \xi_k = 0$。</span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Reinsch 變分定理之分部積分推導**：</span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a>   設 $g(x)$ 為式 (<span class="co">[</span><span class="ot">-@eq-ch05-smoothing-objective</span><span class="co">]</span>) 的解，$h(x)$ 為任意二階可導的擾動函數。利用分部積分法 $\int g''(t) h''(t) dt = <span class="co">[</span><span class="ot">g''(t)h'(t)</span><span class="co">]</span> - <span class="co">[</span><span class="ot">g'''(t)h(t)</span><span class="co">]</span> + \int g^{(4)}(t)h(t)dt$，證明最優解在區間內部必滿足四階常微分方程 $g^{(4)}(x) = 0$（即分段三次多項式）。</span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**平滑矩陣 $\boldsymbol{S}_\lambda$ 的對稱性與半正定性**：</span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>   證明平滑仿樣的投影平滑矩陣 $\boldsymbol{S}_\lambda = (\boldsymbol{I} + \lambda \boldsymbol{K})^{-1}$ 在適當基底變換下為對稱半正定矩陣，其特徵值均介於 $(0, 1]$ 之間。</span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Backfitting 演算法的高斯-賽德爾（Gauss-Seidel）代數等價性**：</span>
-<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a>   將 GAM 視為聯立線性算子方程組 $\boldsymbol{S}_j (\boldsymbol{y} - \sum_{k \neq j} \boldsymbol{f}_k) = \boldsymbol{f}_j$，證明 Backfitting 迭代本質上是求解該大型線性區塊方程組的高斯-賽德爾迭代法。</span>
-<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**不同多項式階數與節點位置之交叉驗證**：</span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>   在真實薪資資料（如 Wage）中，比較節點數 $K \in <span class="sc">\{</span>1, 3, 5, 10<span class="sc">\}</span>$ 以及均勻節點與分位數節點對 10-Fold CV MSE 的影響，繪製誤差條形圖。</span>
-<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**平滑仿樣 GCV（廣義交叉驗證）自動選取 $\lambda$ 實作**：</span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a>   利用 R <span class="in">`smooth.spline(..., cv = FALSE)`</span>（使用 GCV 準則），手刻 GCV 公式：$\mathrm{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left(\frac{y_i - \hat{g}_\lambda(x_i)}{1 - \mathrm{tr}(\boldsymbol{S}_\lambda)/n}\right)^2$，繪製 GCV 隨 $\lambda$ 變化的平滑 U 型曲線。</span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**多元非線性 GAM 視覺化與部分效應圖（Partial Dependence Plot）**：</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a>   使用 R <span class="in">`mgcv`</span> 或 Python <span class="in">`pyGAM`</span> 建立包含 3 個連續特徵與 1 個類別特徵的 GAM 模型，繪製各特徵邊際效應曲線與 95% 漸近信賴帶（Pointwise Confidence Bands）。</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**二維薄板仿樣（Thin Plate Splines）處理空間地理數據**：</span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a>   利用具有空間經緯度的氣象觀測站氣溫數據，使用薄板仿樣擬合二維平滑空間曲面 $f(\text{lat}, \text{lon})$，並繪製等高線熱力圖。</span>
-<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**二元分類 Logistic GAM 實作**：</span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>    在分類問題中將 GAM 的連結函數改為 Logit 連結：$\ln \frac{p(\boldsymbol{x})}{1-p(\boldsymbol{x})} = \beta_0 + \sum f_j(x_j)$。在心臟病或信用卡違約資料集上評估其 ROC-AUC 並對比標準線性羅吉斯迴歸。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="co"># Python 實作：patsy 生成仿樣基底與非線性曲線配適</span></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="co"># 依賴套件：numpy, pandas, statsmodels, patsy</span></span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> patsy <span class="im">import</span> dmatrix</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 模擬具備強烈非線性趨勢的資料</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a>age <span class="op">=</span> np.random.uniform(<span class="dv">18</span>, <span class="dv">70</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a>true_wage <span class="op">=</span> <span class="dv">20</span> <span class="op">+</span> <span class="fl">2.5</span> <span class="op">*</span> age <span class="op">-</span> <span class="fl">0.03</span> <span class="op">*</span> (age<span class="op">**</span><span class="dv">2</span>) <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> np.sin(age <span class="op">/</span> <span class="dv">5</span>)</span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>wage <span class="op">=</span> true_wage <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">15</span>, size<span class="op">=</span>n)</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'age'</span>: age, <span class="st">'wage'</span>: wage})</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 使用 patsy 建立三次 B-仿樣 (B-Splines) 基底</span></span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a>knots <span class="op">=</span> np.percentile(age, [<span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">75</span>])</span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a>transformed_x <span class="op">=</span> dmatrix(<span class="st">"bs(age, knots=knots, degree=3, include_intercept=False)"</span>, {<span class="st">"age"</span>: age}, return_type<span class="op">=</span><span class="st">'dataframe'</span>)</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 擬合 OLS 線性迴歸 (基於仿樣基底)</span></span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>spline_model <span class="op">=</span> sm.OLS(wage, sm.add_constant(transformed_x)).fit()</span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"B-仿樣模型 R-squared: </span><span class="sc">{</span>spline_model<span class="sc">.</span>rsquared<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"內部節點位置: </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(knots, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"模型自由度估計數: </span><span class="sc">{</span>spline_model<span class="sc">.</span>df_model<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="fu">## 5.7 課後全方位習題庫（10 題）</span></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="fu">### 一、觀念理解與數學證明（5 題）</span></span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**三次仿樣基底函數的各階導數連續性驗證**：</span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a>   依據式 (<span class="co">[</span><span class="ot">-@eq-ch05-spline-basis</span><span class="co">]</span>)，逐階計算 $S(x)$ 在節點 $\xi_k$ 處的一階、二階與三階左右導數極限，嚴格證明其二階導連續且三階導發生階梯跳躍。</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**自然邊界條件之矩陣約束形式**：</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a>   對於三次仿樣 $S(x) = \sum_{j=0}^3 \beta_j x^j + \sum_{k=1}^K \theta_k (x - \xi_k)_+^3$，證明邊界條件 $S''(x) = 0$ 與 $S'''(x) = 0$（在 $x &gt; \xi_K$ 處）等價於兩個線性約束：$\sum_{k=1}^K \theta_k = 0$ 與 $\sum_{k=1}^K \theta_k \xi_k = 0$。</span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Reinsch 變分定理之分部積分推導**：</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a>   設 $g(x)$ 為式 (<span class="co">[</span><span class="ot">-@eq-ch05-smoothing-objective</span><span class="co">]</span>) 的解，$h(x)$ 為任意二階可導的擾動函數。利用分部積分法 $\int g''(t) h''(t) dt = <span class="co">[</span><span class="ot">g''(t)h'(t)</span><span class="co">]</span> - <span class="co">[</span><span class="ot">g'''(t)h(t)</span><span class="co">]</span> + \int g^{(4)}(t)h(t)dt$，證明最優解在區間內部必滿足四階常微分方程 $g^{(4)}(x) = 0$（即分段三次多項式）。</span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**平滑矩陣 $\boldsymbol{S}_\lambda$ 的對稱性與半正定性**：</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a>   證明平滑仿樣的投影平滑矩陣 $\boldsymbol{S}_\lambda = (\boldsymbol{I} + \lambda \boldsymbol{K})^{-1}$ 在適當基底變換下為對稱半正定矩陣，其特徵值均介於 $(0, 1]$ 之間。</span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Backfitting 演算法的高斯-賽德爾（Gauss-Seidel）代數等價性**：</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>   將 GAM 視為聯立線性算子方程組 $\boldsymbol{S}_j (\boldsymbol{y} - \sum_{k \neq j} \boldsymbol{f}_k) = \boldsymbol{f}_j$，證明 Backfitting 迭代本質上是求解該大型線性區塊方程組的高斯-賽德爾迭代法。</span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="fu">### 二、程式實作與實務應用（5 題）</span></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**不同多項式階數與節點位置之交叉驗證**：</span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a>   在真實薪資資料（如 Wage）中，比較節點數 $K \in <span class="sc">\{</span>1, 3, 5, 10<span class="sc">\}</span>$ 以及均勻節點與分位數節點對 10-Fold CV MSE 的影響，繪製誤差條形圖。</span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**平滑仿樣 GCV（廣義交叉驗證）自動選取 $\lambda$ 實作**：</span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>   利用 R <span class="in">`smooth.spline(..., cv = FALSE)`</span>（使用 GCV 準則），手刻 GCV 公式：$\mathrm{GCV}(\lambda) = \frac{1}{n} \sum_{i=1}^n \left(\frac{y_i - \hat{g}_\lambda(x_i)}{1 - \mathrm{tr}(\boldsymbol{S}_\lambda)/n}\right)^2$，繪製 GCV 隨 $\lambda$ 變化的平滑 U 型曲線。</span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**多元非線性 GAM 視覺化與部分效應圖（Partial Dependence Plot）**：</span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a>   使用 R <span class="in">`mgcv`</span> 或 Python <span class="in">`pyGAM`</span> 建立包含 3 個連續特徵與 1 個類別特徵的 GAM 模型，繪製各特徵邊際效應曲線與 95% 漸近信賴帶（Pointwise Confidence Bands）。</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**二維薄板仿樣（Thin Plate Splines）處理空間地理數據**：</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a>   利用具有空間經緯度的氣象觀測站氣溫數據，使用薄板仿樣擬合二維平滑空間曲面 $f(\text{lat}, \text{lon})$，並繪製等高線熱力圖。</span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="ss">10. </span>**二元分類 Logistic GAM 實作**：</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a>    在分類問題中將 GAM 的連結函數改為 Logit 連結：$\ln \frac{p(\boldsymbol{x})}{1-p(\boldsymbol{x})} = \beta_0 + \sum f_j(x_j)$。在心臟病或信用卡違約資料集上評估其 ROC-AUC 並對比標準線性羅吉斯迴歸。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">
