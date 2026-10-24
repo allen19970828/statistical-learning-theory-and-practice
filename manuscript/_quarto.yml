@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: _book
+  resources:
+    - figures
 
 book:
   title: "統計學習理論與實務：深入淺出指南"

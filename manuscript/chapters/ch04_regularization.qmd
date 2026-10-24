@@ -103,7 +103,7 @@ $$ {#eq-ch04-lasso-objective}
 
 ### 4.3.1 為什麼 $L_1$ 能產生稀疏解？幾何等高線切點分析
 
-![圖 4.1：Lasso 與 Ridge 的幾何約束面與 OLS 橢圓等高線切點。Lasso 的多面體菱形尖角極易與等高線相碰，迫使係數嚴格歸零；Ridge 的圓弧面則保持非零平滑收縮。](figures/fig04_lasso_ridge_geometry.png){#fig-ch04-lasso-ridge width=90%}
+![圖 4.1：Lasso 與 Ridge 的幾何約束面與 OLS 橢圓等高線切點。Lasso 的多面體菱形尖角極易與等高線相碰，迫使係數嚴格歸零；Ridge 的圓弧面則保持非零平滑收縮。](../figures/fig04_lasso_ridge_geometry.png){#fig-ch04-lasso-ridge width=90%}
 
 * **Lasso 的可行解區域是多面體（$L_1$ 菱形）**：頂點精確坐落在座標軸上。當 OLS 的橢圓形等高線由中心向外膨脹擴展時，**幾何上極大概率最先碰撞到菱形的尖銳頂點**。頂點意味著某些維度精確為 $0$（$\beta_j = 0$），從而實現自動變數選取！
 * **Ridge 的可行解區域是超球面（$L_2$ 圓形）**：表面處處光滑可微，等高線與圓的切點幾乎不可能落在座標軸上，故係數僅被壓縮而不會歸零。

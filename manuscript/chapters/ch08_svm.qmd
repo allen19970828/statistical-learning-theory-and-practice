@@ -52,7 +52,7 @@ $$ {#eq-ch08-hard-margin-primal}
 
 這是一個具有線性不等式約束的**凸二次規劃問題（Convex Quadratic Programming, QP）**，保證存在全域唯一最優解。
 
-![圖 8.1：支援向量機最大間距分類超平面與支援向量。間距寬度為 $2/\|\mathbf{w}\|_2$，最終超平面僅由黃色空心圓標註的支援向量唯一決定。](figures/fig08_svm_margin.png){#fig-ch08-svm-margin width=80%}
+![圖 8.1：支援向量機最大間距分類超平面與支援向量。間距寬度為 $2/\|\mathbf{w}\|_2$，最終超平面僅由黃色空心圓標註的支援向量唯一決定。](../figures/fig08_svm_margin.png){#fig-ch08-svm-margin width=80%}
 
 ---
 
